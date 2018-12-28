@@ -8,7 +8,6 @@
 #include "buttons.h"
 #include "driverlib.h"
 #include "hal.h"
-#include "ptt.h"
 
 //======== Buttons Init function ========
 
@@ -50,7 +49,7 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
             //check IES
             if(P1IES&BIT1){
                 //toggle PTT pin
-                ptt_set(PTT_TOGGLE);
+                //ptt_set(PTT_TOGGLE);
             }
             //disable P1.1 interrupts
             P1IE&=~BIT1;

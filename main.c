@@ -34,7 +34,6 @@
 #include "driverlib.h"
 #include "terminal.h"
 #include "buttons.h"
-#include "ptt.h"
 
 #include "USBprintf.h"
 
@@ -44,11 +43,14 @@
 #include "USB_API/USB_CDC_API/UsbCdc.h"
 #include "USB_app/usbConstructs.h"
 
+
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
  * your own board.
  */
 #include "hal.h"
+
+#include "LEDs.h"
 
 // Function declarations
 
@@ -59,8 +61,6 @@ volatile uint8_t bCDCDataReceived_event = FALSE; // Indicates data has been rx'e
 #define MAX_STR_LENGTH 64
 char wholeString[MAX_STR_LENGTH] = ""; // Entire input str from last 'return'
 
-//init function for ADC
-void ADCinit(void);
 
 /*  
  * ======== main ========
@@ -81,9 +81,8 @@ void main (void)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     USB_setup(TRUE, TRUE); // Init USB & events; if a host is present, connect
     terminal_init(&term_dat);
-    ADCinit();
     Buttons_init();
-    PTT_init();
+    initLEDs();
 
     __enable_interrupt();  // Enable interrupts globally
     
