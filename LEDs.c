@@ -6,13 +6,14 @@
  */
 
 #include <msp430.h>
+#include <string.h>         //for memset
 #include "LEDs.h"
 
 
 void initLEDs(void)
 {
 
-    int i,end_len;
+    int i;
     char brightness=0x1F;
 
 
@@ -30,32 +31,33 @@ void initLEDs(void)
     //take peripheral out of reset mode
     UCB0CTLW0&=~UCSWRST;
 
-    //send start sequence
-    for(i=0;i<4;i++){
-        LEDSendByte(0);
-    }
+
+    //clear LED array
+    memset(LED_stat,0,sizeof(LED_stat));
+
+
 
     for(i=0;i<NUM_LEDS;i++)
     {
-        //send brightness
-        LEDSendByte(0xE0|brightness);
-        //send blue
-        LEDSendByte(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
-        //send green
-        LEDSendByte(((i%4)==3)?0xFF:((i%4)==1)?0xFF:0);
-        //send red
-        LEDSendByte(((i%4)==3)?0xFF:((i%4)==2)?0xFF:0);
+
+        //set brightness
+        LED_stat[0].colors[i].brt=(0xE0|(i+1));
+        //set blue
+        LED_stat[0].colors[i].b=0xFF;//8*i;
+        //set green
+        LED_stat[0].colors[i].g=0;
+        //set red
+        LED_stat[0].colors[i].r=0xFF;
+
+        //set blue
+        LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
+        //set green
+        LED_stat[0].colors[i].g=(((i%4)==3)?0xFF:((i%4)==1)?0xFF:0);
+        //set red
+        LED_stat[0].colors[i].r=(((i%4)==3)?0xFF:((i%4)==2)?0xFF:0);
     }
 
-
-    //calculate number of end bytes
-    end_len=((NUM_LEDS-1)+8)/16;
-
-    //send end frame
-    for(i=0;i<end_len;i++)
-    {
-        LEDSendByte(0);
-    }
+    LEDs_send(&LED_stat[0]);
 
 }
 
@@ -70,4 +72,19 @@ unsigned char LEDSendByte(const unsigned char data)
     UCB0TXBUF=data;
     while(!(UCB0IFG&UCTXIFG));    // wait for RX buffer (full)
     return (UCB0RXBUF);
+}
+
+
+
+void LEDs_send(LED_array *dat)
+{
+
+    int i;
+    unsigned char *ptr=(unsigned char*)dat;
+
+    for(i=0;i<sizeof(LED_array);i++)
+    {
+        LEDSendByte(ptr[i]);
+    }
+
 }
