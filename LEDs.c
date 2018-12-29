@@ -20,7 +20,9 @@ void initLEDs(void)
     UCB0CTL0=UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC;
     UCB0CTL1=UCSSEL_2|UCSWRST;
     //set clock rate to 1MHz
-    UCB0BRW=25;
+    //UCB0BRW=25;
+    //set clock rate to 5MHz
+    UCB0BRW=5;
 
     //setup pins
     P3SEL|=BIT2|BIT0;
