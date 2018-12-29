@@ -84,6 +84,12 @@ void main (void)
     Buttons_init();
     initLEDs();
 
+    //setup onboard LEDs
+    P4OUT&=~BIT7;
+    P1OUT&~BIT0;
+    P4DIR|=BIT7;
+    P1DIR|=BIT0;
+
     __enable_interrupt();  // Enable interrupts globally
     
     while (1)
