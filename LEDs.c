@@ -14,7 +14,6 @@ void initLEDs(void)
 {
 
     int i;
-    char brightness=0x1F;
 
 
     //setup SPI port
@@ -39,7 +38,6 @@ void initLEDs(void)
 
     for(i=0;i<NUM_LEDS;i++)
     {
-
         //set brightness
         LED_stat[0].colors[i].brt=(0xE0|(i+1));
         //set blue

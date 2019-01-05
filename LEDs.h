@@ -10,7 +10,9 @@
 
 void initLEDs(void);
 
-#define NUM_LEDS    30
+#define NUM_LEDS    15
+
+#define LED_LEN     5
 
 typedef struct{
     unsigned char brt;
