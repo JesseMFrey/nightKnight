@@ -75,16 +75,28 @@ unsigned char LEDSendByte(const unsigned char data)
 }
 
 
-
 void LEDs_send(LED_array *dat)
 {
-
-    int i;
     unsigned char *ptr=(unsigned char*)dat;
 
-    for(i=0;i<sizeof(LED_array);i++)
-    {
-        LEDSendByte(ptr[i]);
-    }
+    //disable DMA
+    DMA0CTL&=~DMAEN;
+
+    // DMA trigger is SPI send
+    DMACTL0 = DMA0TSEL_19;
+
+    // Source DMA address: the data buffer.
+    __data20_write_long((unsigned long)&DMA0SA,(unsigned long)(ptr+1));
+
+    // Destination DMA address: the SPI send register.
+    __data20_write_long((unsigned long)&DMA0DA,(unsigned long)&UCB0TXBUF);
+
+    // The size of the block to be transferred, the first byte is transfered manualy so don't count it
+    DMA0SZ = sizeof(LED_array)-1;
+    // Configure the DMA transfer. single byte transfer with destination increment
+    DMA0CTL = DMADT_0|DMASBDB|DMAEN|DMASRCINCR_3;
+
+    //kick off transfer
+    UCB0TXBUF=*ptr;
 
 }
