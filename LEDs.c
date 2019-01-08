@@ -8,13 +8,11 @@
 #include <msp430.h>
 #include <string.h>         //for memset
 #include "LEDs.h"
+#include "flashPattern.h"
 
 
 void initLEDs(void)
 {
-
-    int i;
-
 
     //setup SPI port
     UCB0CTL0=UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC;
@@ -34,28 +32,7 @@ void initLEDs(void)
     //clear LED array
     memset(LED_stat,0,sizeof(LED_stat));
 
-
-
-    for(i=0;i<NUM_LEDS;i++)
-    {
-        //set brightness
-        LED_stat[0].colors[i].brt=(0xE0|(i+1));
-        //set blue
-        LED_stat[0].colors[i].b=0xFF;//8*i;
-        //set green
-        LED_stat[0].colors[i].g=0;
-        //set red
-        LED_stat[0].colors[i].r=0xFF;
-
-        //set blue
-        LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
-        //set green
-        LED_stat[0].colors[i].g=(((i%4)==3)?0xFF:((i%4)==1)?0xFF:0);
-        //set red
-        LED_stat[0].colors[i].r=(((i%4)==3)?0xFF:((i%4)==2)?0xFF:0);
-    }
-
-    LEDs_send(&LED_stat[0]);
+    flashPatternChange(LED_PAT_ST_COLORS);
 
 }
 

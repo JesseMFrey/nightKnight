@@ -14,6 +14,9 @@ void initLEDs(void);
 
 #define LED_LEN     5
 
+#define MAX_BRT     0x1F
+#define LED_ST_BITS 0xE0
+
 typedef struct{
     unsigned char brt;
     unsigned char b,g,r;

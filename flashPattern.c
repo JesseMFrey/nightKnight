@@ -1,0 +1,235 @@
+/*
+ * flashPattern.c
+ *
+ *  Created on: Jan 3, 2019
+ *      Author: jesse
+ */
+
+#include "LEDs.h"
+#include "flashPattern.h"
+
+static int LED_idx;
+static int LED_pattern;
+static int idx_dir;
+
+static int limit_idx(int i)
+{
+    if(i<0)
+        return 0;
+    if(i>=LED_LEN)
+        return LED_LEN-1;
+    return i;
+}
+
+void flashPatternAdvance(void)
+{
+    int i;
+    int red_idx,blue_idx,green_idx;
+    unsigned int s_even;
+
+    //advance index if needed
+    switch(LED_pattern){
+        case LED_PAT_COLORTRAIN:
+            //calculate new index
+            LED_idx+=idx_dir;
+            //check for overflow
+            if(LED_idx>=(LED_LEN))
+            {
+                //reset index
+                LED_idx=(LED_LEN-1);
+                //flip direction
+                idx_dir=-1;
+            }
+            //check for
+            if(LED_idx<=-3)
+            {
+                //reset index
+                LED_idx=-2;
+                //flip direction
+                idx_dir=1;
+            }
+            green_idx=limit_idx(LED_idx);
+            blue_idx =limit_idx(LED_idx+1);
+            red_idx  =limit_idx(LED_idx+2);
+        break;
+        case LED_PAT_HUE:
+            //calculate new index
+            LED_idx+=idx_dir;
+            //check for overflow
+            if(LED_idx>=0xFF)
+            {
+                //reset index
+                LED_idx=0xFF;
+                //flip direction
+                idx_dir=-1;
+            }
+            //check for
+            if(LED_idx<=0)
+            {
+                //reset index
+                LED_idx=0;
+                //flip direction
+                idx_dir=1;
+            }
+        break;
+    }
+
+
+    for(i=0;i<NUM_LEDS;i++)
+    {
+        switch(LED_pattern){
+            case LED_PAT_ST_COLORS:
+                //set to full brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                //set blue
+                LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
+                //set green
+                LED_stat[0].colors[i].g=(((i%4)==3)?0xFF:((i%4)==1)?0xFF:0);
+                //set red
+                LED_stat[0].colors[i].r=(((i%4)==3)?0xFF:((i%4)==2)?0xFF:0);
+            break;
+            case LED_PAT_OFF:
+                //set color to zero
+                LED_stat[0].colors[i].r=LED_stat[0].colors[i].b=LED_stat[0].colors[i].g;
+                //set brightness to zero
+                LED_stat[0].colors[i].brt=LED_ST_BITS;
+            break;
+            case LED_PAT_COLORTRAIN:
+                //set to full brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                //check if strip # is even
+                s_even=(i/LED_LEN)&0x01;
+                //set red
+                LED_stat[0].colors[i].r=((i%LED_LEN)==(s_even?(LED_LEN-red_idx-1):red_idx))?0xFF:0;
+                //set blue
+                LED_stat[0].colors[i].b=((i%LED_LEN)==(s_even?(LED_LEN-blue_idx-1):blue_idx))?0xFF:0;
+                //set green
+                LED_stat[0].colors[i].g=((i%LED_LEN)==(s_even?(LED_LEN-green_idx-1):green_idx))?0xFF:0;
+            break;
+            case LED_PAT_HUE:
+                //is this the first loop
+                if(i==0)
+                {
+                    //calculate color in RGB
+                    HsvToLED(&LED_stat[0].colors[0],LED_idx,0xFF,0xFF);
+                }else
+                {
+                    //copy from first LED
+                    LED_stat[0].colors[i].brt=LED_stat[0].colors[0].brt;
+                    LED_stat[0].colors[i].r  =LED_stat[0].colors[0].r;
+                    LED_stat[0].colors[i].g  =LED_stat[0].colors[0].g;
+                    LED_stat[0].colors[i].b  =LED_stat[0].colors[0].b;
+                }
+        }
+    }
+    //send new info
+    LEDs_send(&LED_stat[0]);
+}
+
+unsigned short flashPatternNext(void)
+{
+    int new_pattern=LED_pattern+1;
+    if(new_pattern>LED_PAT_MAX)
+    {
+        //set to next pattern
+        new_pattern=LED_PAT_MIN;
+    }
+    return flashPatternChange(new_pattern);
+}
+
+unsigned short flashPatternChange(int pattern)
+{
+    unsigned short flash_per=0;
+    //limit pattern to valid values
+    if(pattern<LED_PAT_MIN)
+    {
+        pattern=LED_PAT_MIN;
+    }
+    if(pattern>LED_PAT_MAX)
+    {
+        pattern=LED_PAT_MAX;
+    }
+    //set new pattern
+    LED_pattern=pattern;
+
+    //init indexes
+    switch(LED_pattern)
+    {
+        case LED_PAT_COLORTRAIN:
+            idx_dir=1;
+            LED_idx=-2;
+            //set interrupt interval
+            flash_per=102*2;
+        break;
+        case LED_PAT_HUE:
+            idx_dir=1;
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=51;
+        break;
+    }
+
+    //write LED's
+    flashPatternAdvance();
+
+    //return interval
+    return flash_per;
+}
+
+
+void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value)
+{
+    unsigned char region, remainder, p, q, t;
+
+    //set brightness to maximum
+    dest->brt=LED_ST_BITS|MAX_BRT;
+
+    if (saturation == 0)
+    {
+        dest->r = value;
+        dest->g = value;
+        dest->b = value;
+        return;
+    }
+
+    region = hue / 43;
+    remainder = (hue - (region * 43)) * 6;
+
+    p = (value * (255 - saturation)) >> 8;
+    q = (value * (255 - ((saturation * remainder) >> 8))) >> 8;
+    t = (value * (255 - ((saturation * (255 - remainder)) >> 8))) >> 8;
+
+    switch (region)
+    {
+        case 0:
+            dest->r = value;
+            dest->g = t;
+            dest->b = p;
+            break;
+        case 1:
+            dest->r = q;
+            dest->g = value;
+            dest->b = p;
+            break;
+        case 2:
+            dest->r = p;
+            dest->g = value;
+            dest->b = t;
+            break;
+        case 3:
+            dest->r = p;
+            dest->g = q;
+            dest->b = value;
+            break;
+        case 4:
+            dest->r = t;
+            dest->g = p;
+            dest->b = value;
+            break;
+        default:
+            dest->r = value;
+            dest->g = p;
+            dest->b = q;
+            break;
+    }
+}

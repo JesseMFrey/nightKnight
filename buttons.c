@@ -9,6 +9,9 @@
 #include "driverlib.h"
 #include "hal.h"
 #include "LEDs.h"
+#include "flashPattern.h"
+
+unsigned short LED_int=0;
 
 //======== Buttons Init function ========
 
@@ -62,6 +65,8 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
             if(P1IES&BIT1){
                 //toggle LED for button
                 P4OUT^=BIT7;
+                //set pattern to off
+                flashPatternNext();
             }
             //disable P1.1 interrupts
             P1IE&=~BIT1;
@@ -87,24 +92,20 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
 #error Compiler not found!
 #endif
 {
-    int i;
     switch(__even_in_range(P2IV,P2IV_P2IFG7)){
         case P2IV_P2IFG1:
             //check IES
             if(P2IES&BIT1){
                 //toggle LED for button
                 P1OUT^=BIT0;
-                //set LED brightness to zero
-                for(i=0;i<NUM_LEDS;i++)
-                {
-                    //set brightness
-                    LED_stat[0].colors[i].brt=(0xE0);
-                }
-                //send new info
-                LEDs_send(&LED_stat[0]);
+                //set pattern to off
+                LED_int=flashPatternChange(LED_PAT_OFF);
 
-                //stop flash interrupts
-                TA0CCTL3=0;
+                if(LED_int==0)
+                {
+                    //stop flash interrupts
+                    TA0CCTL3=0;
+                }
             }
             //disable P2.1 interrupts
             P2IE&=~BIT1;
@@ -118,17 +119,6 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
     }
 }
 
-int LED_idx=0;
-int idx_dir=1;
-
-int limit_idx(int i)
-{
-    if(i<0)
-        return 0;
-    if(i>=LED_LEN)
-        return LED_LEN-1;
-    return i;
-}
 
 // ============ TA0 ISR ============
 // This is used for button debouncing
@@ -141,9 +131,6 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
 #error Compiler not found!
 #endif
 {
-    int i;
-    int red_idx,blue_idx,green_idx;
-    unsigned int s_even;
     switch(__even_in_range(TA0IV,TA0IV_TAIFG)){
         case TA0IV_TACCR1:
             if(TA0CCTL1&CAP){
@@ -188,43 +175,8 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
             //next int in 200ms
             TA0CCR3+=102*2;
 
-            //calculate new index
-            LED_idx+=idx_dir;
-            //check for overflow
-            if(LED_idx>=(LED_LEN))
-            {
-                //reset index
-                LED_idx=(LED_LEN-1);
-                //flip direction
-                idx_dir=-1;
-            }
-            //check for
-            if(LED_idx<=-3)
-            {
-                //reset index
-                LED_idx=-2;
-                //flip direction
-                idx_dir=1;
-            }
-            green_idx=limit_idx(LED_idx);
-            blue_idx =limit_idx(LED_idx+1);
-            red_idx  =limit_idx(LED_idx+2);
-
-            for(i=0;i<NUM_LEDS;i++)
-            {
-                //set to full brightness
-                LED_stat[0].colors[i].brt=0xFF;
-                //check if strip # is even
-                s_even=(i/LED_LEN)&0x01;
-                //set red
-                LED_stat[0].colors[i].r=((i%LED_LEN)==(s_even?(LED_LEN-red_idx-1):red_idx))?0xFF:0;
-                //set blue
-                LED_stat[0].colors[i].b=((i%LED_LEN)==(s_even?(LED_LEN-blue_idx-1):blue_idx))?0xFF:0;
-                //set green
-                LED_stat[0].colors[i].g=((i%LED_LEN)==(s_even?(LED_LEN-green_idx-1):green_idx))?0xFF:0;
-            }
-            //send new info
-            LEDs_send(&LED_stat[0]);
+            //set next flash pattern
+            flashPatternAdvance();
         break;
     }
 }
