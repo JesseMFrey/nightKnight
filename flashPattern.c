@@ -54,23 +54,9 @@ void flashPatternAdvance(void)
         break;
         case LED_PAT_HUE:
             //calculate new index
-            LED_idx+=idx_dir;
-            //check for overflow
-            if(LED_idx>=0xFF)
-            {
-                //reset index
-                LED_idx=0xFF;
-                //flip direction
-                idx_dir=-1;
-            }
-            //check for
-            if(LED_idx<=0)
-            {
-                //reset index
-                LED_idx=0;
-                //flip direction
-                idx_dir=1;
-            }
+            LED_idx+=1;
+            //limit 0-255
+            LED_idx&=0xFF;
         break;
     }
 
@@ -162,7 +148,6 @@ unsigned short flashPatternChange(int pattern)
             flash_per=102*2;
         break;
         case LED_PAT_HUE:
-            idx_dir=1;
             LED_idx=0;
             //set interrupt interval
             flash_per=51;
