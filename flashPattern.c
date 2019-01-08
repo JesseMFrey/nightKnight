@@ -164,7 +164,7 @@ unsigned short flashPatternChange(int pattern)
 
 void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value)
 {
-    unsigned char region, remainder, p, q, t;
+    unsigned short region, remainder, p, q, t;
 
     //set brightness to maximum
     dest->brt=LED_ST_BITS|MAX_BRT;
