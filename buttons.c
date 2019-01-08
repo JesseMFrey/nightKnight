@@ -11,7 +11,7 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 
-unsigned short LED_int=0;
+unsigned short LED_int=102*2;
 
 //======== Buttons Init function ========
 
@@ -66,7 +66,16 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
                 //toggle LED for button
                 P4OUT^=BIT7;
                 //set pattern to off
-                flashPatternNext();
+                LED_int=flashPatternNext();
+
+                if(LED_int==0)
+                {
+                    //stop flash interrupts
+                    TA0CCTL3=0;
+                }else
+                {
+                    TA0CCTL3=CCIE;
+                }
             }
             //disable P1.1 interrupts
             P1IE&=~BIT1;
@@ -105,6 +114,10 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
                 {
                     //stop flash interrupts
                     TA0CCTL3=0;
+                }
+                else
+                {
+                    TA0CCTL3=CCIE;
                 }
             }
             //disable P2.1 interrupts
@@ -173,7 +186,7 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
         break;
         case TA0IV_TACCR3:
             //next int in 200ms
-            TA0CCR3+=102*2;
+            TA0CCR3+=LED_int;
 
             //set next flash pattern
             flashPatternAdvance();
