@@ -29,7 +29,7 @@ void flashPatternAdvance(void)
 {
     int i;
     int red_idx,blue_idx,green_idx;
-    unsigned int lin_idx;
+    int lin_idx;
 
     //advance index if needed
     switch(LED_pattern){
