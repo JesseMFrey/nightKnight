@@ -8,9 +8,9 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 
-static int LED_idx;
-static int LED_pattern;
-static int idx_dir;
+static int LED_idx=0;
+static int LED_pattern=LED_PAT_ST_COLORS;
+static int idx_dir=0;
 
 static int limit_idx(int i)
 {
