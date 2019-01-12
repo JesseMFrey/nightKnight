@@ -25,7 +25,7 @@ void flashPatternAdvance(void)
 {
     int i;
     int red_idx,blue_idx,green_idx;
-    unsigned int s_even;
+    unsigned int lin_idx;
 
     //advance index if needed
     switch(LED_pattern){
@@ -58,11 +58,27 @@ void flashPatternAdvance(void)
             //limit 0-255
             LED_idx&=0xFF;
         break;
+        case LED_PAT_BURST:
+            //calculate new index
+            LED_idx+=1;
+            //limit 0 to LED_LEN
+            if(LED_idx>=(LED_LEN*2))
+            {
+                LED_idx=0;
+            }
+        break;
     }
 
 
     for(i=0;i<NUM_LEDS;i++)
     {
+        //calculate linear index for LED
+        lin_idx=(i%LED_LEN);
+        //reverse odd numbered strips
+        if((i/LED_LEN)&0x01)
+        {
+            lin_idx=LED_LEN-lin_idx-1;
+        }
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
                 //set to full brightness
@@ -83,14 +99,12 @@ void flashPatternAdvance(void)
             case LED_PAT_COLORTRAIN:
                 //set to full brightness
                 LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
-                //check if strip # is even
-                s_even=(i/LED_LEN)&0x01;
                 //set red
-                LED_stat[0].colors[i].r=((i%LED_LEN)==(s_even?(LED_LEN-red_idx-1):red_idx))?0xFF:0;
+                LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
                 //set blue
-                LED_stat[0].colors[i].b=((i%LED_LEN)==(s_even?(LED_LEN-blue_idx-1):blue_idx))?0xFF:0;
+                LED_stat[0].colors[i].b=(lin_idx==blue_idx)?0xFF:0;
                 //set green
-                LED_stat[0].colors[i].g=((i%LED_LEN)==(s_even?(LED_LEN-green_idx-1):green_idx))?0xFF:0;
+                LED_stat[0].colors[i].g=(lin_idx==green_idx)?0xFF:0;
             break;
             case LED_PAT_HUE:
                 //is this the first loop
@@ -106,6 +120,27 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =LED_stat[0].colors[0].g;
                     LED_stat[0].colors[i].b  =LED_stat[0].colors[0].b;
                 }
+            break;
+            case LED_PAT_BURST:
+                //set to full brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                //LEDs are red or whit, red always max
+                LED_stat[0].colors[i].r  =0xFF;
+                int c_right=((LED_LEN  )/2);
+                int c_left =((LED_LEN-1)/2);
+                if(LED_idx>0 && lin_idx>(c_left-LED_idx) && lin_idx<(c_right+LED_idx))
+                {
+                    //LED is red
+                    LED_stat[0].colors[i].g  =0x00;
+                    LED_stat[0].colors[i].b  =0x00;
+                }
+                else
+                {
+                    //LED is white
+                    LED_stat[0].colors[i].g  =0xFF;
+                    LED_stat[0].colors[i].b  =0xFF;
+                }
+            break;
         }
     }
     //send new info
@@ -151,6 +186,11 @@ unsigned short flashPatternChange(int pattern)
             LED_idx=0;
             //set interrupt interval
             flash_per=51;
+        break;
+        case LED_PAT_BURST:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=102*5;
         break;
     }
 

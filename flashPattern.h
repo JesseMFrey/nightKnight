@@ -14,7 +14,7 @@ void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigne
 unsigned short flashPatternNext(void);
 
 //flash patterns
-enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_NUM_PAT};
+enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_NUM_PAT};
 
 #define LED_PAT_MIN         LED_PAT_OFF
 #define LED_PAT_MAX         (LED_NUM_PAT-1)
