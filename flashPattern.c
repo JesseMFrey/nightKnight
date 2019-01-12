@@ -8,6 +8,10 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 
+
+#define C_RIGHT ((LED_LEN  )/2)
+#define C_LEFT  ((LED_LEN-1)/2)
+
 static int LED_idx=0;
 static int LED_pattern=LED_PAT_ST_COLORS;
 static int idx_dir=0;
@@ -126,9 +130,7 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
-                int c_right=((LED_LEN  )/2);
-                int c_left =((LED_LEN-1)/2);
-                if(LED_idx>0 && lin_idx>(c_left-LED_idx) && lin_idx<(c_right+LED_idx))
+                if(LED_idx>0 && lin_idx>(C_LEFT-LED_idx) && lin_idx<(C_RIGHT+LED_idx))
                 {
                     //LED is red
                     LED_stat[0].colors[i].g  =0x00;
