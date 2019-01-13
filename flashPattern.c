@@ -81,7 +81,7 @@ void flashPatternAdvance(void)
             //calculate new index
             LED_idx+=1;
             //limit 0 to LED_LEN
-            if(LED_idx>=(LED_LEN*2))
+            if(LED_idx>=(LED_LEN*5))
             {
                 LED_idx=0;
             }
@@ -145,8 +145,13 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
-                if(LED_idx>0 && lin_idx>(C_LEFT-LED_idx) && lin_idx<(C_RIGHT+LED_idx))
+                if(lin_idx>=(C_LEFT-LED_idx) && lin_idx<=(C_RIGHT+LED_idx))
                 {
+                    if(LED_idx>=3 && lin_idx>=(C_LEFT-(LED_idx-3)) && lin_idx<=(C_RIGHT+(LED_idx-3)))
+                    {
+                        //LED is black, clear red
+                        LED_stat[0].colors[i].r  =0x00;
+                    }
                     //LED is red
                     LED_stat[0].colors[i].g  =0x00;
                     LED_stat[0].colors[i].b  =0x00;
@@ -156,6 +161,17 @@ void flashPatternAdvance(void)
                     //LED is white
                     LED_stat[0].colors[i].g  =0xFF;
                     LED_stat[0].colors[i].b  =0xFF;
+                }
+                if(LED_idx>=6)
+                {
+                    //HsvToLED(&LED_stat[0].colors[i],0,0,0xFF/(25-6)*(LED_idx-5));
+                    //LED is white
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0xFF;
+                    LED_stat[0].colors[i].b  =0xFF;
+                    //ramp up brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(LED_idx-5)));
+
                 }
             break;
             case LED_PAT_SATURATION:
@@ -228,7 +244,7 @@ unsigned short flashPatternChange(int pattern)
         case LED_PAT_BURST:
             LED_idx=0;
             //set interrupt interval
-            flash_per=102*5;
+            flash_per=102;
         break;
     }
 
