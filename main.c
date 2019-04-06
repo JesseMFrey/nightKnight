@@ -34,6 +34,7 @@
 #include "driverlib.h"
 #include "terminal.h"
 #include "buttons.h"
+#include "Nosecone.h"
 
 #include "USBprintf.h"
 
@@ -42,6 +43,7 @@
 #include "USB_API/USB_Common/usb.h"                 // USB-specific functions
 #include "USB_API/USB_CDC_API/UsbCdc.h"
 #include "USB_app/usbConstructs.h"
+
 
 
 /*
@@ -83,6 +85,7 @@ void main (void)
     terminal_init(&term_dat);
     Buttons_init();
     initLEDs();
+    init_Nosecone();
 
     //setup onboard LEDs
     P4OUT&=~BIT7;
