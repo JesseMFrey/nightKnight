@@ -58,7 +58,7 @@ void LEDs_send(LED_array *dat)
     DMA0CTL&=~DMAEN;
 
     // DMA trigger is SPI send
-    DMACTL0 = DMA0TSEL_19;
+    DMACTL0_L = DMA0TSEL__USCIB0TX;
 
     // Source DMA address: the data buffer.
     __data20_write_long((unsigned long)&DMA0SA,(unsigned long)(ptr+1));
