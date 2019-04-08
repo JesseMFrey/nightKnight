@@ -35,6 +35,7 @@
 #include "terminal.h"
 #include "buttons.h"
 #include "Nosecone.h"
+#include "Companion.h"
 
 #include "USBprintf.h"
 
@@ -86,6 +87,7 @@ void main (void)
     Buttons_init();
     initLEDs();
     init_Nosecone();
+    init_Companion();
 
     //setup onboard LEDs
     P4OUT&=~BIT7;
