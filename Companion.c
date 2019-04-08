@@ -73,7 +73,7 @@ void init_Companion(void)
      __data20_write_long((unsigned long)&DMA0DA,(unsigned long)(&cpRx));
 
      // Companion block size
-     DMA1SZ = 8;
+     DMA1SZ = sizeof(COMPANION_BUF);
      // Configure the DMA transfer. single byte transfer with destination increment
      DMA1CTL = DMADT_0|DMASBDB|DMAEN|DMADSTINCR_3;
 
@@ -92,7 +92,7 @@ void init_Companion(void)
      __data20_write_long((unsigned long)&DMA0DA,(unsigned long)&UCB1TXBUF);
 
      // Companion block size
-     DMA1SZ = 8;
+     DMA2SZ = sizeof(COMPANION_BUF);
      // Configure the DMA transfer. single byte transfer with destination increment
      DMA1CTL = DMADT_0|DMASBDB|DMAEN|DMADSTINCR_3;
 
