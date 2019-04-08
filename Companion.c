@@ -63,8 +63,11 @@ void init_Companion(void)
      //disable DMA
      DMA1CTL&=~DMAEN;
 
+     //clear DMA trigger
+     DMACTL0 &= ~DMA1TSEL_31;
+
      // DMA trigger is SPI Rx
-     DMACTL0_H = DMA0TSEL__USCIB1RX;
+     DMACTL0 |= DMA1TSEL__USCIB1RX;
 
      // Source DMA address: SPI RX register.
      __data20_write_long((unsigned long)&DMA0SA,(unsigned long)(&UCB1RXBUF));
@@ -83,7 +86,7 @@ void init_Companion(void)
      DMA2CTL&=~DMAEN;
 
      // DMA trigger is SPI send
-     DMACTL2_L = DMA2TSEL__USCIB1TX;
+     DMACTL1_L = DMA2TSEL__USCIB1TX;
 
      // Source DMA address: buffer
      __data20_write_long((unsigned long)&DMA0SA,(unsigned long)(&cpTx));
