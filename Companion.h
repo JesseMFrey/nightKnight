@@ -51,10 +51,17 @@ enum ao_flight_state {
     ao_flight_test = 10
 };
 
-typedef union{
-    struct ao_companion_setup s;
-    struct ao_companion_command c;
-}COMPANION_BUF;
+
+//structure for telemitry data
+struct telemitry_dat {
+};
+
+//states for SPI
+enum{CP_COMMAND_RX=0,CP_SETUP_TX,CP_TLM_TX};
+
+enum{DMA_NO_INCR=0,DMA_INCR=1};
+
+enum{DMA_NO_START=0,DMA_START=1};
 
 //from ao_host.h
 #define AO_SEC_TO_TICKS(s)  ((s) * 100)
