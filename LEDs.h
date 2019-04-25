@@ -10,9 +10,9 @@
 
 void initLEDs(void);
 
-#define NUM_LEDS    15
+#define NUM_LEDS    600
 
-#define LED_LEN     5
+#define LED_LEN     50
 
 #define MAX_BRT     0x1F
 #define LED_ST_BITS 0xE0

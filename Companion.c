@@ -8,6 +8,7 @@
 
 #include <msp430.h>
 #include "Companion.h"
+#include <string.h>
 
 //Board ID, just made this up
 #define BOARD_ID        0xAFF5
@@ -24,90 +25,34 @@ static uint8_t dummy_Rx;
 
 static int cp_SPI_state;
 
-//setup DMA for outbound transfer
-static inline void cp_SPI_tx_setup(const void *buf,int size,int incr,int start)
+static char* rx_ptr,*rx_end;
+static const char* tx_ptr,*tx_end;
+
+void SPI_rx_ptr_setup(void *rxptr,size_t size)
 {
-    uint16_t incr_flags;
-    unsigned long saddr=(unsigned long)(buf);
 
-    if(incr)
-    {
-        incr_flags=DMASRCINCR_3;
-    }
-    else
-    {
-        incr_flags=0;
-    }
+    //set tx pointer
+    rx_ptr=rxptr;
 
-    if(start)
-    {
-        size--;
-        saddr++;
-    }
-
-    //disable DMA
-    DMA2CTL&=~DMAEN;
-
-    //clear DMA trigger
-    DMACTL1 &= ~DMA2TSEL_31;
-
-    // DMA trigger is SPI send
-    DMACTL1 |= DMA2TSEL__USCIB1TX;
-
-    // Source DMA address: buffer
-    __data20_write_long((unsigned long)&DMA2SA,saddr);
-
-    // Destination DMA address: SPI TX register
-    __data20_write_long((unsigned long)&DMA2DA,(unsigned long)&UCB1TXBUF);
-
-    // Companion block size
-    DMA2SZ = size;
-    // Configure the DMA transfer. single byte transfer with no increment
-    DMA2CTL = DMADT_0|DMASBDB|DMAEN|DMAIE|incr_flags;
-
-    if(start)
-    {
-        //kickoff transfer
-        UCB1TXBUF=*((uint8_t*)buf);
-    }
-
+    //setup end pointer
+    rx_end=rxptr+sizeof(cpCmd);
 }
 
-//setup DMA for inbound transfer
-static inline void cp_SPI_rx_setup(void *buf,int size,int incr)
+void SPI_tx_ptr_setup(const void *txptr,size_t size)
 {
-    uint16_t incr_flags;
 
-    if(incr)
-    {
-        incr_flags=DMADSTINCR_3;
-    }
-    else
-    {
-        incr_flags=0;
-    }
+    //set tx pointer
+    tx_ptr=txptr;
 
-    //disable DMA
-    DMA1CTL&=~DMAEN;
-
-    //clear DMA trigger
-    DMACTL0 &= ~DMA1TSEL_31;
-
-    // DMA trigger is SPI Rx
-    DMACTL0 |= DMA1TSEL__USCIB1RX;
-
-    // Source DMA address: SPI RX register.
-    __data20_write_long((unsigned long)&DMA1SA,(unsigned long)(&UCB1RXBUF));
-
-    // Destination DMA address: buffer
-    __data20_write_long((unsigned long)&DMA1DA,(unsigned long)(buf));
-
-    // Companion block size
-    DMA1SZ = size;
-    // Configure the DMA transfer. single byte transfer with destination increment
-    DMA1CTL = DMADT_0|DMASBDB|DMAEN|DMAIE|incr_flags;
+    //setup end pointer
+    tx_end=txptr+sizeof(cpCmd);
 }
 
+void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
+{
+    SPI_tx_ptr_setup(txptr,size);
+    SPI_rx_ptr_setup(rxptr,size);
+}
 
 void init_Companion(void)
 {
@@ -141,111 +86,105 @@ void init_Companion(void)
      //take peripheral out of reset mode
      UCB1CTLW0&=~UCSWRST;
 
+     //setup SPI buffers
+     SPI_ptr_setup(&cpCmd,NULL,sizeof(cpCmd));
+
+     //enable interrupts
+     UCB0IE|=UCTXIE|UCRXIE;
+
+
      //set SPI data state
      cp_SPI_state=CP_COMMAND_RX;
-
-     cp_SPI_rx_setup(&cpCmd,sizeof(cpCmd),DMA_INCR);
-     cp_SPI_tx_setup(&dummy_Tx,sizeof(cpCmd),DMA_NO_INCR,DMA_START);
 
 }
 
 
 /*
- * ======== DMA_ISR ========
+ * ======== SPI_ISR ========
  */
 #if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
-#pragma vector = DMA_VECTOR
-__interrupt void DMA_ISR (void)
+#pragma vector = USCI_B0_VECTOR
+__interrupt void Companion_ISR (void)
 #elif defined(__GNUC__) && (__MSP430__)
-void __attribute__ ((interrupt(DMA_VECTOR))) DMA_ISR (void)
+void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
 #else
 #error Compiler not found!
 #endif
 {
-    switch(DMAIV)
+    switch(UCB0IV)
 
     {
-    //LED SPI DMA
-    case DMAIV_DMA0IFG:
-        break;
-    //companion SPI RX DMA
-    case DMAIV_DMA1IFG:
-        switch(cp_SPI_state)
-        {
+    case USCI_UCRXIFG:
+        if(rx_ptr==NULL){
+            rx_end--;
+        }else{
+            rx_ptr++=UCB0RXBUF;
+        }
+        //check if we have ended
+        if(rx_ptr>=rx_end){
+            //setup next transaction
+            //state has already been set
+            switch(cp_SPI_state)
+            {
             case CP_COMMAND_RX:
-                //next state depends on command
-                switch(cpCmd.command)
-                {
-                case AO_COMPANION_SETUP:
-                    //send setup info
-                    cp_SPI_state=CP_SETUP_TX;
-                    break;
-                case AO_COMPANION_FETCH:
-                    //check if we have telemetry
-                    if(sizeof(cpTLM)>0)
-                    {
-                        //send telemetry
-                        cp_SPI_state=CP_TLM_TX;
-                    }
-                    else
-                    {
-                        cp_SPI_state=CP_COMMAND_RX;
-                    }
-                    break;
-                case AO_COMPANION_NOTIFY:
-                //no extra data to send
-                cp_SPI_state=CP_COMMAND_RX;
+                //setup to receive command
+                SPI_rx_ptr_setup(&cpCmd,,sizeof(cpCmd));
                 break;
-                }
             case CP_SETUP_TX:
-                //next SPI command Rx
-                cp_SPI_state=CP_COMMAND_RX;
+                //setup for setup Tx, send dummy bytes
+                SPI_rx_ptr_setup(NULL,size(cpSetup));
                 break;
             case CP_TLM_TX:
-                //next SPI command Rx
-                cp_SPI_state=CP_COMMAND_RX;
+                //setup for TLM tx, send dummy bytes
+                SPI_rx_ptr_setup(NULL,sizeof(cpCmd));
                 break;
-        }
-        //setup new DMA
-        switch(cp_SPI_state)
-        {
-        case CP_COMMAND_RX:
-
-            cp_SPI_rx_setup(&cpCmd,sizeof(cpCmd),DMA_INCR);
-
-            break;
-        case CP_SETUP_TX:
-
-            cp_SPI_rx_setup(&dummy_Rx,sizeof(cpSetup),DMA_NO_INCR);
-
-            break;
-        case CP_TLM_TX:
-
-            cp_SPI_rx_setup(&dummy_Rx,sizeof(cpTLM),DMA_NO_INCR);
-
-            break;
+            }
         }
         break;
-    //companion SPI TX DMA
-    case DMAIV_DMA2IFG:
-        //setup new DMA
-        switch(cp_SPI_state)
-        {
-        case CP_COMMAND_RX:
-
-            cp_SPI_tx_setup(&dummy_Tx,sizeof(cpCmd),DMA_NO_INCR,DMA_NO_START);
-
-            break;
-        case CP_SETUP_TX:
-
-            cp_SPI_tx_setup(&cpSetup,sizeof(cpSetup),DMA_INCR,DMA_NO_START);
-
-            break;
-        case CP_TLM_TX:
-
-            cp_SPI_tx_setup(&cpTLM,sizeof(cpTLM),DMA_INCR,DMA_NO_START);
-
-            break;
+    case USCI_UCTXIFG:
+        if(tx_ptr==NULL){
+            UCB0TXBUF=dummy_Tx;
+            tx_end--;
+        }else{
+            UCB0TXBUF=tx_ptr++;
+        }
+        //check if we have ended
+        if(tx_ptr>=tx_end){
+            //setup next transaction
+            switch(cp_SPI_state)
+            {
+            case CP_COMMAND_RX:
+                //check what command we got
+                switch(cpCmd.command)
+                {
+                    case AO_COMPANION_SETUP:
+                        //send command
+                        SPI_tx_ptr_setup(cpSetup,size(cpSetup));
+                        //set next state
+                        cp_SPI_state=CP_SETUP_TX;
+                        break;
+                    case AO_COMPANION_FETCH:
+                        //send command
+                        SPI_tx_ptr_setup(cpTlm,size(cpTlm));
+                        //set next state
+                        cp_SPI_state=CP_TLM_TX;
+                        break;
+                    case AO_COMPANION_NOTIFY:
+                        //send command
+                        SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
+                        //set next state
+                        cp_SPI_state=CP_COMMAND_RX;
+                        break;
+                }
+                break;
+            case CP_SETUP_TX:
+            case CP_TLM_TX:
+                //send command
+                SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
+                //set next state
+                cp_SPI_state=CP_COMMAND_RX;
+                break;
+            }
         }
         break;
     }
