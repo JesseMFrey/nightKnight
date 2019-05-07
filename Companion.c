@@ -35,7 +35,7 @@ void SPI_rx_ptr_setup(void *rxptr,size_t size)
     rx_ptr=rxptr;
 
     //setup end pointer
-    rx_end=rxptr+sizeof(cpCmd);
+    rx_end=((char*)rxptr)+sizeof(cpCmd);
 }
 
 void SPI_tx_ptr_setup(const void *txptr,size_t size)
@@ -45,7 +45,7 @@ void SPI_tx_ptr_setup(const void *txptr,size_t size)
     tx_ptr=txptr;
 
     //setup end pointer
-    tx_end=txptr+sizeof(cpCmd);
+    tx_end=((char*)txptr)+sizeof(cpCmd);
 }
 
 void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
@@ -118,7 +118,7 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
         if(rx_ptr==NULL){
             rx_end--;
         }else{
-            rx_ptr++=UCB0RXBUF;
+            *(rx_ptr++)=UCB0RXBUF;
         }
         //check if we have ended
         if(rx_ptr>=rx_end){
@@ -128,11 +128,11 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
             {
             case CP_COMMAND_RX:
                 //setup to receive command
-                SPI_rx_ptr_setup(&cpCmd,,sizeof(cpCmd));
+                SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
                 break;
             case CP_SETUP_TX:
                 //setup for setup Tx, send dummy bytes
-                SPI_rx_ptr_setup(NULL,size(cpSetup));
+                SPI_rx_ptr_setup(NULL,sizeof(cpSetup));
                 break;
             case CP_TLM_TX:
                 //setup for TLM tx, send dummy bytes
@@ -146,7 +146,7 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
             UCB0TXBUF=dummy_Tx;
             tx_end--;
         }else{
-            UCB0TXBUF=tx_ptr++;
+            UCB0TXBUF=*(tx_ptr++);
         }
         //check if we have ended
         if(tx_ptr>=tx_end){
@@ -159,13 +159,13 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
                 {
                     case AO_COMPANION_SETUP:
                         //send command
-                        SPI_tx_ptr_setup(cpSetup,size(cpSetup));
+                        SPI_tx_ptr_setup(&cpSetup,sizeof(cpSetup));
                         //set next state
                         cp_SPI_state=CP_SETUP_TX;
                         break;
                     case AO_COMPANION_FETCH:
                         //send command
-                        SPI_tx_ptr_setup(cpTlm,size(cpTlm));
+                        SPI_tx_ptr_setup(&cpTLM,sizeof(cpTLM));
                         //set next state
                         cp_SPI_state=CP_TLM_TX;
                         break;
