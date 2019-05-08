@@ -114,7 +114,7 @@ void init_Companion(void)
     //allow port mapping
     PMAPKEYID=PMAPKEY;
 
-    P4MAP3 = PM_UCB1SCL;
+    P4MAP3 = PM_UCB1CLK;
     P4MAP0 = PM_UCB1STE;
     P4MAP2 = PM_UCB1SOMI;
     P4MAP1 = PM_UCB1SIMO;
