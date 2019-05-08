@@ -19,7 +19,7 @@ const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),0
 struct telemitry_dat cpTLM;
 
 //char to transmit if we have nothing to send
-static const uint8_t dummy_Tx=0xA5;
+static const uint8_t dummy_Tx=0x05;
 //char to write to if we have nothing to receive
 static uint8_t dummy_Rx;
 
@@ -70,15 +70,15 @@ void init_Companion(void)
     PMAPKEYID=0;
 
     //put UCB1 in reset mode
-    UCB1CTL1=UCSWRST;
+    UCB1CTLW0|=UCSWRST;
 
     //set up UCB1 for SPI
      UCB1CTL0=UCCKPH|UCMSB|UCMODE_2|UCSYNC;
      UCB1CTL1=UCSSEL_2|UCSWRST;
      //set clock rate to 1MHz
-     UCB0BRW=25;
+     UCB1BRW=25;
      //set clock rate to 5MHz
-     //UCB0BRW=5;
+     //UCB1BRW=5;
 
      //setup pins
      P4SEL|=BIT0|BIT1|BIT2|BIT3;
@@ -90,7 +90,7 @@ void init_Companion(void)
      SPI_ptr_setup(&cpCmd,NULL,sizeof(cpCmd));
 
      //enable interrupts
-     UCB0IE|=UCTXIE|UCRXIE;
+     UCB1IE|=UCTXIE|UCRXIE;
 
 
      //set SPI data state
@@ -98,27 +98,29 @@ void init_Companion(void)
 
 }
 
+int tx_bytes=0,rx_bytes=0;
 
 /*
  * ======== SPI_ISR ========
  */
 #if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
-#pragma vector = USCI_B0_VECTOR
+#pragma vector = USCI_B1_VECTOR
 __interrupt void Companion_ISR (void)
 #elif defined(__GNUC__) && (__MSP430__)
-void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
+void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
 #else
 #error Compiler not found!
 #endif
 {
-    switch(UCB0IV)
+    switch(UCB1IV)
 
     {
     case USCI_UCRXIFG:
+        rx_bytes++;
         if(rx_ptr==NULL){
             rx_end--;
         }else{
-            *(rx_ptr++)=UCB0RXBUF;
+            *(rx_ptr++)=UCB1RXBUF;
         }
         //check if we have ended
         if(rx_ptr>=rx_end){
@@ -142,11 +144,12 @@ void __attribute__ ((interrupt(USCI_B0_VECTOR))) Companion_ISR (void)
         }
         break;
     case USCI_UCTXIFG:
+        tx_bytes++;
         if(tx_ptr==NULL){
-            UCB0TXBUF=dummy_Tx;
+            UCB1TXBUF=dummy_Tx;
             tx_end--;
         }else{
-            UCB0TXBUF=*(tx_ptr++);
+            UCB1TXBUF=*(tx_ptr++);
         }
         //check if we have ended
         if(tx_ptr>=tx_end){
