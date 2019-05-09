@@ -8,6 +8,8 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 
+//use quarter brightness
+#define LED_BRT     (MAX_BRT>>2)
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -100,8 +102,8 @@ void flashPatternAdvance(void)
         }
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
-                //set to full brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                //set brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
                 //set blue
                 LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
                 //set green
@@ -117,7 +119,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_COLORTRAIN:
                 //set to full brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
                 //set red
                 LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
                 //set blue
@@ -142,7 +144,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_BURST:
                 //set to full brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
                 if(lin_idx>=(C_LEFT-LED_idx) && lin_idx<=(C_RIGHT+LED_idx))
@@ -260,8 +262,8 @@ void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigne
 {
     unsigned short region, remainder, p, q, t;
 
-    //set brightness to maximum
-    dest->brt=LED_ST_BITS|MAX_BRT;
+    //set brightness
+    dest->brt=LED_ST_BITS|LED_BRT;
 
     if (saturation == 0)
     {
