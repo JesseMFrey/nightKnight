@@ -8,14 +8,15 @@
 
 #include <msp430.h>
 #include "Companion.h"
+#include <string.h>
 
 //Board ID, just made this up
-#define BOARD_ID        0xAFF5
+#define BOARD_ID        1986
 
 struct ao_companion_command cpCmd;
-const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),0};
+const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),TLM_ITEMS};
 
-struct telemitry_dat cpTLM;
+struct telemitry_dat cpTLM={};
 
 //char to transmit if we have nothing to send
 static const uint8_t dummy_Tx=0xA5;
@@ -111,6 +112,11 @@ static inline void cp_SPI_rx_setup(void *buf,int size,int incr)
 
 void init_Companion(void)
 {
+    //setup interrupt for chip select
+    P2DIR&=~BIT6;           //input
+    P2IES|= BIT6;           //falling edge triggered
+    //P2IE |= BIT6;           //enable interrupt
+
     //allow port mapping
     PMAPKEYID=PMAPKEY;
 
@@ -128,7 +134,7 @@ void init_Companion(void)
     UCB1CTL1=UCSWRST;
 
     //set up UCB1 for SPI
-     UCB1CTL0=UCCKPH|UCMSB|UCMODE_2|UCSYNC;
+     UCB1CTL0=UCMSB|UCMODE_2|UCSYNC;
      UCB1CTL1=UCSSEL_2|UCSWRST;
      //set clock rate to 1MHz
      UCB0BRW=25;
@@ -149,6 +155,20 @@ void init_Companion(void)
 
 }
 
+void companion_SPI_reset(void)
+{
+    //put peripheral in reset
+    UCB1CTLW0|= UCSWRST;
+    //setup to receive command
+    cp_SPI_rx_setup(&cpCmd,sizeof(cpCmd),DMA_INCR);
+    cp_SPI_tx_setup(&dummy_Tx,sizeof(cpCmd),DMA_NO_INCR,DMA_START);
+    //set next state
+    cp_SPI_state=CP_COMMAND_RX;
+    //take peripheral out of reset
+    UCB1CTLW0&=~UCSWRST;
+}
+
+int tx_bytes=0,rx_bytes=0;
 
 /*
  * ======== DMA_ISR ========
@@ -250,3 +270,4 @@ void __attribute__ ((interrupt(DMA_VECTOR))) DMA_ISR (void)
         break;
     }
 }
+
