@@ -6,6 +6,7 @@
  */
 
 #include <msp430.h>
+#include <stdint.h>
 #include "Nosecone.h"
 
 void init_Nosecone(void)
@@ -19,18 +20,36 @@ void init_Nosecone(void)
     //set timer period
     TA2CCR0=MAX_PWM;
 
-    //Set TA2.1 to output PWM
-    TA2CCTL1=OUTMOD_3;
-    //set TA2.1 period to 50%
-    TA2CCR1=MAX_PWM/2;
-
-
-    //Set TA2.2 to output PWM
-    TA2CCTL2=OUTMOD_3;
-    //set TA2.1 period to 50%
-    TA2CCR2=MAX_PWM/2;
+    set_nosecone(0,MAX_PWM/4);
 
     //setup TA2 to run in up mode for PWM
     TA2CTL=TASSEL_2|ID_3|MC_1|TACLR;
 }
 
+void set_nosecone(uint16_t chute,uint16_t cone)
+{
+    if(chute==0)
+    {
+        //set output to out bit and set low
+        TA2CCTL1=OUTMOD_0;
+    }
+    else
+    {
+        //set chute period
+        TA2CCR1=chute;
+        //set output reset/set mode
+        TA2CCTL1=OUTMOD_7;
+    }
+    if(cone==0)
+    {
+        //set output to out bit and set low
+        TA2CCTL2=OUTMOD_0;
+    }
+    else
+    {
+        //set chute period
+        TA2CCR2=cone;
+        //set output reset/set mode
+        TA2CCTL2=OUTMOD_7;
+    }
+}

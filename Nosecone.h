@@ -9,6 +9,11 @@
 #define NOSECONE_H_
 
 void init_Nosecone(void);
+void set_nosecone(uint16_t chute,uint16_t cone);
+
+
+#define getNoseconeLED()        ((TA2CCTL2==(TA2CCTL2&OUTMOD_7)?TA2CCR2:0))
+#define getChuteLED()           ((TA2CCTL1==(TA2CCTL1&OUTMOD_7)?TA2CCR1:0))
 
 #define MAX_PWM     0XFFF
 
