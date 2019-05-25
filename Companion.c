@@ -11,12 +11,12 @@
 #include <string.h>
 
 //Board ID, just made this up
-#define BOARD_ID        0xAFF5
+#define BOARD_ID        1986
 
 struct ao_companion_command cpCmd;
-const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),0};
+const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),TLM_ITEMS};
 
-struct telemitry_dat cpTLM;
+struct telemitry_dat cpTLM={};
 
 //char to transmit if we have nothing to send
 static const uint8_t dummy_Tx=0x05;
@@ -56,6 +56,11 @@ void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
 
 void init_Companion(void)
 {
+    //setup interrupt for chip select
+    P2DIR&=~BIT6;           //input
+    P2IES|= BIT6;           //falling edge triggered
+    //P2IE |= BIT6;           //enable interrupt
+
     //allow port mapping
     PMAPKEYID=PMAPKEY;
 
@@ -73,7 +78,7 @@ void init_Companion(void)
     UCB1CTLW0|=UCSWRST;
 
     //set up UCB1 for SPI
-     UCB1CTL0=UCCKPH|UCMSB|UCMODE_2|UCSYNC;
+     UCB1CTL0=UCMSB|UCMODE_2|UCSYNC;
      UCB1CTL1=UCSSEL_2|UCSWRST;
      //set clock rate to 1MHz
      UCB1BRW=25;
@@ -96,6 +101,19 @@ void init_Companion(void)
      //set SPI data state
      cp_SPI_state=CP_COMMAND_RX;
 
+}
+
+void companion_SPI_reset(void)
+{
+    //put peripheral in reset
+    UCB1CTLW0|= UCSWRST;
+    //setup to receive command
+    SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
+    SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
+    //set next state
+    cp_SPI_state=CP_COMMAND_RX;
+    //take peripheral out of reset
+    UCB1CTLW0&=~UCSWRST;
 }
 
 int tx_bytes=0,rx_bytes=0;
@@ -138,7 +156,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
                 break;
             case CP_TLM_TX:
                 //setup for TLM tx, send dummy bytes
-                SPI_rx_ptr_setup(NULL,sizeof(cpCmd));
+                SPI_rx_ptr_setup(NULL,sizeof(cpTLM));
                 break;
             }
         }
@@ -192,3 +210,4 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         break;
     }
 }
+

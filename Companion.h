@@ -16,6 +16,8 @@
 #define AO_COMPANION_FETCH      2
 #define AO_COMPANION_NOTIFY     3
 
+#define TLM_ITEMS               1
+
 struct ao_companion_command {
     uint8_t     command;
     uint8_t     flight_state;
@@ -54,6 +56,7 @@ enum ao_flight_state {
 
 //structure for telemitry data
 struct telemitry_dat {
+    uint16_t dat[TLM_ITEMS];
 };
 
 //states for SPI
@@ -67,5 +70,7 @@ enum{DMA_NO_START=0,DMA_START=1};
 #define AO_SEC_TO_TICKS(s)  ((s) * 100)
 
 void init_Companion(void);
+
+void companion_SPI_reset(void);
 
 #endif /* COMPANION_H_ */

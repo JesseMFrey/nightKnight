@@ -10,6 +10,7 @@
 #include "hal.h"
 #include "LEDs.h"
 #include "flashPattern.h"
+#include "Companion.h"
 
 unsigned short LED_int=102*2;
 
@@ -129,6 +130,9 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             //capture current timer value
             TA0CCTL2^=CCIS0;
         break;
+        case P2IV_P2IFG6:
+            companion_SPI_reset();
+            break;
     }
 }
 
