@@ -13,7 +13,8 @@ void initLEDs(void);
 
 #define NUM_LEDS    (3*LED_LEN)
 
-#define LED_LEN     11
+//11 under fins, 6 on lower section, 33 on upper section
+#define LED_LEN     (11+6+33)
 
 #define MAX_BRT     0x1F
 #define LED_ST_BITS 0xE0
