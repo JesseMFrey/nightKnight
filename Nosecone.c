@@ -32,7 +32,8 @@ void init_Nosecone(void)
     //set timer period
     TA2CCR0=MAX_PWM;
 
-    set_nosecone(0,MAX_PWM/4);
+    set_nosecone(MAX_PWM/4);
+    set_chute(0);
 
     //setup TA2 to run in up mode for PWM
     TA2CTL=TASSEL_2|ID_3|MC_1|TACLR;
@@ -40,7 +41,7 @@ void init_Nosecone(void)
     TA2CCTL0=CCIE;
 }
 
-void set_nosecone(uint16_t chute,uint16_t cone)
+void set_chute(uint16_t chute)
 {
     if(chute==0)
     {
@@ -54,6 +55,11 @@ void set_nosecone(uint16_t chute,uint16_t cone)
         //set output reset/set mode
         TA2CCTL1=OUTMOD_7;
     }
+}
+
+
+void set_nosecone(uint16_t cone)
+{
     if(cone==0)
     {
         //set output to out bit and set low
@@ -96,7 +102,7 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) PWM_ISR (void)
             {
                 val+=FADE_INCR;
             }
-            set_nosecone(0,val);
+            set_nosecone(val);
         }
         else
         {
@@ -109,7 +115,7 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) PWM_ISR (void)
             {
                 val-=FADE_INCR;
             }
-            set_nosecone(0,val);
+            set_nosecone(val);
         }
     }
 }

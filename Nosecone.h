@@ -9,7 +9,8 @@
 #define NOSECONE_H_
 
 void init_Nosecone(void);
-void set_nosecone(uint16_t chute,uint16_t cone);
+void set_nosecone(uint16_t cone);
+void set_chute(uint16_t chute);
 
 
 #define getNoseconeLED()        ((TA2CCTL2==(TA2CCTL2&OUTMOD_7)?TA2CCR2:0))
