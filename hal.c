@@ -37,9 +37,6 @@
 
 #include "driverlib.h"
 
-#include "USB_API/USB_Common/device.h"
-#include "USB_config/descriptors.h"
-
 #include "hal.h"
 
 #define GPIO_ALL	GPIO_PIN0|GPIO_PIN1|GPIO_PIN2|GPIO_PIN3| \
