@@ -15,11 +15,14 @@
 #define MIN_FADE        400
 #define MAX_FADE        MAX_PWM
 
+#define FLASH_NUMBER    10
+
 enum{DIR_DOWN=0,DIR_UP=1};
 
 int dir=DIR_DOWN;
 int count=0;
 uint16_t val=MAX_FADE;
+int flash_count=0;
 
 void init_Nosecone(void)
 {
@@ -87,6 +90,14 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) PWM_ISR (void)
 #error Compiler not found!
 #endif
 {
+    if(flash_count>0)
+    {
+        flash_count-=1;
+        if(flash_count==0)
+        {
+            set_chute(0);
+        }
+    }
     count+=1;
     if(count>=FADE_COUNT)
     {
@@ -110,6 +121,8 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) PWM_ISR (void)
             {
                 val=MIN_FADE;
                 dir=DIR_UP;
+                flash_count=FLASH_NUMBER;
+                set_chute(MAX_PWM);
             }
             else
             {
