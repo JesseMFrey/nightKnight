@@ -30,17 +30,17 @@ void Buttons_init(void){
     //enable P1.1 interrupt
     P1IE |= BIT1;
 
-    //setup p1.1 pull up
-    P2DIR&=~BIT1;
-    P2OUT|= BIT1;
-    P2REN|= BIT1;
-    //initialize p1.1 interrupt
-    P2DIR&=~BIT1;
-    P2IES|= BIT1;
+    //setup p2.1 pull up
+    P2DIR&=~BIT1|BIT3;
+    P2OUT|= BIT1|BIT3;
+    P2REN|= BIT1|BIT3;
+    //initialize p2.1 and p2.3 interrupt
+    P2DIR&=~BIT1|BIT3;
+    P2IES|= BIT1|BIT3;
     //clear P2 interrupt flags
     P2IFG = 0;
-    //enable P2.1 interrupt
-    P2IE |= BIT1;
+    //enable P2.1 and p2.3 interrupt
+    P2IE |= BIT1|BIT3;
 
     //set input divider expansion to /4
     TA0EX0=TAIDEX_3;
@@ -130,6 +130,33 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             //capture current timer value
             TA0CCTL2^=CCIS0;
         break;
+        case P2IV_P2IFG3:
+            //check IES
+            if(P2IES&BIT3){
+
+                //set pattern to off
+                LED_int=flashPatternNext();
+
+                if(LED_int==0)
+                {
+                    //stop flash interrupts
+                    TA0CCTL3=0;
+                }
+                else
+                {
+                    TA0CCTL3=CCIE;
+                }
+
+            }
+            //disable P2.1 interrupts
+            P2IE&=~BIT3;
+            //Toggle IES
+            P2IES^=BIT3;
+            //setup TA0CCR2 to capture timer value
+            TA0CCTL1=CM_3|CCIS_2|SCS|CAP|CCIE;
+            //capture current timer value
+            TA0CCTL1^=CCIS0;
+        break;
         case P2IV_P2IFG6:
             companion_SPI_reset();
             break;
@@ -168,6 +195,10 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
                 P1IFG&=~BIT1;
                 //enable P1.1 interrupt
                 P1IE |= BIT1;
+                //clear P2.3 flags
+                P2IFG&=~BIT3;
+                //enable P2.3 interrupt
+                P2IE |= BIT3;
             }
         break;
         case TA0IV_TACCR2:
