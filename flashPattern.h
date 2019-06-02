@@ -12,6 +12,7 @@ unsigned short flashPatternChange(int pattern);
 void flashPatternAdvance(void);
 void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value);
 unsigned short flashPatternNext(void);
+int flashPatternGet(void);
 
 //flash patterns
 enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,LED_NUM_PAT};

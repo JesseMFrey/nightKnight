@@ -208,6 +208,12 @@ unsigned short flashPatternNext(void)
     return flashPatternChange(new_pattern);
 }
 
+
+int flashPatternGet(void)
+{
+    return LED_pattern;
+}
+
 unsigned short flashPatternChange(int pattern)
 {
     unsigned short flash_per=0;
