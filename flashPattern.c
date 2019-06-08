@@ -31,7 +31,7 @@ void flashPatternAdvance(void)
 {
     int i;
     int red_idx,blue_idx,green_idx;
-    int lin_idx;
+    int lin_idx,strp_idx;
 
     //advance index if needed
     switch(LED_pattern){
@@ -94,12 +94,9 @@ void flashPatternAdvance(void)
     for(i=0;i<NUM_LEDS;i++)
     {
         //calculate linear index for LED
-        lin_idx=(i%LED_LEN);
-        //reverse odd numbered strips
-        if((i/LED_LEN)&0x01)
-        {
-            lin_idx=LED_LEN-lin_idx-1;
-        }
+        lin_idx  =LED_lut[i][0];
+        //get strip index for LED
+        strp_idx =LED_lut[i][1];
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
                 //set brightness
