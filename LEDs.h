@@ -44,6 +44,8 @@ typedef struct{
 
 LED_array LED_stat[2];
 
+extern const int LED_lut[150][2];
+
 unsigned char LEDSendByte(const unsigned char data);
 
 void LEDs_send(LED_array *dat);
