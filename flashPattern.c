@@ -115,7 +115,7 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].brt=LED_ST_BITS;
             break;
             case LED_PAT_COLORTRAIN:
-                //set to full brightness
+                //set brightness
                 LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
                 //set red
                 LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
