@@ -202,7 +202,8 @@ int flashPatternGet(void)
 
 unsigned short flashPatternChange(int pattern)
 {
-    unsigned short flash_per=0;
+    //default is ~1 s
+    unsigned short flash_per=1020;
     //limit pattern to valid values
     if(pattern<LED_PAT_MIN)
     {
@@ -239,6 +240,10 @@ unsigned short flashPatternChange(int pattern)
             LED_idx=0;
             //set interrupt interval
             flash_per=102;
+        break;
+        case LED_PAT_OFF:
+            //don't update
+            flash_per=0;
         break;
     }
 
