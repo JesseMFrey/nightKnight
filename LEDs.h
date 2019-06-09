@@ -39,7 +39,7 @@ typedef struct{
 typedef struct{
     unsigned char header[4];
     LED_color colors[NUM_LEDS];
-    unsigned char end[((NUM_LEDS-1)+8)/16];
+    unsigned char end[4];
 }LED_array;
 
 LED_array LED_stat[2];
