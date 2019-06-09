@@ -68,7 +68,7 @@ void flashPatternAdvance(void)
             //calculate new index
             LED_idx+=idx_dir;
             //check for reversal
-            if(LED_idx>=0xFF)
+            if(LED_idx>=(0xFF+50))
             {
                 //set direction to down
                 idx_dir=-1;
@@ -174,19 +174,8 @@ void flashPatternAdvance(void)
                 }
             break;
             case LED_PAT_SATURATION:
-                //is this the first loop
-                if(i==0)
-                {
-                    //calculate color in RGB
-                    HsvToLED(&LED_stat[0].colors[0],0,LED_idx,0xFF);
-                }else
-                {
-                    //copy from first LED
-                    LED_stat[0].colors[i].brt=LED_stat[0].colors[0].brt;
-                    LED_stat[0].colors[i].r  =LED_stat[0].colors[0].r;
-                    LED_stat[0].colors[i].g  =LED_stat[0].colors[0].g;
-                    LED_stat[0].colors[i].b  =LED_stat[0].colors[0].b;
-                }
+                //calculate color in RGB
+                HsvToLED(&LED_stat[0].colors[i],strp_idx*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
         }
     }
