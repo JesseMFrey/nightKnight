@@ -32,6 +32,10 @@ void initLEDs(void)
     //clear LED array
     memset(LED_stat,0,sizeof(LED_stat));
 
+    //set end values
+    //memset(LED_stat[0].end,0xFF,sizeof(LED_stat[0].end));
+    //memset(LED_stat[1].end,0xFF,sizeof(LED_stat[1].end));
+
     flashPatternChange(LED_PAT_ST_COLORS);
 
 }
