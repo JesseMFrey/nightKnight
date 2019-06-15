@@ -114,8 +114,9 @@ void init_Companion(void)
 {
     //setup interrupt for chip select
     P2DIR&=~BIT6;           //input
-    P2IES|= BIT6;           //falling edge triggered
-    //P2IE |= BIT6;           //enable interrupt
+    P2IES&=~BIT6;           //rising edge triggered
+    P2IFG&=~BIT6;           //clear flag
+    P2IE |= BIT6;           //enable interrupt
 
     //allow port mapping
     PMAPKEYID=PMAPKEY;
