@@ -66,17 +66,16 @@ void flashPatternAdvance(void)
         break;
         case LED_PAT_SATURATION:
             //calculate new index
-            LED_idx+=idx_dir;
+            LED_idx+=(idx_dir&0x01)?-1:1;
             //check for reversal
-            if(LED_idx>=(0xFF+50))
+            if(LED_idx>=(0xFF+50) || LED_idx<=0)
             {
-                //set direction to down
-                idx_dir=-1;
-            }
-            else if(LED_idx<=0)
-            {
-                //set direction to up
-                idx_dir=1;
+                //increment direction
+                idx_dir+=1;
+                //check for overflow
+                if(idx_dir>=6){
+                    idx_dir=0;
+                }
             }
         break;
         case LED_PAT_BURST:
@@ -175,7 +174,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_SATURATION:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],strp_idx*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
         }
     }
@@ -231,7 +230,7 @@ unsigned short flashPatternChange(int pattern)
             flash_per=51;
         break;
         case LED_PAT_SATURATION:
-            idx_dir=1;
+            idx_dir=0;
             LED_idx=0;
             //set interrupt interval
             flash_per=51;
