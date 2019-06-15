@@ -9,6 +9,7 @@
 #include <string.h>         //for memset
 #include "LEDs.h"
 #include "flashPattern.h"
+#include "buttons.h"
 
 
 void initLEDs(void)
@@ -38,7 +39,7 @@ void initLEDs(void)
     //memset(LED_stat[0].end,0xFF,sizeof(LED_stat[0].end));
     //memset(LED_stat[1].end,0xFF,sizeof(LED_stat[1].end));
 
-    flashPatternChange(LED_PAT_ST_COLORS);
+    set_LED_int(flashPatternChange(LED_PAT_SATURATION));
 
 }
 

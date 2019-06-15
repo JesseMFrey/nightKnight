@@ -11,7 +11,6 @@
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
 	<templateProperties value="id=C1_LedOnOff.projectspec.C1_LedOnOff,"/>
-	<origin value="C:\Users\jmf6\Desktop\MSP430USBDevelopersPackage_5_20_06_02\MSP430USBDevelopersPackage_5_20_06_02\MSP430_USB_Software\MSP430_USB_API\examples\CDC_virtualCOMport\C1_LedOnOff\CCS\C1_LedOnOff.projectspec"/>
 	<filesToOpen value=""/>
 	<connection value="common/targetdb/connections/TIMSP430-USB.xml"/>
 	<isTargetManual value="false"/>

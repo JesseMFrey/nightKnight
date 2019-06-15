@@ -11,13 +11,13 @@
 void initLEDs(void);
 
 //number of LEDs under the fins
-#define FIN_LED     (11)
+#define FIN_LED     (5)
 
 //number of LEDs on the outside of lower section
-#define BOOST_LED   (6)
+#define BOOST_LED   (0)
 
 //number of LEDs on the outside of the upper section
-#define UPR_LED     (33)
+#define UPR_LED     (0)
 
 //lower section LED length
 #define LWR_LED     (FIN_LED+BOOST_LED)

@@ -11,5 +11,7 @@
 
 void Buttons_init(void);
 
+void set_LED_int(unsigned short new_int);
+
 
 #endif /* BUTTONS_H_ */

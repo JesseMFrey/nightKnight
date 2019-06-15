@@ -9,13 +9,13 @@
 #include "flashPattern.h"
 
 //use quarter brightness
-#define LED_BRT     (MAX_BRT>>2)
+#define LED_BRT     (MAX_BRT)
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
 
 static int LED_idx=0;
-static int LED_pattern=LED_PAT_ST_COLORS;
+static int LED_pattern=LED_PAT_SATURATION;
 static int idx_dir=0;
 
 static int limit_idx(int i)
@@ -25,6 +25,24 @@ static int limit_idx(int i)
     if(i>=LED_LEN)
         return LED_LEN-1;
     return i;
+}
+
+extern inline int get_lin(int i)
+{
+    //calculate linear index for LED
+    int lin_idx=(i%LED_LEN);
+    //reverse odd numbered strips
+    if((i/LED_LEN)&0x01)
+    {
+        lin_idx=LED_LEN-lin_idx-1;
+    }
+    return lin_idx;
+}
+
+extern inline int get_strip(int i)
+{
+    //get strip index for LED
+    return i/LED_LEN;
 }
 
 void flashPatternAdvance(void)
@@ -94,9 +112,9 @@ void flashPatternAdvance(void)
     for(i=0;i<NUM_LEDS;i++)
     {
         //calculate linear index for LED
-        lin_idx  =LED_lut[i][0];
+        lin_idx  =get_lin(i);
         //get strip index for LED
-        strp_idx =LED_lut[i][1];
+        strp_idx =get_strip(i);
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
                 //set brightness

@@ -10,7 +10,6 @@
 #include "hal.h"
 #include "LEDs.h"
 #include "flashPattern.h"
-#include "Companion.h"
 
 unsigned short LED_int=102*2;
 
@@ -49,6 +48,23 @@ void Buttons_init(void){
     TA0CTL=TASSEL_1|ID_3|MC_2|TACLR;
 }
 
+void set_LED_int(unsigned short new_int)
+{
+    LED_int=new_int;
+    if(LED_int==0)
+    {
+        //stop flash interrupts
+        TA0CCTL3=0;
+    }
+    else
+    {
+        //setup TA0CCR3 to capture timer value
+        TA0CCTL3=CM_3|CCIS_2|SCS|CAP|CCIE;
+        //capture current timer value
+        TA0CCTL3^=CCIS0;
+    }
+}
+
 // ======== P1 ISR ========
 
 #if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
@@ -66,17 +82,8 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
             if(P1IES&BIT1){
                 //toggle LED for button
                 P4OUT^=BIT7;
-                //set pattern to off
-                LED_int=flashPatternNext();
-
-                if(LED_int==0)
-                {
-                    //stop flash interrupts
-                    TA0CCTL3=0;
-                }else
-                {
-                    TA0CCTL3=CCIE;
-                }
+                //advance LED pattern
+                set_LED_int(flashPatternNext());
             }
             //disable P1.1 interrupts
             P1IE&=~BIT1;
@@ -109,17 +116,7 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
                 //toggle LED for button
                 P1OUT^=BIT0;
                 //set pattern to off
-                LED_int=flashPatternChange(LED_PAT_OFF);
-
-                if(LED_int==0)
-                {
-                    //stop flash interrupts
-                    TA0CCTL3=0;
-                }
-                else
-                {
-                    TA0CCTL3=CCIE;
-                }
+                set_LED_int(flashPatternChange(LED_PAT_OFF));
             }
             //disable P2.1 interrupts
             P2IE&=~BIT1;
@@ -137,16 +134,6 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
                 //set pattern to off
                 LED_int=flashPatternNext();
 
-                if(LED_int==0)
-                {
-                    //stop flash interrupts
-                    TA0CCTL3=0;
-                }
-                else
-                {
-                    TA0CCTL3=CCIE;
-                }
-
             }
             //disable P2.1 interrupts
             P2IE&=~BIT3;
@@ -157,10 +144,6 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             //capture current timer value
             TA0CCTL1^=CCIS0;
         break;
-        case P2IV_P2IFG6:
-            //when the companion slave goes high reset comms
-            companion_SPI_reset();
-            break;
     }
 }
 
@@ -221,6 +204,9 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
             }
         break;
         case TA0IV_TACCR3:
+            //put timer in compare mode
+            TA0CCTL3=CCIE;
+
             //next int in 200ms
             TA0CCR3+=LED_int;
 
