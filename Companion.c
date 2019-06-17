@@ -113,10 +113,10 @@ static inline void cp_SPI_rx_setup(void *buf,int size,int incr)
 void init_Companion(void)
 {
     //setup interrupt for chip select
-    P2DIR&=~BIT6;           //input
+    /*P2DIR&=~BIT6;           //input
     P2IES&=~BIT6;           //rising edge triggered
     P2IFG&=~BIT6;           //clear flag
-    P2IE |= BIT6;           //enable interrupt
+    P2IE |= BIT6;           //enable interrupt*/
 
     //allow port mapping
     PMAPKEYID=PMAPKEY;
