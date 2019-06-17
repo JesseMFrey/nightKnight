@@ -107,14 +107,14 @@ void init_Companion(void)
 void companion_SPI_reset(void)
 {
     //put peripheral in reset
-    UCB1CTLW0|= UCSWRST;
+    //UCB1CTLW0|= UCSWRST;
     //setup to receive command
     SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
     SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
     //set next state
     cp_SPI_state=CP_COMMAND_RX;
     //take peripheral out of reset
-    UCB1CTLW0&=~UCSWRST;
+    //UCB1CTLW0&=~UCSWRST;
 }
 
 int tx_bytes=0,rx_bytes=0;
