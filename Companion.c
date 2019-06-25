@@ -88,7 +88,8 @@ void init_Companion(void)
      //UCB1BRW=5;
 
      //setup pins
-     P4SEL|=BIT0|BIT1|BIT2|BIT3;
+     P4DIR&=~(BIT0|BIT1|BIT2|BIT3);
+     P4SEL|=  BIT0|BIT1|BIT2|BIT3;
 
      //take peripheral out of reset mode
      UCB1CTLW0&=~UCSWRST;
@@ -107,15 +108,23 @@ void init_Companion(void)
 
 void companion_SPI_reset(void)
 {
+    //disable pins
+    P4SEL|=~(BIT0|BIT1|BIT2|BIT3);
     //put peripheral in reset
-    //UCB1CTLW0|= UCSWRST;
+    UCB1CTLW0|= UCSWRST;
+    //put peripheral in master mode
+    UCB1CTL0|= UCMST;
     //setup to receive command
     SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
     SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
     //set next state
     cp_SPI_state=CP_COMMAND_RX;
+    //put peripheral in slave mode
+    UCB1CTL0&=~UCMST;
     //take peripheral out of reset
-    //UCB1CTLW0&=~UCSWRST;
+    UCB1CTLW0&=~UCSWRST;
+    //enable pins
+    P4SEL|=  BIT0|BIT1|BIT2|BIT3;
 }
 
 int tx_bytes=0,rx_bytes=0;
