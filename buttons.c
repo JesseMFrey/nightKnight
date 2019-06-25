@@ -124,6 +124,8 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             TA0CCTL1^=CCIS0;
         break;
         case P2IV_P2IFG6:
+            //toggle bit 0 for debugging
+            P6OUT^=BIT0;
             //when the companion slave goes high reset comms
             companion_SPI_reset();
             break;

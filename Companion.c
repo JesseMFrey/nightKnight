@@ -142,6 +142,8 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         }else{
             *(rx_ptr++)=UCB1RXBUF;
         }
+        //toggle bit 2 for debugging
+        P6OUT^=BIT2;
         //check if we have ended
         if(rx_ptr>=rx_end){
             //setup next transaction
@@ -171,6 +173,8 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         }else{
             UCB1TXBUF=*(tx_ptr++);
         }
+        //toggle bit 1 for debugging
+        P6OUT^=BIT1;
         //check if we have ended
         if(tx_ptr>=tx_end){
             //setup next transaction
