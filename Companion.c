@@ -148,6 +148,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         rx_bytes++;
         if(rx_ptr==NULL){
             rx_end--;
+            dummy_Rx=UCB1RXBUF;
         }else{
             *(rx_ptr++)=UCB1RXBUF;
         }
