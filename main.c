@@ -32,9 +32,7 @@
 #include <string.h>
 
 #include "driverlib.h"
-#include "terminal.h"
 #include "buttons.h"
-#include "Nosecone.h"
 #include "Companion.h"
 
 
@@ -44,25 +42,19 @@
  */
 #include "hal.h"
 
-#include "LEDs.h"
-
 
 /*  
  * ======== main ========
  */
 void main (void)
 {
-    TERM_DAT term_dat;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initPorts();           // Config GPIOS for low-power (output low)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
-    terminal_init(&term_dat);
     Buttons_init();
-    initLEDs();
-    init_Nosecone();
     init_Companion();
 
     //setup onboard LEDs
