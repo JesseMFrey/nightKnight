@@ -56,11 +56,15 @@ void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
 
 void init_Companion(void)
 {
+    //pull down on chip select
+    P2DIR&=~BIT3;           //input
+    P2OUT&=~BIT3;
+    P2REN|= BIT3;
     //setup interrupt for chip select
-    P2DIR&=~BIT6;           //input
-    P2IES&=~BIT6;           //rising edge triggered
-    P2IFG&=~BIT6;           //clear flag
-    P2IE |= BIT6;           //enable interrupt
+    P2DIR&=~BIT3;           //input
+    P2IES&=~BIT3;           //rising edge triggered
+    P2IFG&=~BIT3;           //clear flag
+    P2IE |= BIT3;           //enable interrupt
 
 
     //allow port mapping

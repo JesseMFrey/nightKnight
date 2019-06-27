@@ -17,30 +17,17 @@ unsigned short LED_int=102*2;
 //======== Buttons Init function ========
 
 void Buttons_init(void){
-
-    //setup p1.1 pull up
-    P1DIR&=~BIT1;
-    P1OUT|= BIT1;
-    P1REN|= BIT1;
-    //initialize p1.1 interrupt
-    P1DIR&=~BIT1;
-    P1IES|= BIT1;
-    //clear P1 interrupt flags
-    P1IFG = 0;
-    //enable P1.1 interrupt
-    P1IE |= BIT1;
-
-    //setup p2.1 pull up
-    P2DIR&=~BIT1|BIT3;
-    P2OUT|= BIT1|BIT3;
-    P2REN|= BIT1|BIT3;
-    //initialize p2.1 and p2.3 interrupt
-    P2DIR&=~BIT1|BIT3;
-    P2IES|= BIT1|BIT3;
+    //setup p2.1  interrupt
+    P2DIR&=~BIT1;
+    P2OUT|= BIT1;
+    P2REN|= BIT1;
+    //initialize p2.1 interrupt
+    P2DIR&=~(BIT1);
+    P2IES|= (BIT1);
     //clear P2 interrupt flags
-    P2IFG = 0;
-    //enable P2.1 and p2.3 interrupt
-    P2IE |= BIT1|BIT3;
+    P2IFG&=~(BIT1);
+    //enable P2.1 interrupt
+    P2IE |= (BIT1);
 
     //set input divider expansion to /4
     TA0EX0=TAIDEX_3;
@@ -131,35 +118,6 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             TA0CCTL2^=CCIS0;
         break;
         case P2IV_P2IFG3:
-            //check IES
-            if(P2IES&BIT3){
-
-                //set pattern to off
-                LED_int=flashPatternNext();
-
-                if(LED_int==0)
-                {
-                    //stop flash interrupts
-                    TA0CCTL3=0;
-                }
-                else
-                {
-                    TA0CCTL3=CCIE;
-                }
-
-            }
-            //disable P2.1 interrupts
-            P2IE&=~BIT3;
-            //Toggle IES
-            P2IES^=BIT3;
-            //setup TA0CCR2 to capture timer value
-            TA0CCTL1=CM_3|CCIS_2|SCS|CAP|CCIE;
-            //capture current timer value
-            TA0CCTL1^=CCIS0;
-        break;
-        case P2IV_P2IFG6:
-            //toggle bit 0 for debugging
-            P6OUT^=BIT0;
             //when the companion slave goes high reset comms
             companion_SPI_reset();
             break;
