@@ -35,7 +35,7 @@ void SPI_rx_ptr_setup(void *rxptr,size_t size)
     rx_ptr=rxptr;
 
     //setup end pointer
-    rx_end=((char*)rxptr)+sizeof(cpCmd);
+    rx_end=((char*)rxptr)+size;
 }
 
 void SPI_tx_ptr_setup(const void *txptr,size_t size)
@@ -45,7 +45,7 @@ void SPI_tx_ptr_setup(const void *txptr,size_t size)
     tx_ptr=txptr;
 
     //setup end pointer
-    tx_end=((char*)txptr)+sizeof(cpCmd);
+    tx_end=((char*)txptr)+size;
 }
 
 void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
