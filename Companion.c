@@ -114,6 +114,8 @@ void companion_SPI_reset(void)
 {
     //disable pins
     P4SEL|=~(BIT0|BIT1|BIT2|BIT3);
+    //disable interrupts
+    UCB1IE&=~(UCTXIE|UCRXIE);
     //put peripheral in reset
     UCB1CTLW0|= UCSWRST;
     //put peripheral in master mode
@@ -125,10 +127,12 @@ void companion_SPI_reset(void)
     cp_SPI_state=CP_COMMAND_RX;
     //put peripheral in slave mode
     UCB1CTL0&=~UCMST;
-    //take peripheral out of reset
-    UCB1CTLW0&=~UCSWRST;
     //enable pins
     P4SEL|=  BIT0|BIT1|BIT2|BIT3;
+    //take peripheral out of reset
+    UCB1CTLW0&=~UCSWRST;
+    //enable interrupts
+    UCB1IE|=UCTXIE|UCRXIE;
 }
 
 /*
