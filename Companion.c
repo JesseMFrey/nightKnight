@@ -184,7 +184,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
     case USCI_UCTXIFG:
         if(tx_ptr==NULL){
             //UCB1TXBUF=dummy_Tx;
-            UCB1TXBUF=((unsigned short)tx_end);
+            UCB1TXBUF=((unsigned short)((unsigned long)tx_end));
             tx_end--;
         }else{
             UCB1TXBUF=*(tx_ptr++);
