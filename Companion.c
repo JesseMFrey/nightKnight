@@ -131,8 +131,6 @@ void companion_SPI_reset(void)
     P4SEL|=  BIT0|BIT1|BIT2|BIT3;
 }
 
-int tx_bytes=0,rx_bytes=0;
-
 /*
  * ======== SPI_ISR ========
  */
@@ -149,7 +147,6 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
 
     {
     case USCI_UCRXIFG:
-        rx_bytes++;
         if(rx_ptr==NULL){
             rx_end--;
             dummy_Rx=UCB1RXBUF;
@@ -180,7 +177,6 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         }
         break;
     case USCI_UCTXIFG:
-        tx_bytes++;
         if(tx_ptr==NULL){
             //UCB1TXBUF=dummy_Tx;
             UCB1TXBUF=((unsigned short)tx_end);
