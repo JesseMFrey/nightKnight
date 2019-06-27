@@ -161,10 +161,6 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
             //state has already been set
             switch(cp_SPI_state)
             {
-            case CP_COMMAND_RX:
-                //setup to receive command
-                SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
-                break;
             case CP_SETUP_TX:
                 //setup for setup Tx, send dummy bytes
                 SPI_rx_ptr_setup(NULL,sizeof(cpSetup));
@@ -172,6 +168,11 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
             case CP_TLM_TX:
                 //setup for TLM tx, send dummy bytes
                 SPI_rx_ptr_setup(NULL,sizeof(cpTLM));
+                break;
+            default:
+            case CP_COMMAND_RX:
+                //setup to receive command
+                SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
                 break;
             }
         }
@@ -207,6 +208,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
                         //set next state
                         cp_SPI_state=CP_TLM_TX;
                         break;
+                    default:
                     case AO_COMPANION_NOTIFY:
                         //send command
                         SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
