@@ -56,18 +56,20 @@ void main (void)
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
+    //setup debug pins
+    P6OUT&=~(BIT0|BIT1|BIT2|BIT3);
+    P6SEL&=~(BIT0|BIT1|BIT2|BIT3);
+    P6REN&=~(BIT0|BIT1|BIT2|BIT3);
+    P6DIR|= (BIT0|BIT1|BIT2|BIT3);
+
     PMM_setVCore(PMM_CORE_LEVEL_3);
-    USBHAL_initPorts();           // Config GPIOS for low-power (output low)
+    //USBHAL_initPorts();           // Config GPIOS for low-power (output low)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     terminal_init(&term_dat);
     Buttons_init();
     initLEDs();
     init_Nosecone();
     init_Companion();
-
-    //setup debug pins
-    P6OUT&=~(BIT0|BIT1|BIT2|BIT3);
-    P6DIR|= (BIT0|BIT1|BIT2|BIT3);
 
 
     //setup onboard LEDs
