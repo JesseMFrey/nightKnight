@@ -18,8 +18,7 @@ const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),T
 
 struct telemitry_dat cpTLM={};
 
-//char to transmit if we have nothing to send
-static const uint8_t dummy_Tx=0x05;
+#define DUMMY_TX (0x05)
 //char to write to if we have nothing to receive
 static uint8_t dummy_Rx;
 
