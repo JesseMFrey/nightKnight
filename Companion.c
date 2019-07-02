@@ -106,8 +106,6 @@ void init_Companion(void)
 
      //set SPI data state
      cp_SPI_state=CP_COMMAND_RX;
-     //output status
-     P6OUT=(P6OUT&(~(BIT0|BIT1|BIT2)))|(cp_SPI_state&(BIT0|BIT1|BIT2));
 
 }
 
@@ -126,8 +124,6 @@ void companion_SPI_reset(void)
     SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
     //set next state
     cp_SPI_state=CP_COMMAND_RX;
-    //output status
-    P6OUT=(P6OUT&(~(BIT0|BIT1|BIT2)))|(cp_SPI_state&(BIT0|BIT1|BIT2));
     //put peripheral in slave mode
     UCB1CTL0&=~UCMST;
     //enable pins
@@ -162,8 +158,6 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         }
         //check if we have ended
         if(rx_ptr>=rx_end){
-            //toggle bit 3 for debugging
-            P6OUT^=BIT3;
             //setup next transaction
             //state has already been set
             switch(cp_SPI_state)
@@ -229,8 +223,6 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
                 cp_SPI_state=CP_COMMAND_RX;
                 break;
             }
-            //output status
-            P6OUT=(P6OUT&(~(BIT0|BIT1|BIT2)))|(cp_SPI_state&(BIT0|BIT1|BIT2));
         }
         break;
     }
