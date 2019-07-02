@@ -16,7 +16,7 @@
 #define AO_COMPANION_FETCH      2
 #define AO_COMPANION_NOTIFY     3
 
-#define TLM_ITEMS               1
+#define TLM_ITEMS               3
 
 struct ao_companion_command {
     uint8_t     command;
@@ -72,5 +72,7 @@ enum{DMA_NO_START=0,DMA_START=1};
 void init_Companion(void);
 
 void companion_SPI_reset(void);
+
+extern struct ao_companion_command cpCmd;
 
 #endif /* COMPANION_H_ */

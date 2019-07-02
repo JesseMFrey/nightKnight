@@ -36,6 +36,7 @@
 #include "buttons.h"
 #include "Nosecone.h"
 #include "Companion.h"
+#include "events.h"
 
 
 /*
@@ -52,7 +53,7 @@
  */
 void main (void)
 {
-    TERM_DAT term_dat;
+    e_type wake_e;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
@@ -65,7 +66,6 @@ void main (void)
     PMM_setVCore(PMM_CORE_LEVEL_3);
     //USBHAL_initPorts();           // Config GPIOS for low-power (output low)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
-    terminal_init(&term_dat);
     Buttons_init();
     initLEDs();
     init_Nosecone();
@@ -82,9 +82,36 @@ void main (void)
     
     while (1)
     {
-        // Enter LPM0 (can't do LPM3 when active)
+        // Enter LPM0
         __bis_SR_register(LPM0_bits + GIE);
         _NOP();
+        //toggle P6.3
+        P6OUT^=BIT3;
+        //read interrupts
+        wake_e=e_get_clear();
+        if(wake_e&COMP_RX_CMD)
+        {
+            P6OUT&=~(BIT0|BIT1|BIT2);
+            P6OUT!=(BIT0|BIT1|BIT2)&cpCmd.command;
+            switch(cpCmd.command)
+            {
+            case ao_flight_idle:
+                //set LED's
+                P4OUT|= BIT7;
+                P1OUT&=~BIT0;
+                break;
+            case ao_flight_pad:
+                //set LED's
+                P4OUT&=~BIT7;
+                P1OUT|= BIT0;
+                break;
+            default:
+                //turn off LED's
+                P4OUT&=~BIT7;
+                P1OUT&=~BIT0;
+                break;
+            }
+        }
 
     }  // while(1)
 } // main()
