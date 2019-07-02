@@ -84,7 +84,7 @@ void init_Companion(void)
     UCB1CTLW0|=UCSWRST;
 
     //set up UCB1 for SPI
-     UCB1CTL0=UCMSB|UCMODE_2|UCSYNC;
+     UCB1CTL0=UCCKPH|UCMSB|UCMODE_2|UCSYNC;
      UCB1CTL1=UCSSEL_2|UCSWRST;
      //set clock rate to 1MHz
      UCB1BRW=25;
@@ -185,9 +185,14 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
     case USCI_UCTXIFG:
         if(tx_ptr==NULL){
             UCB1TXBUF=DUMMY_TX;
+            //write twice see USCI40
+            UCB1TXBUF=DUMMY_TX;
             tx_end--;
         }else{
-            UCB1TXBUF=*(tx_ptr++);
+            unsigned char tx_val=*(tx_ptr++);
+            UCB1TXBUF=tx_val;
+            //write twice see USCI40
+            UCB1TXBUF=tx_val;
         }
         //check if we have ended
         if(tx_ptr>=tx_end){
