@@ -9,6 +9,7 @@
 #include <msp430.h>
 #include "Companion.h"
 #include <string.h>
+#include "events.h"
 
 //Board ID, just made this up
 #define BOARD_ID        1986
@@ -176,6 +177,9 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
                 SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
                 break;
             }
+            //recived a command, exit LPM
+            e_flags|=COMP_RX_CMD;
+            LPM0_EXIT;
         }
         break;
     case USCI_UCTXIFG:
