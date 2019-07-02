@@ -87,7 +87,7 @@ void main (void)
         {
             P6OUT&=~(BIT0|BIT1|BIT2);
             P6OUT!=(BIT0|BIT1|BIT2)&cpCmd.command;
-            switch(cpCmd.command)
+            switch(cpCmd.flight_state)
             {
             case ao_flight_idle:
                 //set LED's
