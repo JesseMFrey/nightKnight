@@ -21,7 +21,7 @@
 #define C_LEFT  ((LED_LEN-1)/2)
 
 static int LED_idx=0;
-static int LED_pattern=LED_PAT_ST_COLORS;
+static int LED_pattern;
 static int idx_dir=0;
 
 static unsigned short LED_int=102*2;
