@@ -56,6 +56,8 @@ void main (void)
 {
     e_type wake_e;
 
+    uint8_t lastState=ao_flight_invalid;
+
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
     //setup debug pins
@@ -100,20 +102,58 @@ void main (void)
             {
             case ao_flight_idle:
                 //set LED's
-                P4OUT|= BIT7;
-                P1OUT&=~BIT0;
-                break;
-            case ao_flight_pad:
-                //set LED's
                 P4OUT&=~BIT7;
                 P1OUT|= BIT0;
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_OFF);
+                }
+                break;
+            case ao_flight_pad:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_PAD);
+                }
+                break;
+            case ao_flight_boost:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_BOOST);
+                }
+                break;
+            case ao_flight_fast:
+            case ao_flight_coast:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_PAD);
+                }
+                break;
+            case ao_flight_drogue:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_USA);
+                }
+                break;
+            case ao_flight_main:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_ST_USA);
+                }
+                break;
+            case ao_flight_landed:
+                if(lastState!=cpCmd.flight_state)
+                {
+                    flashPatternChange(LED_PAT_USA);
+                }
                 break;
             default:
-                //turn off LED's
-                P4OUT&=~BIT7;
-                P1OUT&=~BIT0;
+                //turn on both LED's
+                P4OUT|= BIT7;
+                P1OUT|= BIT0;
                 break;
             }
+            //set last state
+            lastState=cpCmd.flight_state;
         }
 
     }  // while(1)
