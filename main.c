@@ -55,7 +55,7 @@
 void main (void)
 {
     e_type wake_e;
-
+    unsigned int maxSpeed=0;
     uint8_t lastState=ao_flight_invalid;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
@@ -123,9 +123,14 @@ void main (void)
                 break;
             case ao_flight_fast:
             case ao_flight_coast:
-                if(lastState!=cpCmd.flight_state)
+                if(lastState!=cpCmd.flight_state && lastState!=ao_flight_fast)
                 {
-                    flashPatternChange(LED_PAT_PAD);
+                    maxSpeed=cpCmd.speed;
+                    flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_GREEN);
+                }
+                else
+                {
+                    flashPattern_setValue(50-(cpCmd.speed*50)/maxSpeed);
                 }
                 break;
             case ao_flight_drogue:
