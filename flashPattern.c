@@ -9,14 +9,6 @@
 #include "flashPattern.h"
 #include <msp430.h>
 
-//maximum brightness 31
-#define LED_BRT_DIM      (0x1)
-#define LED_BRT_LOW      (4)
-#define LED_BRT_MED      (8)
-#define LED_BRT_NORM     (15)
-#define LED_BRT_HIGH     (18)
-#define LED_BRT_EXHIGH   (24)
-
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
 

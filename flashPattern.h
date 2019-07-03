@@ -10,6 +10,15 @@
 
 #include "LEDs.h"
 
+
+//maximum brightness 31
+#define LED_BRT_DIM      (0x1)
+#define LED_BRT_LOW      (4)
+#define LED_BRT_MED      (8)
+#define LED_BRT_NORM     (15)
+#define LED_BRT_HIGH     (18)
+#define LED_BRT_EXHIGH   (24)
+
 void flashPatternChange(int pattern);
 void flashPatternAdvance(void);
 void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char saturation,unsigned char value);
