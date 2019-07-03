@@ -94,7 +94,7 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             //capture current timer value
             TA0CCTL2^=CCIS0;
         break;
-        case P2IV_P2IFG3:
+        case P2IV_P2IFG6:
             //when the companion slave goes high reset comms
             companion_SPI_reset();
             break;
