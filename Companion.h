@@ -66,6 +66,8 @@ enum{DMA_NO_INCR=0,DMA_INCR=1};
 
 enum{DMA_NO_START=0,DMA_START=1};
 
+#define AO_TICKS_TO_SEC(s)  ((s) / 100)
+
 //from ao_host.h
 #define AO_SEC_TO_TICKS(s)  ((s) * 100)
 
