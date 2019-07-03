@@ -335,6 +335,18 @@ void flashPatternAdvance(void)
                 //calculate color in RGB
                 HsvToLED(&LED_stat[0].colors[i],LED_BRT_NORM,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
+            case LED_PAT_GRAPH:
+                if(lin_idx<pat_val)
+                {
+                    LED_stat[0].colors[i]=pat_color;
+                }
+                else
+                {
+                    LED_stat[0].colors[i].brt=pat_color.brt;
+                    LED_stat[0].colors[i].r=0xFF;
+                    LED_stat[0].colors[i].g=0xFF;
+                    LED_stat[0].colors[i].b=0xFF;
+                }
         }
     }
     //send new info
