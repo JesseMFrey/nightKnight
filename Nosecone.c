@@ -18,7 +18,7 @@ void init_Nosecone(void)
 
 
     //set timer period
-    TA2CCR0=MAX_PWM;
+    TA2CCR0=NC_MAX_PWM;
 
     set_nosecone(MAX_PWM/4);
     set_chute(0);

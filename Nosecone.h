@@ -16,6 +16,6 @@ void set_chute(uint16_t chute);
 #define getNoseconeLED()        ((TA2CCTL2==(TA2CCTL2&OUTMOD_7)?TA2CCR2:0))
 #define getChuteLED()           ((TA2CCTL1==(TA2CCTL1&OUTMOD_7)?TA2CCR1:0))
 
-#define MAX_PWM     0XFFF
+#define NC_MAX_PWM     0XFFF
 
 #endif /* NOSECONE_H_ */
