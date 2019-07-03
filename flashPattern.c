@@ -18,6 +18,9 @@ static int idx_dir=0;
 
 static unsigned short LED_int=102*2;
 
+static LED_color pat_color;
+unsigned int pat_val;
+
 static int limit_idx(int i)
 {
     if(i<0)
@@ -42,6 +45,30 @@ void init_FlashPattern(void)
     //set input divider to /8 for a total of /32
     TA1CTL=TASSEL_1|ID_3|MC_2|TACLR;
 
+}
+
+void flashPattern_setColor(LED_color color)
+{
+    pat_color=color;
+    //refresh pattern
+    flashPatternAdvance();
+}
+
+void flashPattern_setValue(unsigned int val)
+{
+    //set value
+    pat_val=val;
+    //refresh pattern
+    flashPatternAdvance();
+}
+
+void flashPatternVC(int pattern,unsigned int val,LED_color color)
+{
+    pat_color=color;
+    //set value
+    pat_val=val;
+
+    flashPatternChange(pattern);
 }
 
 void flashPatternAdvance(void)

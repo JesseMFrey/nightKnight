@@ -38,6 +38,10 @@ void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char 
 void flashPatternNext(void);
 int flashPatternGet(void);
 void init_FlashPattern(void);
+void flashPattern_setColor(LED_color color);
+void flashPattern_setValue(unsigned int val);
+void flashPatternVC(int pattern,unsigned int val,LED_color color);
+
 
 //flash patterns
 enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
