@@ -83,6 +83,20 @@ void flashPatternAdvance(void)
             blue_idx =limit_idx(LED_idx+1);
             red_idx  =limit_idx(LED_idx+2);
         break;
+        case LED_PAT_PAD:
+            //calculate new index
+            LED_idx+=(idx_dir&0x01)?-1:1;
+            //check for reversal
+            if(LED_idx>=(0xFF+50) || LED_idx<=0)
+            {
+                //increment direction
+                idx_dir+=1;
+                //check for overflow
+                if(idx_dir>=6){
+                    idx_dir=0;
+                }
+            }
+        break;
         case LED_PAT_HUE:
             //calculate new index
             LED_idx+=1;
@@ -101,6 +115,19 @@ void flashPatternAdvance(void)
                 if(idx_dir>=6){
                     idx_dir=0;
                 }
+            }
+        break;
+        case LED_PAT_USA:
+            LED_idx+=1;
+            if(LED_idx>=300)
+            {
+                LED_idx=0;
+            }
+        break;
+        case LED_PAT_BOOST:
+            LED_idx+=1;
+            if(LED_idx>50){
+                LED_idx=0;
             }
         break;
         case LED_PAT_BURST:
@@ -132,6 +159,90 @@ void flashPatternAdvance(void)
                 //set red
                 LED_stat[0].colors[i].r=(strp_idx==2)?0xFF:0;
             break;
+            case LED_PAT_ST_USA:
+                //set brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                //set blue
+                LED_stat[0].colors[i].b=(strp_idx==0||strp_idx==1)?0xFF:0;
+                //set green
+                LED_stat[0].colors[i].g=(strp_idx==1)?0xFF:0;
+                //set red
+                LED_stat[0].colors[i].r=(strp_idx==2||strp_idx==1)?0xFF:0;
+            break;
+            case LED_PAT_USA:
+                if(i==0){
+                    _NOP();
+                }
+                if(LED_idx<=75){
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //red color
+                    LED_stat[0].colors[i].r=0xFF;
+                    LED_stat[0].colors[i].g=0;
+                    LED_stat[0].colors[i].b=0;
+                }
+                else if(LED_idx<100)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS;
+                    //LEDs off
+                    LED_stat[0].colors[i].r=0;
+                    LED_stat[0].colors[i].g=0;
+                    LED_stat[0].colors[i].b=0;
+                }
+                else if(LED_idx<=175)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //white color
+                    LED_stat[0].colors[i].r=0xFF;
+                    LED_stat[0].colors[i].g=0xFF;
+                    LED_stat[0].colors[i].b=0xFF;
+                }
+                else if(LED_idx<200)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS;
+                    //LEDs off
+                    LED_stat[0].colors[i].r=0;
+                    LED_stat[0].colors[i].g=0;
+                    LED_stat[0].colors[i].b=0;
+                }
+                else if(LED_idx<=275)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //blue color
+                    LED_stat[0].colors[i].r=0;
+                    LED_stat[0].colors[i].g=0;
+                    LED_stat[0].colors[i].b=0xFF;
+                }
+                else if(LED_idx<300)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS;
+                    //LEDs off
+                    LED_stat[0].colors[i].r=0;
+                    LED_stat[0].colors[i].g=0;
+                    LED_stat[0].colors[i].b=0;
+                }
+            break;
+            case LED_PAT_BOOST:
+                if(LED_idx>0)
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                }
+                else
+                {
+                    //set brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+                }
+                //red color
+                LED_stat[0].colors[i].r=0xFF;
+                LED_stat[0].colors[i].g=0;
+                LED_stat[0].colors[i].b=0;
+            break;
             case LED_PAT_OFF:
                 //set color to zero
                 LED_stat[0].colors[i].r=LED_stat[0].colors[i].b=LED_stat[0].colors[i].g;
@@ -147,6 +258,10 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].b=(lin_idx==blue_idx)?0xFF:0;
                 //set green
                 LED_stat[0].colors[i].g=(lin_idx==green_idx)?0xFF:0;
+            break;
+            case LED_PAT_PAD:
+                //calculate color in RGB
+                HsvToLED(&LED_stat[0].colors[i],LED_BRT_LOW,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
             case LED_PAT_HUE:
                 //is this the first loop
@@ -249,7 +364,23 @@ void flashPatternChange(int pattern)
             //set interrupt interval
             flash_per=102*2;
         break;
+        case LED_PAT_USA:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=20;
+        break;
+        case LED_PAT_BOOST:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=600;
+        break;
         case LED_PAT_HUE:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=51;
+        break;
+        case LED_PAT_PAD:
+            idx_dir=0;
             LED_idx=0;
             //set interrupt interval
             flash_per=51;
