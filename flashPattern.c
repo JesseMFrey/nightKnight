@@ -101,11 +101,11 @@ void flashPatternAdvance(void)
                 //set brightness
                 LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
                 //set blue
-                LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
+                LED_stat[0].colors[i].b=(strp_idx==0)?0xFF:0;
                 //set green
-                LED_stat[0].colors[i].g=(((i%4)==3)?0xFF:((i%4)==1)?0xFF:0);
+                LED_stat[0].colors[i].g=(strp_idx==1)?0xFF:0;
                 //set red
-                LED_stat[0].colors[i].r=(((i%4)==3)?0xFF:((i%4)==2)?0xFF:0);
+                LED_stat[0].colors[i].r=(strp_idx==2)?0xFF:0;
             break;
             case LED_PAT_OFF:
                 //set color to zero
