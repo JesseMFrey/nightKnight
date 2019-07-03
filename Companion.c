@@ -67,6 +67,19 @@ void init_Companion(void)
     P2IE |= BIT6;           //enable interrupt
 
 
+    /*Cmpanion connector pinout
+
+    Companion   KN pin
+    pin
+    1           Gnd
+    2           4.3
+    3           4.1
+    4           4.2
+    5           NC
+    6           4.0,2.6
+    7           NC
+    8           NC      */
+
     //allow port mapping
     PMAPKEYID=PMAPKEY;
 
