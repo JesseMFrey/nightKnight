@@ -20,7 +20,7 @@ void init_Nosecone(void)
     //set timer period
     TA2CCR0=NC_MAX_PWM;
 
-    set_nosecone(MAX_PWM/4);
+    set_nosecone(200);
     set_chute(0);
 
     //setup TA2 to run in up mode for PWM

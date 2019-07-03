@@ -106,19 +106,26 @@ void main (void)
                 P1OUT|= BIT0;
                 if(lastState!=cpCmd.flight_state)
                 {
+                    //turn everything off
                     flashPatternChange(LED_PAT_OFF);
+                    set_nosecone(0);
+                    set_chute(0);
                 }
                 break;
             case ao_flight_pad:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_PAD);
+                    set_nosecone(400);
+                    set_chute(0);
                 }
                 break;
             case ao_flight_boost:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_BOOST);
+                    set_nosecone(NC_MAX_PWM);
+                    set_chute(0);
                 }
                 break;
             case ao_flight_fast:
@@ -127,34 +134,45 @@ void main (void)
                 {
                     maxSpeed=cpCmd.speed;
                     flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_GREEN);
+                    set_chute(0);
                 }
                 else
                 {
                     flashPattern_setValue(50-(cpCmd.speed*50)/maxSpeed);
                 }
+                //set nosecone based on speed
+                set_nosecone(NC_MAX_PWM*(cpCmd.speed/(float)maxSpeed));
                 break;
             case ao_flight_drogue:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_USA);
+                    set_nosecone(NC_MAX_PWM);
+                    set_chute(0);
                 }
                 break;
             case ao_flight_main:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_ST_USA);
+                    set_nosecone(0);
+                    set_chute(NC_MAX_PWM);
                 }
                 break;
             case ao_flight_landed:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_USA);
+                    set_nosecone(300);
+                    set_chute(0);
                 }
                 break;
             default:
                 //turn on both LED's
                 P4OUT|= BIT7;
                 P1OUT|= BIT0;
+                //turn off chute
+                set_chute(0);
                 break;
             }
             //set last state
