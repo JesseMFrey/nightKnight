@@ -8,11 +8,14 @@
 #ifndef FLASHPATTERN_H_
 #define FLASHPATTERN_H_
 
-unsigned short flashPatternChange(int pattern);
+#include "LEDs.h"
+
+void flashPatternChange(int pattern);
 void flashPatternAdvance(void);
 void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value);
-unsigned short flashPatternNext(void);
+void flashPatternNext(void);
 int flashPatternGet(void);
+void init_FlashPattern(void);
 
 //flash patterns
 enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,LED_NUM_PAT};

@@ -7,6 +7,7 @@
 
 #include "LEDs.h"
 #include "flashPattern.h"
+#include <msp430.h>
 
 //use quarter brightness
 #define LED_BRT     (MAX_BRT>>2)
@@ -18,6 +19,8 @@ static int LED_idx=0;
 static int LED_pattern=LED_PAT_ST_COLORS;
 static int idx_dir=0;
 
+static unsigned short LED_int=102*2;
+
 static int limit_idx(int i)
 {
     if(i<0)
@@ -25,6 +28,23 @@ static int limit_idx(int i)
     if(i>=LED_LEN)
         return LED_LEN-1;
     return i;
+}
+
+void init_FlashPattern(void)
+{
+
+    //flash pattern timer interrupt
+    TA1CCTL0=CCIE;
+
+    //set flash pattern and interrupt period
+    flashPatternChange(LED_PAT_COLORTRAIN);
+
+    //set input divider expansion to /4
+    TA1EX0=TAIDEX_3;
+    //setup TA0 to run in continuous mode
+    //set input divider to /8 for a total of /32
+    TA1CTL=TASSEL_1|ID_3|MC_2|TACLR;
+
 }
 
 void flashPatternAdvance(void)
@@ -182,7 +202,7 @@ void flashPatternAdvance(void)
     LEDs_send(&LED_stat[0]);
 }
 
-unsigned short flashPatternNext(void)
+void flashPatternNext(void)
 {
     int new_pattern=LED_pattern+1;
     if(new_pattern>LED_PAT_MAX)
@@ -190,7 +210,7 @@ unsigned short flashPatternNext(void)
         //set to next pattern
         new_pattern=LED_PAT_MIN;
     }
-    return flashPatternChange(new_pattern);
+    flashPatternChange(new_pattern);
 }
 
 
@@ -199,7 +219,7 @@ int flashPatternGet(void)
     return LED_pattern;
 }
 
-unsigned short flashPatternChange(int pattern)
+void flashPatternChange(int pattern)
 {
     //default is ~1 s
     unsigned short flash_per=1020;
@@ -248,9 +268,20 @@ unsigned short flashPatternChange(int pattern)
 
     //write LED's
     flashPatternAdvance();
-
-    //return interval
-    return flash_per;
+    //set interrupt period
+    if(flash_per==0)
+    {
+        //no interrupts
+        TA1CCTL0=CCIE;
+    }
+    else
+    {
+        LED_int=flash_per;
+        //setup TA0CCR1 to capture timer value
+        TA1CCTL0=CM_3|CCIS_2|SCS|CAP|CCIE;
+        //capture current timer value
+        TA1CCTL0^=CCIS0;
+    }
 }
 
 
@@ -308,5 +339,34 @@ void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigne
             dest->g = p;
             dest->b = q;
             break;
+    }
+}
+
+
+// ============ TA0 ISR ============
+// This is used for button debouncing
+#if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMER1_A0_VECTOR
+__interrupt void flash_ISR (void)
+#elif defined(__GNUC__) && (__MSP430__)
+void __attribute__ ((interrupt(TIMER1_A0_VECTOR))) flash_ISR (void)
+#else
+#error Compiler not found!
+#endif
+{
+    if(TA1CCTL0&CAP)
+    {
+        //set next interrupt time
+        TA1CCR0+=LED_int;
+        //switch to compare mode
+        TA1CCTL0=CCIE;
+    }
+    else
+    {
+        //set next interrupt time
+        TA1CCR0+=LED_int;
+
+        //set next flash pattern
+        flashPatternAdvance();
     }
 }

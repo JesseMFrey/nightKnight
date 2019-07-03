@@ -37,6 +37,7 @@
 #include "Nosecone.h"
 #include "Companion.h"
 #include "events.h"
+#include "flashPattern.h"
 
 
 /*
@@ -70,6 +71,8 @@ void main (void)
     initLEDs();
     init_Nosecone();
     init_Companion();
+
+    init_FlashPattern();
 
 
     //setup onboard LEDs
