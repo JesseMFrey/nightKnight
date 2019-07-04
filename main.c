@@ -158,6 +158,11 @@ void main (void)
                     set_nosecone(0);
                     set_chute(NC_MAX_PWM);
                 }
+                //turn off chute under 5m
+                if(cpCmd.height<=10){
+                    set_chute(0);
+                    set_nosecone(NC_MAX_PWM);
+                }
                 break;
             case ao_flight_landed:
                 if(lastState!=cpCmd.flight_state)
