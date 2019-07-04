@@ -133,7 +133,7 @@ void main (void)
                 if(lastState!=cpCmd.flight_state && lastState!=ao_flight_fast)
                 {
                     maxSpeed=cpCmd.speed;
-                    flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_GREEN);
+                    flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_RED);
                     set_chute(0);
                 }
                 else
