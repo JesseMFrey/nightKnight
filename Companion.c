@@ -21,7 +21,7 @@ struct telemitry_dat cpTLM={};
 
 #define DUMMY_TX (0x05)
 //char to write to if we have nothing to receive
-static uint8_t dummy_Rx;
+static volatile uint8_t dummy_Rx;
 
 static int cp_SPI_state;
 
