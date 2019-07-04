@@ -123,7 +123,7 @@ void main (void)
             case ao_flight_boost:
                 if(lastState!=cpCmd.flight_state)
                 {
-                    flashPatternChange(LED_PAT_BOOST);
+                    flashPatternVC(LED_PAT_BOOST,0,LED_COLOR_RED);
                     set_nosecone(NC_MAX_PWM);
                     set_chute(0);
                 }

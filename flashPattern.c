@@ -247,20 +247,18 @@ void flashPatternAdvance(void)
                 }
             break;
             case LED_PAT_BOOST:
+                //set color from pattern color
+                LED_stat[0].colors[i]=pat_color;
                 if(LED_idx>0)
                 {
-                    //set brightness
+                    //overide brightness
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
                 }
                 else
                 {
-                    //set brightness
+                    //overide brightness
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
                 }
-                //red color
-                LED_stat[0].colors[i].r=0xFF;
-                LED_stat[0].colors[i].g=0;
-                LED_stat[0].colors[i].b=0;
             break;
             case LED_PAT_OFF:
                 //set color to zero
