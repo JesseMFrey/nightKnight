@@ -16,7 +16,7 @@
 #define AO_COMPANION_FETCH      2
 #define AO_COMPANION_NOTIFY     3
 
-#define TLM_ITEMS               3
+#define TLM_ITEMS               0
 
 struct ao_companion_command {
     uint8_t     command;
