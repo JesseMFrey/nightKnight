@@ -15,7 +15,7 @@
 #define BOARD_ID        1986
 
 struct ao_companion_command cpCmd;
-const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_SEC_TO_TICKS(1),TLM_ITEMS};
+const struct ao_companion_setup cpSetup={BOARD_ID,~BOARD_ID,AO_mSEC_TO_TICKS(500),TLM_ITEMS};
 
 struct telemitry_dat cpTLM={};
 
