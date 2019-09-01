@@ -7,9 +7,7 @@
 
 #include "LEDs.h"
 #include "flashPattern.h"
-
-//use quarter brightness
-#define LED_BRT     (MAX_BRT)
+#include "lightSensor.h"
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -17,6 +15,8 @@
 static int LED_idx=0;
 static int LED_pattern=LED_PAT_SATURATION;
 static int idx_dir=0;
+
+#define MIN_BRT     4
 
 static int limit_idx(int i)
 {
@@ -50,6 +50,24 @@ void flashPatternAdvance(void)
     int i;
     int red_idx,blue_idx,green_idx;
     int lin_idx,strp_idx;
+    unsigned int brightness;
+
+    if(LED_pattern!=LED_PAT_OFF)
+    {
+        brightness=light_sensor_get();
+        //right shift brightness by 6 to convert 12 bit value to a 5 bit value
+        brightness>>=6;
+        //saturate brightness to MAX_BRT
+        if(brightness>MAX_BRT)
+        {
+            brightness=MAX_BRT;
+        }
+        //force minimum brightness
+        if(brightness<MIN_BRT)
+        {
+            brightness=MIN_BRT;
+        }
+    }
 
     //advance index if needed
     switch(LED_pattern){
@@ -117,7 +135,7 @@ void flashPatternAdvance(void)
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
                 //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|brightness;
                 //set blue
                 LED_stat[0].colors[i].b=(((i%4)==3)?0xFF:((i%4)==0)?0xFF:0);
                 //set green
@@ -133,7 +151,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_COLORTRAIN:
                 //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|brightness;
                 //set red
                 LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
                 //set blue
@@ -146,7 +164,7 @@ void flashPatternAdvance(void)
                 if(i==0)
                 {
                     //calculate color in RGB
-                    HsvToLED(&LED_stat[0].colors[0],LED_idx,0xFF,0xFF);
+                    HsvToLED(&LED_stat[0].colors[0],brightness,LED_idx,0xFF,0xFF);
                 }else
                 {
                     //copy from first LED
@@ -158,7 +176,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_BURST:
                 //set to full brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|brightness;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
                 if(lin_idx>=(C_LEFT-LED_idx) && lin_idx<=(C_RIGHT+LED_idx))
@@ -192,7 +210,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_SATURATION:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],brightness,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
         }
     }
@@ -272,12 +290,19 @@ unsigned short flashPatternChange(int pattern)
 }
 
 
-void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value)
+
+void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char saturation,unsigned char value)
 {
     unsigned short region, remainder, p, q, t;
 
+    if(brt>MAX_BRT)
+    {
+        //set to max
+        brt=MAX_BRT;
+    }
+
     //set brightness
-    dest->brt=LED_ST_BITS|LED_BRT;
+    dest->brt=LED_ST_BITS|brt;
 
     if (saturation == 0)
     {
@@ -328,3 +353,5 @@ void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigne
             break;
     }
 }
+
+

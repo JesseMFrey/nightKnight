@@ -34,6 +34,7 @@
 #include "driverlib.h"
 #include "buttons.h"
 #include "Nosecone.h"
+#include "lightSensor.h"
 
 
 /*
@@ -59,6 +60,7 @@ void main (void)
     Buttons_init();
     initLEDs();
     init_Nosecone();
+    init_light_sensor();
 
     //setup onboard LEDs
     P4OUT&=~BIT7;
@@ -68,6 +70,8 @@ void main (void)
 
     __enable_interrupt();  // Enable interrupts globally
     
+    light_sensor_start();
+
     while (1)
     {
         // Enter LPM0 (can't do LPM3 when active)

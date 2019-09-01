@@ -10,7 +10,7 @@
 
 unsigned short flashPatternChange(int pattern);
 void flashPatternAdvance(void);
-void HsvToLED(LED_color *dest,unsigned char hue,unsigned char saturation,unsigned char value);
+void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char saturation,unsigned char value);
 unsigned short flashPatternNext(void);
 int flashPatternGet(void);
 
