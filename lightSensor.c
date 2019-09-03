@@ -8,12 +8,13 @@
 #include <msp430.h>
 #include <string.h>
 #include "lightSensor.h"
-
-#define NUM_ADC_VALS        16
+#include "filter.h"
 
 unsigned int adc_vals[NUM_ADC_VALS];
 
 int adc_idx;
+int filt_dty=1;
+unsigned short filt_val;
 
 void init_light_sensor(void)
 {
@@ -73,14 +74,36 @@ void light_sensor_stop(void)
 
 unsigned short light_sensor_get(void)
 {
-    int idx=adc_idx;
-    idx-=1;
-    if(idx<0)
+    if(filt_dty)
     {
-        idx=NUM_ADC_VALS-1;
+        int s_idx=adc_idx,i,idx;
+        //setup MAC
+        MPY32CTL0=MPYDLY32|MPYDLYWRTEN|MPYM_1|MPYSAT;
+        //initialize MAC by running first calc
+        MPYS=adc_vals[s_idx];
+        OP2=filter_coefs[0];
+
+        for(i=1,idx=s_idx+1;idx!=s_idx;i++,idx++)
+        {
+            //wrap idx
+            if(idx>=NUM_ADC_VALS){
+                idx=0;
+                //check for end condition
+                if(idx==s_idx)
+                {
+                    break;
+                }
+            }
+            //use MAC
+            MACS=adc_vals[idx];
+            OP2=filter_coefs[i];
+        }
+        filt_val=RESHI;
+        filt_dty=0;
     }
-    //for now just return the most recent value
-    return adc_vals[idx];
+
+    //return value from MAC
+    return filt_val;
 }
 
 
@@ -107,6 +130,8 @@ void __attribute__ ((interrupt(ADC12_VECTOR))) ADC_ISR (void)
         {
             adc_idx=0;
         }
+        //set filter dirty
+        filt_dty=1;
         break;
     }
 }

@@ -56,7 +56,7 @@ void flashPatternAdvance(void)
     {
         brightness=light_sensor_get();
         //right shift brightness by 6 to convert 12 bit value to a 5 bit value
-        brightness>>=6;
+        //brightness>>=6;
         //saturate brightness to MAX_BRT
         if(brightness>MAX_BRT)
         {

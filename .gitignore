@@ -4,3 +4,6 @@ Release/
 .xdchelp
 .config/
 .launches/
+
+filter.h
+filter.c
