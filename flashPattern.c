@@ -37,7 +37,7 @@ void init_FlashPattern(void)
     TA1CCTL0=CCIE;
 
     //set flash pattern and interrupt period
-    flashPatternChange(LED_PAT_COLORTRAIN);
+    flashPatternChange(LED_PAT_SATURATION);
 
     //set input divider expansion to /4
     TA1EX0=TAIDEX_3;
