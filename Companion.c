@@ -84,8 +84,7 @@ void init_Companion(void)
     UCB1CTLW0|=UCSWRST;
 
     //set up UCB1 for SPI
-     UCB1CTL0=UCCKPH|UCMSB|UCMODE_2|UCSYNC;
-     UCB1CTL1=UCSSEL_2|UCSWRST;
+     UCB1CTLW0=UCCKPH|UCMSB|UCMODE_2|UCSYNC|UCSSEL_2|UCSWRST;
      //set clock rate to 1MHz
      UCB1BRW=25;
      //set clock rate to 5MHz
@@ -119,14 +118,14 @@ void companion_SPI_reset(void)
     //put peripheral in reset
     UCB1CTLW0|= UCSWRST;
     //put peripheral in master mode
-    UCB1CTL0|= UCMST;
+    UCB1CTLW0|= UCMST;
     //setup to receive command
     SPI_rx_ptr_setup(&cpCmd,sizeof(cpCmd));
     SPI_tx_ptr_setup(NULL,sizeof(cpCmd));
     //set next state
     cp_SPI_state=CP_COMMAND_RX;
     //put peripheral in slave mode
-    UCB1CTL0&=~UCMST;
+    UCB1CTLW0&=~UCMST;
     //enable pins
     P4SEL0|=  BIT4|BIT5|BIT6|BIT7;
     //take peripheral out of reset

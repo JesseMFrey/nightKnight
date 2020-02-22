@@ -15,8 +15,7 @@ void initLEDs(void)
 {
 
     //setup SPI port
-    UCB0CTL0=UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC;
-    UCB0CTL1=UCSSEL_2|UCSWRST;
+    UCB0CTLW0=UCCKPH|UCMSB|UCMST|UCMODE_0|UCSYNC|UCSSEL_2|UCSWRST;
     //set clock rate to 1MHz
     //UCB0BRW=25;
     //set clock rate to 5MHz
