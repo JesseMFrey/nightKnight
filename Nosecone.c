@@ -13,18 +13,18 @@ void init_Nosecone(void)
 {
 
     //TA2.2 and TA2.1 output pins
-    P2DIR|=BIT4|BIT5;
-    P2SEL|=BIT4|BIT5;
+    P2DIR |=BIT1|BIT2;
+    P2SEL0|=BIT1|BIT2;
 
 
     //set timer period
-    TA2CCR0=NC_MAX_PWM;
+    TA0CCR0=NC_MAX_PWM;
 
     set_nosecone(200);
     set_chute(0);
 
-    //setup TA2 to run in up mode for PWM
-    TA2CTL=TASSEL_2|ID_3|MC_1|TACLR;
+    //setup TA0 to run in up mode for PWM
+    TA0CTL=TASSEL_2|ID_3|MC_1|TACLR;
 }
 
 void set_chute(uint16_t chute)
@@ -32,14 +32,14 @@ void set_chute(uint16_t chute)
     if(chute==0)
     {
         //set output to out bit and set low
-        TA2CCTL1=OUTMOD_0;
+        TA0CCTL2=OUTMOD_0;
     }
     else
     {
         //set chute period
-        TA2CCR1=chute;
+        TA0CCR2=chute;
         //set output reset/set mode
-        TA2CCTL1=OUTMOD_7;
+        TA0CCTL2=OUTMOD_7;
     }
 }
 
@@ -49,14 +49,14 @@ void set_nosecone(uint16_t cone)
     if(cone==0)
     {
         //set output to out bit and set low
-        TA2CCTL2=OUTMOD_0;
+        TA0CCTL1=OUTMOD_0;
     }
     else
     {
         //set chute period
-        TA2CCR2=cone;
+        TA0CCR1=cone;
         //set output reset/set mode
-        TA2CCTL2=OUTMOD_7;
+        TA0CCTL1=OUTMOD_7;
     }
 }
 

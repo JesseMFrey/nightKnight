@@ -57,41 +57,28 @@ void SPI_ptr_setup(void *rxptr,const void *txptr,size_t size)
 void init_Companion(void)
 {
     //pull down on chip select
-    P2DIR&=~BIT6;           //input
-    P2OUT&=~BIT6;
-    P2REN|= BIT6;
+    P2DIR&=~BIT5;           //input
+    P2OUT&=~BIT5;
+    P2REN|= BIT5;
     //setup interrupt for chip select
-    P2DIR&=~BIT6;           //input
-    P2IES&=~BIT6;           //rising edge triggered
-    P2IFG&=~BIT6;           //clear flag
-    P2IE |= BIT6;           //enable interrupt
+    P2DIR&=~BIT5;           //input
+    P2IES&=~BIT5;           //rising edge triggered
+    P2IFG&=~BIT5;           //clear flag
+    P2IE |= BIT5;           //enable interrupt
 
 
     /*Cmpanion connector pinout
 
-    Companion   KN pin
+    Companion   KN pin      Function
     pin
     1           Gnd
-    2           4.3
-    3           4.1
-    4           4.2
-    5           NC
-    6           4.0,2.6
-    7           NC
+    2           4.4         SCK
+    3           4.5         MOSI
+    4           4.7         MISO
+    5           4.6,2.5     CS
+    6           NC
+    7           tm_vcc
     8           NC      */
-
-    //allow port mapping
-    PMAPKEYID=PMAPKEY;
-
-    P4MAP3 = PM_UCB1CLK;
-    P4MAP0 = PM_UCB1STE;
-    P4MAP2 = PM_UCB1SOMI;
-    P4MAP1 = PM_UCB1SIMO;
-
-    //allow reconfiguration
-    PMAPCTL|=PMAPRECFG;
-    //lock port mapping with invalid key
-    PMAPKEYID=0;
 
     //put UCB1 in reset mode
     UCB1CTLW0|=UCSWRST;
@@ -105,8 +92,8 @@ void init_Companion(void)
      //UCB1BRW=5;
 
      //setup pins
-     P4DIR&=~(BIT0|BIT1|BIT2|BIT3);
-     P4SEL|=  BIT0|BIT1|BIT2|BIT3;
+     P4DIR &=~(BIT4|BIT5|BIT6|BIT7);
+     P4SEL0|=  BIT4|BIT5|BIT6|BIT7;
 
      //take peripheral out of reset mode
      UCB1CTLW0&=~UCSWRST;
@@ -126,7 +113,7 @@ void init_Companion(void)
 void companion_SPI_reset(void)
 {
     //disable pins
-    P4SEL|=~(BIT0|BIT1|BIT2|BIT3);
+    P4SEL0|=~(BIT4|BIT5|BIT6|BIT7);
     //disable interrupts
     UCB1IE&=~(UCTXIE|UCRXIE);
     //put peripheral in reset
@@ -141,7 +128,7 @@ void companion_SPI_reset(void)
     //put peripheral in slave mode
     UCB1CTL0&=~UCMST;
     //enable pins
-    P4SEL|=  BIT0|BIT1|BIT2|BIT3;
+    P4SEL0|=  BIT4|BIT5|BIT6|BIT7;
     //take peripheral out of reset
     UCB1CTLW0&=~UCSWRST;
     //enable interrupts
@@ -163,7 +150,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
     switch(UCB1IV)
 
     {
-    case USCI_UCRXIFG:
+    case USCI_SPI_UCRXIFG:
         if(rx_ptr==NULL){
             rx_end--;
             dummy_Rx=UCB1RXBUF;
@@ -195,7 +182,7 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
             LPM0_EXIT;
         }
         break;
-    case USCI_UCTXIFG:
+    case USCI_SPI_UCTXIFG:
         if(tx_ptr==NULL){
             UCB1TXBUF=DUMMY_TX;
             //write twice see USCI40
@@ -249,4 +236,25 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
         break;
     }
 }
+
+// ======== P2 ISR ========
+
+#if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
+#pragma vector=PORT2_VECTOR
+__interrupt void button2_ISR (void)
+#elif defined(__GNUC__) && (__MSP430__)
+void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
+#else
+#error Compiler not found!
+#endif
+{
+    switch(__even_in_range(P2IV,P2IV_P2IFG7)){
+        case P2IV_P2IFG5:
+            //when the companion slave goes high reset comms
+            companion_SPI_reset();
+            break;
+    }
+}
+
+
 

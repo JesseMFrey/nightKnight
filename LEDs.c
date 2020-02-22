@@ -23,9 +23,9 @@ void initLEDs(void)
     UCB0BRW=5;
 
     //setup pins
-    //P3.0 for DAT
-    //P3.2 for CLK
-    P3SEL|=BIT2|BIT0;
+    //P2.6 for DAT
+    //P2.7 for CLK
+    P2SEL0|=BIT6|BIT7;
 
     //take peripheral out of reset mode
     UCB0CTLW0&=~UCSWRST;

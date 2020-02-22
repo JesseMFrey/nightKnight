@@ -1,5 +1,5 @@
 /* ============================================================================ */
-/* Copyright (c) 2017, Texas Instruments Incorporated                           */
+/* Copyright (c) 2019, Texas Instruments Incorporated                           */
 /*  All rights reserved.                                                        */
 /*                                                                              */
 /*  Redistribution and use in source and binary forms, with or without          */
@@ -31,7 +31,7 @@
 /* ============================================================================ */
 
 /******************************************************************************/
-/* lnk_msp430f5529.cmd - LINKER COMMAND FILE FOR LINKING MSP430F5529 PROGRAMS     */
+/* lnk_msp430f6779a.cmd - LINKER COMMAND FILE FOR LINKING MSP430F6779A PROGRAMS     */
 /*                                                                            */
 /*   Usage:  lnk430 <obj files...>    -o <out file> -m <map file> lnk.cmd     */
 /*           cl430  <src files...> -z -o <out file> -m <map file> lnk.cmd     */
@@ -44,7 +44,7 @@
 /* -heap   0x0100                                   HEAP AREA SIZE            */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-/* Version: 1.201                                                             */
+/* Version: 1.207                                                             */
 /*----------------------------------------------------------------------------*/
 
 /****************************************************************************/
@@ -56,14 +56,13 @@ MEMORY
     SFR                     : origin = 0x0000, length = 0x0010
     PERIPHERALS_8BIT        : origin = 0x0010, length = 0x00F0
     PERIPHERALS_16BIT       : origin = 0x0100, length = 0x0100
-    RAM                     : origin = 0x2400, length = 0x2000
-    USBRAM                  : origin = 0x1C00, length = 0x0800
+    RAM                     : origin = 0x1C00, length = 0x8000
     INFOA                   : origin = 0x1980, length = 0x0080
     INFOB                   : origin = 0x1900, length = 0x0080
     INFOC                   : origin = 0x1880, length = 0x0080
     INFOD                   : origin = 0x1800, length = 0x0080
-    FLASH                   : origin = 0x4400, length = 0xBB80
-    FLASH2                  : origin = 0x10000,length = 0x14400
+    FLASH                   : origin = 0xC000, length = 0x3F80
+    FLASH2                  : origin = 0x10000,length = 0x7C000
     INT00                   : origin = 0xFF80, length = 0x0002
     INT01                   : origin = 0xFF82, length = 0x0002
     INT02                   : origin = 0xFF84, length = 0x0002
@@ -213,31 +212,31 @@ SECTIONS
     .int33       : {}               > INT33
     .int34       : {}               > INT34
     .int35       : {}               > INT35
-    .int36       : {}               > INT36
-    .int37       : {}               > INT37
-    .int38       : {}               > INT38
-    .int39       : {}               > INT39
-    .int40       : {}               > INT40
-    RTC          : { * ( .int41 ) } > INT41 type = VECT_INIT
+    AES          : { * ( .int36 ) } > INT36 type = VECT_INIT
+    COMP_B       : { * ( .int37 ) } > INT37 type = VECT_INIT
+    RTC          : { * ( .int38 ) } > INT38 type = VECT_INIT
+    LCD_C        : { * ( .int39 ) } > INT39 type = VECT_INIT
+    TIMER3_A1    : { * ( .int40 ) } > INT40 type = VECT_INIT
+    TIMER3_A0    : { * ( .int41 ) } > INT41 type = VECT_INIT
     PORT2        : { * ( .int42 ) } > INT42 type = VECT_INIT
     TIMER2_A1    : { * ( .int43 ) } > INT43 type = VECT_INIT
     TIMER2_A0    : { * ( .int44 ) } > INT44 type = VECT_INIT
-    USCI_B1      : { * ( .int45 ) } > INT45 type = VECT_INIT
-    USCI_A1      : { * ( .int46 ) } > INT46 type = VECT_INIT
-    PORT1        : { * ( .int47 ) } > INT47 type = VECT_INIT
+    PORT1        : { * ( .int45 ) } > INT45 type = VECT_INIT
+    USCI_B1      : { * ( .int46 ) } > INT46 type = VECT_INIT
+    USCI_A3      : { * ( .int47 ) } > INT47 type = VECT_INIT
     TIMER1_A1    : { * ( .int48 ) } > INT48 type = VECT_INIT
     TIMER1_A0    : { * ( .int49 ) } > INT49 type = VECT_INIT
     DMA          : { * ( .int50 ) } > INT50 type = VECT_INIT
-    USB_UBM      : { * ( .int51 ) } > INT51 type = VECT_INIT
-    TIMER0_A1    : { * ( .int52 ) } > INT52 type = VECT_INIT
-    TIMER0_A0    : { * ( .int53 ) } > INT53 type = VECT_INIT
-    ADC12        : { * ( .int54 ) } > INT54 type = VECT_INIT
-    USCI_B0      : { * ( .int55 ) } > INT55 type = VECT_INIT
-    USCI_A0      : { * ( .int56 ) } > INT56 type = VECT_INIT
-    WDT          : { * ( .int57 ) } > INT57 type = VECT_INIT
-    TIMER0_B1    : { * ( .int58 ) } > INT58 type = VECT_INIT
-    TIMER0_B0    : { * ( .int59 ) } > INT59 type = VECT_INIT
-    COMP_B       : { * ( .int60 ) } > INT60 type = VECT_INIT
+    AUX          : { * ( .int51 ) } > INT51 type = VECT_INIT
+    USCI_A2      : { * ( .int52 ) } > INT52 type = VECT_INIT
+    USCI_A1      : { * ( .int53 ) } > INT53 type = VECT_INIT
+    TIMER0_A1    : { * ( .int54 ) } > INT54 type = VECT_INIT
+    TIMER0_A0    : { * ( .int55 ) } > INT55 type = VECT_INIT
+    SD24B        : { * ( .int56 ) } > INT56 type = VECT_INIT
+    ADC10        : { * ( .int57 ) } > INT57 type = VECT_INIT
+    USCI_B0      : { * ( .int58 ) } > INT58 type = VECT_INIT
+    USCI_A0      : { * ( .int59 ) } > INT59 type = VECT_INIT
+    WDT          : { * ( .int60 ) } > INT60 type = VECT_INIT
     UNMI         : { * ( .int61 ) } > INT61 type = VECT_INIT
     SYSNMI       : { * ( .int62 ) } > INT62 type = VECT_INIT
     .reset       : {}               > RESET  /* MSP430 Reset vector         */
@@ -247,5 +246,5 @@ SECTIONS
 /* Include peripherals memory map                                           */
 /****************************************************************************/
 
--l msp430f5529.cmd
+-l msp430f6779a.cmd
 
