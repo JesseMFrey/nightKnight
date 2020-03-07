@@ -37,6 +37,8 @@
 #include "Companion.h"
 #include "events.h"
 #include "flashPattern.h"
+#include "regulator.h"
+#include "switches.h"
 
 
 /*
@@ -59,21 +61,18 @@ void main (void)
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
+
+    setupDIP();
+
     PMM_setVCore(PMM_CORE_LEVEL_3);
-    //USBHAL_initPorts();           // Config GPIOS for low-power (output low)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
     init_Nosecone();
     init_Companion();
+    init5Vreg();
 
     init_FlashPattern();
 
-
-    //setup onboard LEDs
-    P4OUT&=~BIT7;
-    P1OUT&~BIT0;
-    P4DIR|=BIT7;
-    P1DIR|=BIT0;
 
     __enable_interrupt();  // Enable interrupts globally
     
