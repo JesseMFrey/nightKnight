@@ -61,15 +61,14 @@ void main (void)
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
-
     setupDIP();
+    init5Vreg();
 
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
     init_Nosecone();
     init_Companion();
-    init5Vreg();
 
     init_FlashPattern();
 

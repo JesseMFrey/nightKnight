@@ -7,6 +7,7 @@
 
 #include "LEDs.h"
 #include "flashPattern.h"
+#include "regulator.h"
 #include <msp430.h>
 
 #define C_RIGHT ((LED_LEN  )/2)
@@ -370,6 +371,12 @@ int flashPatternGet(void)
 
 void flashPatternChange(int pattern)
 {
+    //check if LED's will be on
+    if(pattern!=LED_PAT_OFF)
+    {
+        //turn on regulator
+        reg5V_on();
+    }
     //default is ~1 s
     unsigned short flash_per=1020;
     //limit pattern to valid values
@@ -446,6 +453,13 @@ void flashPatternChange(int pattern)
         TA1CCTL0=CM_3|CCIS_2|SCS|CAP|CCIE;
         //capture current timer value
         TA1CCTL0^=CCIS0;
+    }
+    //check if LED's are off
+    if(LED_pattern==LED_PAT_OFF)
+    {
+        //turn off regulator
+        reg5V_off();
+        //TODO: do more low power stuff??
     }
 }
 
