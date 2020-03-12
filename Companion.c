@@ -236,24 +236,4 @@ void __attribute__ ((interrupt(USCI_B1_VECTOR))) Companion_ISR (void)
     }
 }
 
-// ======== P2 ISR ========
-
-#if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
-#pragma vector=PORT2_VECTOR
-__interrupt void button2_ISR (void)
-#elif defined(__GNUC__) && (__MSP430__)
-void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
-#else
-#error Compiler not found!
-#endif
-{
-    switch(__even_in_range(P2IV,P2IV_P2IFG7)){
-        case P2IV_P2IFG5:
-            //when the companion slave goes high reset comms
-            companion_SPI_reset();
-            break;
-    }
-}
-
-
 
