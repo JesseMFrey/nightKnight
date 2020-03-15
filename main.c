@@ -39,7 +39,7 @@
 #include "flashPattern.h"
 #include "regulator.h"
 #include "switches.h"
-
+#include "ADC.h"
 
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
@@ -67,6 +67,7 @@ void main (void)
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
+    initADC();
     init_Nosecone();
     init_Companion();
 
