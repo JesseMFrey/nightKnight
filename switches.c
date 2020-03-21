@@ -9,7 +9,7 @@
 #include "switches.h"
 
 #define DIP_PINS    (BIT2|BIT3|BIT4|BIT5)
-#define DIP_SHIFT   (1)
+#define DIP_SHIFT   (2)
 
 void setupDIP(void)
 {
