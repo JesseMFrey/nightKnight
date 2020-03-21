@@ -8,6 +8,7 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 #include "regulator.h"
+#include "switches.h"
 #include <msp430.h>
 
 #define C_RIGHT ((LED_LEN  )/2)
@@ -33,12 +34,40 @@ static int limit_idx(int i)
 
 void init_FlashPattern(void)
 {
+    char sw_val;
 
     //flash pattern timer interrupt
     TA1CCTL0=CCIE;
 
-    //set flash pattern and interrupt period
-    flashPatternChange(LED_PAT_SATURATION);
+    //read DIP switches
+    sw_val=readDIP();
+
+    switch(sw_val){
+    case 0:
+        //set flash pattern
+        flashPatternChange(LED_PAT_SATURATION);
+        break;
+    case 1:
+        //set flash pattern
+        flashPatternChange(LED_PAT_USA);
+        break;
+    case 2:
+        //set flash pattern
+        flashPatternChange(LED_PAT_ST_USA);
+        break;
+    case 3:
+        //set flash pattern
+        flashPatternChange(LED_PAT_COLORTRAIN);
+        break;
+    case 4:
+        //set flash pattern
+        flashPatternChange(LED_PAT_HUE);
+        break;
+    default:
+        //set LED's off
+        flashPatternChange(LED_PAT_OFF);
+        break;
+    }
 
     //set input divider expansion to /4
     TA1EX0=TAIDEX_3;
@@ -269,7 +298,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_COLORTRAIN:
                 //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_DIM;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
                 //set red
                 LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
                 //set blue
