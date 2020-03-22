@@ -23,6 +23,19 @@ static unsigned short LED_int=102*2;
 static LED_color pat_color;
 unsigned int pat_val;
 
+LED_color RNBW_colors[6]={//start bits|brightness  , b  , g  , r
+                           //{LED_ST_BITS|LED_BRT_NORM,0x03,0x03,0xE4},   //Red
+                           {LED_ST_BITS|LED_BRT_NORM,0x03,0x03,0xF9},   //Red
+                           //{LED_ST_BITS|LED_BRT_NORM,0x00,0xC0,0xFF},   //Orange
+                           {LED_ST_BITS|LED_BRT_NORM,0x00,0x30,0xFF},   //Orange
+                           //{LED_ST_BITS|LED_BRT_NORM,0x00,0xeD,0xFF},   //Yellow
+                           {LED_ST_BITS|LED_BRT_NORM,0x00,0xB1,0xFF},   //Yellow
+                           //{LED_ST_BITS|LED_BRT_NORM,0x26,0x80,0x00},   //Green
+                           {LED_ST_BITS|LED_BRT_NORM,0x00,0xFF,0x00},   //Green
+                           {LED_ST_BITS|LED_BRT_NORM,0xFF,0x4D,0x00},   //Blue
+                           {LED_ST_BITS|LED_BRT_NORM,0x78,0x07,0x75}    //Purple
+                          };
+
 static int limit_idx(int i)
 {
     if(i<0)
@@ -62,6 +75,15 @@ void init_FlashPattern(void)
     case 4:
         //set flash pattern
         flashPatternChange(LED_PAT_HUE);
+        break;
+    case 5:
+        flashPatternChange(LED_PAT_RNBW_FLOW);
+        break;
+    case 6:
+        flashPatternChange(LED_PAT_RNBW_ST);
+        break;
+    case 7:
+        flashPatternChange(LED_PAT_RNBW_FLASH);
         break;
     default:
         //set LED's off
@@ -188,6 +210,34 @@ void flashPatternAdvance(void)
                 LED_idx=0;
             }
         break;
+        case LED_PAT_RNBW_FLASH:
+            //calculate new index
+            LED_idx+=1;
+            //limit 0 to 6
+            if(LED_idx>=6)
+            {
+                LED_idx=0;
+            }
+        break;
+        case LED_PAT_RNBW_FLOW:
+            //calculate new index
+            LED_idx+=1;
+            //limit
+            if(LED_idx>=(LED_LEN-FIN_LED-2))
+            {
+                LED_idx=0;
+            }
+        break;
+        case LED_PAT_USA_FLOW:
+            //calculate new index
+            LED_idx+=1;
+            //limit
+            if(LED_idx>=6)
+            {
+                LED_idx=0;
+            }
+        break;
+
     }
 
 
@@ -375,6 +425,73 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0xFF;
                     LED_stat[0].colors[i].b=0xFF;
                 }
+            break;
+            case LED_PAT_RNBW_ST:
+                if(lin_idx<FIN_LED)
+                {
+                    //fins bright white
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0xFF;
+                    LED_stat[0].colors[i].b  =0xFF;
+                    //high brightness for fins
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+
+                }
+                else
+                {
+                    //set color from array
+                    LED_stat[0].colors[i]=RNBW_colors[(((lin_idx-11)/6)%6)];
+                }
+            break;
+            case LED_PAT_RNBW_FLASH:
+                LED_stat[0].colors[i]=RNBW_colors[LED_idx];
+            break;
+            case LED_PAT_RNBW_FLOW:
+                if(lin_idx<FIN_LED)
+                {
+                    //fins bright white
+                    LED_stat[0].colors[i].r  =255;
+                    LED_stat[0].colors[i].g  =200;
+                    LED_stat[0].colors[i].b  =150;
+                    //high brightness for fins
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+
+                }
+                else
+                {
+                    //set color from array
+                    LED_stat[0].colors[i]=RNBW_colors[( ((lin_idx+LED_idx)/6)%6 )];
+                }
+            break;
+            case LED_PAT_USA_FLOW:
+                if(lin_idx<FIN_LED)
+                {
+                    //fins bright Blue
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0xFF;
+                    //high brightness for fins
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+
+                }
+                else if( ((lin_idx+LED_idx)/3)%2 )
+                {
+                    //set color to red
+                    LED_stat[0].colors[i]=LED_COLOR_RED;
+                }
+                else
+                {
+                    //set color to white
+                    //LED_stat[0].colors[i]=LED_COLOR_WHITE;
+
+                    //fins bright white
+                    LED_stat[0].colors[i].r  =255;
+                    LED_stat[0].colors[i].g  =200;
+                    LED_stat[0].colors[i].b  =150;
+                    //high brightness for fins
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_ST_BITS|LED_BRT_NORM;
+                }
+            break;
         }
     }
     //send new info
@@ -460,6 +577,21 @@ void flashPatternChange(int pattern)
             LED_idx=0;
             //set interrupt interval
             flash_per=102;
+        break;
+        case LED_PAT_RNBW_FLASH:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=2048;
+        break;
+        case LED_PAT_RNBW_FLOW:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=70;
+        break;
+        case LED_PAT_USA_FLOW:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=200;
         break;
         case LED_PAT_OFF:
             //don't update

@@ -20,7 +20,7 @@
 #define LED_BRT_EXHIGH   (24)
 
 //define standard colors                    brightness               | b  | g  | r  |
-#define LED_COLOR_RED           ((LED_color){LED_ST_BITS|LED_BRT_NORM,0x00,0xFF,0xFF})
+#define LED_COLOR_RED           ((LED_color){LED_ST_BITS|LED_BRT_NORM,0x00,0x00,0xFF})
 #define LED_COLOR_GREEN         ((LED_color){LED_ST_BITS|LED_BRT_NORM,0x00,0xFF,0x00})
 #define LED_COLOR_BLUE          ((LED_color){LED_ST_BITS|LED_BRT_NORM,0xFF,0x00,0x00})
 #define LED_COLOR_YELLOW        ((LED_color){LED_ST_BITS|LED_BRT_NORM,0x00,0xFF,0xFF})
@@ -45,7 +45,8 @@ void flashPatternVC(int pattern,unsigned int val,LED_color color);
 
 //flash patterns
 enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
-    LED_PAT_ST_USA,LED_PAT_USA,LED_PAT_PAD,LED_PAT_BOOST,LED_PAT_GRAPH,LED_NUM_PAT};
+    LED_PAT_ST_USA,LED_PAT_USA,LED_PAT_PAD,LED_PAT_BOOST,LED_PAT_GRAPH,LED_PAT_RNBW_ST,LED_PAT_RNBW_FLASH,
+    LED_PAT_RNBW_FLOW,LED_PAT_USA_FLOW,LED_NUM_PAT};
 
 #define LED_PAT_MIN         LED_PAT_OFF
 #define LED_PAT_MAX         (LED_NUM_PAT-1)
