@@ -40,6 +40,9 @@
 #include "regulator.h"
 #include "switches.h"
 #include "ADC.h"
+#include "UART.h"
+#include "terminal.h"
+#include <stdio.h>
 
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
@@ -49,6 +52,28 @@
 
 #include "LEDs.h"
 
+int fputc(int _c, register FILE *_fp)
+{
+  return TxChar(_c);
+}
+
+int putchar(int _c)
+{
+  return TxChar(_c);
+}
+
+int fputs(const char *_ptr, register FILE *_fp)
+{
+    int len=0;
+    while(*_ptr)
+    {
+        TxChar(*_ptr++);
+        len+=1;
+    }
+    return len;
+}
+
+static TERM_DAT term;
 
 /*  
  * ======== main ========
@@ -58,6 +83,7 @@ void main (void)
     e_type wake_e;
     unsigned int maxSpeed=0;
     uint8_t lastState=ao_flight_invalid;
+    int c;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
@@ -67,6 +93,7 @@ void main (void)
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
+    initUART();
     initADC();
     init_Nosecone();
     init_Companion();
@@ -76,6 +103,31 @@ void main (void)
 
     __enable_interrupt();  // Enable interrupts globally
     
+
+    printf("NightKnight Command mode\r\n>");
+
+    //initialize command vars
+    terminal_init(&term);
+
+    //interactive loop for commandline
+    while(cpCmd.flight_state<ao_flight_pad || cpCmd.flight_state>ao_flight_landed)
+    {
+        c=UART_CheckKey();
+        if(c==EOF)
+        {
+            //no char from user, sleep
+            // Enter LPM0
+            __bis_SR_register(LPM0_bits + GIE);
+            _NOP();
+        }
+        else
+        {
+            terminal_proc_char(c,&term);
+        }
+    }
+
+    printf("Flight detected command mode exited\n");
+
     while (1)
     {
         // Enter LPM0

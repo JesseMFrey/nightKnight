@@ -22,11 +22,14 @@ void initLEDs(void);
 //lower section LED length
 #define LWR_LED     (FIN_LED+BOOST_LED)
 
+//number of strings
+#define LED_STR     (3)
+
 //11 under fins, 6 on lower section, 33 on upper section
 #define LED_LEN     (FIN_LED+BOOST_LED+UPR_LED)
 
 
-#define NUM_LEDS    (3*LED_LEN)
+#define NUM_LEDS    (LED_STR*LED_LEN)
 
 #define MAX_BRT     0x1F
 #define LED_ST_BITS 0xE0

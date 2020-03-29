@@ -30,7 +30,10 @@ typedef struct{
  //table of commands with help
  extern const CMD_SPEC cmd_tbl[];
 
-//process a block of data from USB can run multiple commands
+//process a single char for terminal
+void terminal_proc_char(char c,TERM_DAT *data);
+
+//process a block of data can run multiple commands
 void terminal_proc_block(const char *inbuf,size_t num,TERM_DAT *data);
 
 //help command
