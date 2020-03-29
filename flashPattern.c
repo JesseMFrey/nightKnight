@@ -10,6 +10,8 @@
 #include "regulator.h"
 #include "switches.h"
 #include <msp430.h>
+#include <math.h>
+#include <stdlib.h>
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -17,6 +19,11 @@
 static int LED_idx=0;
 static int LED_pattern;
 static int idx_dir=0;
+
+#define NUM_PARTICLES (LED_STR*7)
+
+//particle stuff for particle pattern
+static PARTICLE particles[NUM_PARTICLES];
 
 static unsigned short LED_int=102*2;
 
@@ -123,11 +130,20 @@ void flashPatternVC(int pattern,unsigned int val,LED_color color)
     flashPatternChange(pattern);
 }
 
+static void new_particle(PARTICLE *n)
+{
+    //create new particle
+    n->v=0.3*(rand()/(float)RAND_MAX)+0.1;
+    n->x=LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
+}
+
 void flashPatternAdvance(void)
 {
-    int i;
+    int i,j;
+    int tmp;
     int red_idx,blue_idx,green_idx;
     int lin_idx,strp_idx;
+    static int particle_pos[NUM_PARTICLES];
 
     //advance index if needed
     switch(LED_pattern){
@@ -237,7 +253,20 @@ void flashPatternAdvance(void)
                 LED_idx=0;
             }
         break;
-
+        case LED_PAT_PARTICLE:
+            //shift all particles by their velocity
+            for(j=0;j<NUM_PARTICLES;j++)
+            {
+                particles[j].x-=particles[j].v;
+                particle_pos[j]=round(particles[j].x);
+                //check if we have gone off the end
+                if(particle_pos[j]<0)
+                {
+                    //create new particle
+                    new_particle(&particles[j]);
+                }
+            }
+        break;
     }
 
 
@@ -492,6 +521,43 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_ST_BITS|LED_BRT_NORM;
                 }
             break;
+            case LED_PAT_PARTICLE:
+
+                //set to off
+                LED_stat[0].colors[i].r=LED_stat[0].colors[i].g=LED_stat[0].colors[i].b=0;
+                //set brightness to zero
+                LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+
+                for(j=strp_idx;j<NUM_PARTICLES;j+=LED_STR)
+                {
+                    tmp=lin_idx-particle_pos[j];
+                    if(tmp>=0 && tmp<=5)
+                    {
+                        //set color
+                        LED_stat[0].colors[i].r  =255;
+                        LED_stat[0].colors[i].g  =150;
+                        LED_stat[0].colors[i].b  =10;
+                        if(tmp==0)
+                        {
+                            //set brightness
+                            LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                        }
+                        else
+                        {
+                            //get brightness, mask out start bits
+                            int tbrt=LED_stat[0].colors[i].brt&(~LED_ST_BITS);
+                            //add brightness from particle
+                            tbrt+=(6-tmp);
+                            //saturate brightness
+                            if(tbrt>MAX_BRT)
+                            {
+                                tbrt=MAX_BRT;
+                            }
+                            LED_stat[0].colors[i].brt=LED_ST_BITS|(tbrt);
+                        }
+                    }
+                }
+            break;
         }
     }
     //send new info
@@ -517,6 +583,8 @@ int flashPatternGet(void)
 
 void flashPatternChange(int pattern)
 {
+    int string;
+    int i;
     //check if LED's will be on
     if(pattern!=LED_PAT_OFF)
     {
@@ -592,6 +660,22 @@ void flashPatternChange(int pattern)
             LED_idx=0;
             //set interrupt interval
             flash_per=200;
+        break;
+        case LED_PAT_PARTICLE:
+            LED_idx=LED_LEN;
+            //set interrupt interval
+            flash_per=10;
+            string=0;
+            for(i=0;i<NUM_PARTICLES;i++)
+            {
+                new_particle(&particles[i]);
+                string+=1;
+                if(string>=LED_STR)
+                {
+                    string=0;
+                }
+
+            }
         break;
         case LED_PAT_OFF:
             //don't update

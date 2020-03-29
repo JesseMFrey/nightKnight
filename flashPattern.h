@@ -42,11 +42,15 @@ void flashPattern_setColor(LED_color color);
 void flashPattern_setValue(unsigned int val);
 void flashPatternVC(int pattern,unsigned int val,LED_color color);
 
+typedef struct{
+    float v,x;
+}PARTICLE;
+
 
 //flash patterns
-enum{LED_PAT_OFF=0,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
+enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
     LED_PAT_ST_USA,LED_PAT_USA,LED_PAT_PAD,LED_PAT_BOOST,LED_PAT_GRAPH,LED_PAT_RNBW_ST,LED_PAT_RNBW_FLASH,
-    LED_PAT_RNBW_FLOW,LED_PAT_USA_FLOW,LED_NUM_PAT};
+    LED_PAT_RNBW_FLOW,LED_PAT_USA_FLOW,LED_PAT_PARTICLE,LED_NUM_PAT};
 
 #define LED_PAT_MIN         LED_PAT_OFF
 #define LED_PAT_MAX         (LED_NUM_PAT-1)

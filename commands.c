@@ -250,6 +250,7 @@ const struct {
                  {"rnbw_fs",LED_PAT_RNBW_FLASH},
                  {"rnbw_fl",LED_PAT_RNBW_FLOW},
                  {"USA_fl",LED_PAT_USA_FLOW},
+                 {"particle",LED_PAT_PARTICLE},
                  {NULL,0}
 };
 
