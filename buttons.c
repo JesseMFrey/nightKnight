@@ -13,6 +13,8 @@
 
 unsigned short LED_int=102*2;
 
+int led_brt_mode=AUTO_BRT;
+
 //======== Buttons Init function ========
 
 void Buttons_init(void){
@@ -30,16 +32,16 @@ void Buttons_init(void){
     P1IE |= BIT1;
 
     //setup p2.1 pull up
-    P2DIR&=~BIT1|BIT3;
-    P2OUT|= BIT1|BIT3;
-    P2REN|= BIT1|BIT3;
-    //initialize p2.1 and p2.3 interrupt
-    P2DIR&=~BIT1|BIT3;
-    P2IES|= BIT1|BIT3;
+    P2DIR&=~BIT1;
+    P2OUT|= BIT1;
+    P2REN|= BIT1;
+    //initialize p2.1 interrupt
+    P2DIR&=~BIT1;
+    P2IES|= BIT1;
     //clear P2 interrupt flags
     P2IFG = 0;
-    //enable P2.1 and p2.3 interrupt
-    P2IE |= BIT1|BIT3;
+    //enable P2.1 interrupt
+    P2IE |= BIT1;
 
     //set input divider expansion to /4
     TA0EX0=TAIDEX_3;
@@ -113,10 +115,23 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
         case P2IV_P2IFG1:
             //check IES
             if(P2IES&BIT1){
-                //toggle LED for button
-                P1OUT^=BIT0;
-                //set pattern to off
-                set_LED_int(flashPatternChange(LED_PAT_OFF));
+                //set next brightness
+                led_brt_mode+=1;
+                //wrap around
+                if(led_brt_mode>=NUM_BRT_MODES)
+                {
+                    led_brt_mode=FIRST_BRT_MODE;
+                }
+                if(led_brt_mode==AUTO_BRT)
+                {
+                    //LED off
+                    P1OUT&=~BIT0;
+                }
+                else
+                {
+                    //LED on
+                    P1OUT|= BIT0;
+                }
             }
             //disable P2.1 interrupts
             P2IE&=~BIT1;
@@ -126,23 +141,6 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) button2_ISR (void)
             TA0CCTL2=CM_3|CCIS_2|SCS|CAP|CCIE;
             //capture current timer value
             TA0CCTL2^=CCIS0;
-        break;
-        case P2IV_P2IFG3:
-            //check IES
-            if(P2IES&BIT3){
-
-                //set pattern to off
-                LED_int=flashPatternNext();
-
-            }
-            //disable P2.1 interrupts
-            P2IE&=~BIT3;
-            //Toggle IES
-            P2IES^=BIT3;
-            //setup TA0CCR2 to capture timer value
-            TA0CCTL1=CM_3|CCIS_2|SCS|CAP|CCIE;
-            //capture current timer value
-            TA0CCTL1^=CCIS0;
         break;
     }
 }
@@ -162,12 +160,6 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
     switch(__even_in_range(TA0IV,TA0IV_TAIFG)){
         case TA0IV_TACCR1:
             if(TA0CCTL1&CAP){
-
-                //set TA0CCR3 interrupt time
-                TA0CCR3=TA0CCR1+102*2;
-                //setup TA0CCR3 for compare interrupt
-                TA0CCTL3=CCIE;
-
                 //add 100ms to capture time
                 TA0CCR1+=102;
                 //set to compare mode and enable interrupts
@@ -179,10 +171,6 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) TIMER0_ISR (void)
                 P1IFG&=~BIT1;
                 //enable P1.1 interrupt
                 P1IE |= BIT1;
-                //clear P2.3 flags
-                P2IFG&=~BIT3;
-                //enable P2.3 interrupt
-                P2IE |= BIT3;
             }
         break;
         case TA0IV_TACCR2:

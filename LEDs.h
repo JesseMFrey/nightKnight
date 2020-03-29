@@ -10,6 +10,15 @@
 
 void initLEDs(void);
 
+//define brightness levels
+enum{AUTO_BRT=0,BRT_MODE_LOWEST,BRT_MODE_LOW,BRT_MODE_MED_LOW,BRT_MODE_MED,BRT_MODE_MED_HIGH,BRT_MODE_HIGH,BRT_MODE_HIGHEST,NUM_BRT_MODES};
+
+//first brightness mode
+#define FIRST_BRT_MODE  (AUTO_BRT)
+
+//array of brightness modes
+extern const unsigned char brt_values[];
+
 //number of LEDs under the fins
 #define FIN_LED     (5)
 

@@ -8,6 +8,7 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 #include "lightSensor.h"
+#include "buttons.h"
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -16,7 +17,7 @@ static int LED_idx=0;
 static int LED_pattern=LED_PAT_SATURATION;
 static int idx_dir=0;
 
-#define MIN_BRT     4
+#define MIN_BRT     3
 
 static int limit_idx(int i)
 {
@@ -54,18 +55,25 @@ void flashPatternAdvance(void)
 
     if(LED_pattern!=LED_PAT_OFF)
     {
-        brightness=light_sensor_get();
-        //right shift brightness by 6 to convert 12 bit value to a 5 bit value
-        //brightness>>=6;
-        //saturate brightness to MAX_BRT
-        if(brightness>MAX_BRT)
+        if(led_brt_mode==AUTO_BRT)
         {
-            brightness=MAX_BRT;
+            brightness=light_sensor_get();
+            //right shift brightness by 6 to convert 12 bit value to a 5 bit value
+            //brightness>>=6;
+            //saturate brightness to MAX_BRT
+            if(brightness>MAX_BRT)
+            {
+                brightness=MAX_BRT;
+            }
+            //force minimum brightness
+            if(brightness<MIN_BRT)
+            {
+                brightness=MIN_BRT;
+            }
         }
-        //force minimum brightness
-        if(brightness<MIN_BRT)
+        else
         {
-            brightness=MIN_BRT;
+            brightness=brt_values[led_brt_mode];
         }
     }
 

@@ -11,6 +11,8 @@
 #include "flashPattern.h"
 #include "buttons.h"
 
+//                                AUTO_BRT,BRT_MODE_LOWEST,BRT_MODE_LOW,BRT_MODE_MED_LOW,BRT_MODE_MED,BRT_MODE_MED_HIGH,BRT_MODE_HIGH,BRT_MODE_HIGHEST};
+const unsigned char brt_values[]={       0,              1,           3,               5,          15,               20,           25,              31};
 
 void initLEDs(void)
 {
