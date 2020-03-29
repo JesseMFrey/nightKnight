@@ -32,14 +32,14 @@ void set_chute(uint16_t chute)
     if(chute==0)
     {
         //set output to out bit and set low
-        TA0CCTL2=OUTMOD_0;
+        TA0CCTL1=OUTMOD_0;
     }
     else
     {
         //set chute period
-        TA0CCR2=chute;
+        TA0CCR1=chute;
         //set output reset/set mode
-        TA0CCTL2=OUTMOD_7;
+        TA0CCTL1=OUTMOD_7;
     }
 }
 
@@ -49,14 +49,14 @@ void set_nosecone(uint16_t cone)
     if(cone==0)
     {
         //set output to out bit and set low
-        TA0CCTL1=OUTMOD_0;
+        TA0CCTL2=OUTMOD_0;
     }
     else
     {
         //set chute period
-        TA0CCR1=cone;
+        TA0CCR2=cone;
         //set output reset/set mode
-        TA0CCTL1=OUTMOD_7;
+        TA0CCTL2=OUTMOD_7;
     }
 }
 
