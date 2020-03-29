@@ -100,7 +100,7 @@ void init_FlashPattern(void)
 
     //set input divider expansion to /4
     TA1EX0=TAIDEX_3;
-    //setup TA0 to run in continuous mode
+    //setup TA1 to run in continuous mode
     //set input divider to /8 for a total of /32
     TA1CTL=TASSEL_1|ID_3|MC_2|TACLR;
 
@@ -694,7 +694,7 @@ void flashPatternChange(int pattern)
     else
     {
         LED_int=flash_per;
-        //setup TA0CCR1 to capture timer value
+        //setup TA1CCR1 to capture timer value
         TA1CCTL0=CM_3|CCIS_2|SCS|CAP|CCIE;
         //capture current timer value
         TA1CCTL0^=CCIS0;
@@ -773,8 +773,8 @@ void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char 
 }
 
 
-// ============ TA0 ISR ============
-// This is used for button debouncing
+// ============ TA1.0 ISR ============
+
 #if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
 #pragma vector=TIMER1_A0_VECTOR
 __interrupt void flash_ISR (void)
