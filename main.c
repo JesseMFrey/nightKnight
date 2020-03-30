@@ -147,7 +147,7 @@ void main (void)
                 {
                     //turn everything off
                     flashPatternChange(LED_PAT_OFF);
-                    set_nosecone(0);
+                    nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                     set_chute(0);
                 }
                 break;
@@ -155,7 +155,7 @@ void main (void)
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_PAD);
-                    set_nosecone(400);
+                    nosecone_mode(NC_MODE_STATIC,400,NC_NA,NC_NA,NC_NA);
                     set_chute(0);
                 }
                 break;
@@ -163,7 +163,7 @@ void main (void)
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternVC(LED_PAT_BOOST,0,LED_COLOR_BLUE);
-                    set_nosecone(NC_MAX_PWM);
+                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
                     set_chute(0);
                 }
                 break;
@@ -180,13 +180,13 @@ void main (void)
                     flashPattern_setValue(50-(cpCmd.speed*50)/maxSpeed);
                 }
                 //set nosecone based on speed
-                set_nosecone(NC_MAX_PWM*(cpCmd.speed/(float)maxSpeed));
+                nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM*(cpCmd.speed/(float)maxSpeed),NC_NA,NC_NA,NC_NA);
                 break;
             case ao_flight_drogue:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_USA);
-                    set_nosecone(NC_MAX_PWM);
+                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
                     set_chute(0);
                 }
                 break;
@@ -194,20 +194,20 @@ void main (void)
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_ST_USA);
-                    set_nosecone(0);
+                    nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                     set_chute(NC_MAX_PWM);
                 }
                 //turn off chute under 5m
                 if(cpCmd.height<=10){
                     set_chute(0);
-                    set_nosecone(NC_MAX_PWM);
+                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             case ao_flight_landed:
                 if(lastState!=cpCmd.flight_state)
                 {
                     flashPatternChange(LED_PAT_USA);
-                    set_nosecone(300);
+                    nosecone_mode(NC_MODE_STATIC,300,NC_NA,NC_NA,NC_NA);
                     set_chute(0);
                 }
                 break;
