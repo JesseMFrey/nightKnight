@@ -12,6 +12,7 @@
 #include <msp430.h>
 #include <math.h>
 #include <stdlib.h>
+#include "Nosecone.h"
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -264,6 +265,12 @@ void flashPatternAdvance(void)
                 {
                     //create new particle
                     new_particle(&particles[j]);
+                }
+                //check if particle is about to start
+                else if(particle_pos[j]==LED_LEN)
+                {
+                    //blip the nosecone
+                    nosecone_mode(NC_MODE_ONE_SHOT,700,0,5,NC_NA);
                 }
             }
         break;
@@ -704,6 +711,10 @@ void flashPatternChange(int pattern)
     {
         //turn off regulator
         reg5V_off();
+        //turn off nosecone
+        nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
+        //turn chute off
+        set_chute(0);
         //TODO: do more low power stuff??
     }
 }
