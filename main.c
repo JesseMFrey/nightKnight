@@ -212,9 +212,6 @@ void main (void)
                 }
                 break;
             default:
-                //turn on both LED's
-                P4OUT|= BIT7;
-                P1OUT|= BIT0;
                 //turn off chute
                 set_chute(0);
                 break;
