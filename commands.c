@@ -178,12 +178,12 @@ int LED_Cmd(int argc,char **argv)
 
         if(temp>0xFF)
         {
-            printf("Error : color values must be less than 255. got %li",temp);
+            printf("Error : color values must be less than 255. got %li\r\n",temp);
             return 4;
         }
         if(temp<0)
         {
-            printf("Error : color values must be greater than zero. got %li",temp);
+            printf("Error : color values must be greater than zero. got %li\r\n",temp);
             return 5;
         }
         c[i]=temp;
