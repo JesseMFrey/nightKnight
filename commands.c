@@ -301,11 +301,11 @@ const struct {
     const char *name,*unit;
     float scale,offset;
 } ADC_chans[]={
-               {"Battery Voltage","V",8.5,0},
+               {"Battery Voltage","V",13.5,0},
                {"Battery Current","A",2,0},
-               {"LED Voltage","V",1.5625,0},
+               {"LED Voltage","V",4.75,0},
                {"LED Current","A",2,0},
-               {"MSP Voltage","V",2,0},
+               {"MSP Voltage","V",3,0},
                {"Regulator Temp","C",51.282051,-20.641026}
 };
 
