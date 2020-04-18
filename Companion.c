@@ -94,6 +94,23 @@ void init_Companion(void)
      P4DIR &=~(BIT4|BIT5|BIT6|BIT7);
      P4SEL0|=  BIT4|BIT5|BIT6|BIT7;
 
+     //setup port mapping
+
+
+     //allow port mapping
+     PMAPKEYID=PMAPKEY;
+
+     P4MAP4 = PM_UCB1CLK;
+     P4MAP5 = PM_UCB1SIMO;
+     P4MAP6 = PM_UCB1STE;
+     P4MAP7 = PM_UCB1SOMI;
+
+     //allow reconfiguration
+     PMAPCTL|=PMAPRECFG;
+     //lock port mapping with invalid key
+     PMAPKEYID=0;
+
+
      //take peripheral out of reset mode
      UCB1CTLW0&=~UCSWRST;
 
