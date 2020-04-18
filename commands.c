@@ -251,6 +251,7 @@ const struct {
                  {"rnbw_fl",LED_PAT_RNBW_FLOW},
                  {"USA_fl",LED_PAT_USA_FLOW},
                  {"particle",LED_PAT_PARTICLE},
+                 {"eyes_h",LED_PAT_EYES_H},
                  {NULL,0}
 };
 

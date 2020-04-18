@@ -274,6 +274,16 @@ void flashPatternAdvance(void)
                 }
             }
         break;
+        case LED_PAT_EYES_H:
+            LED_idx-=1;
+            if(LED_idx<-20)
+            {
+                //reset
+                LED_idx=MAX_BRT;
+                //use dir for eye location
+                idx_dir=(rand()%(BOOST_LED+UPR_LED-3)) + FIN_LED;
+            }
+        break;
     }
 
 
@@ -565,6 +575,24 @@ void flashPatternAdvance(void)
                     }
                 }
             break;
+            case LED_PAT_EYES_H:
+                if((lin_idx!=idx_dir && lin_idx!=idx_dir+2) || LED_idx<=0)
+                {
+                    //turn of LED
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS;
+                }
+                else
+                {
+                    //turn of LED
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_idx;
+                }
+            break;
         }
     }
     //send new info
@@ -683,6 +711,11 @@ void flashPatternChange(int pattern)
                 }
 
             }
+        break;
+        case LED_PAT_EYES_H:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=70;
         break;
         case LED_PAT_OFF:
             //don't update
