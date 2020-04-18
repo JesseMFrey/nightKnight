@@ -231,6 +231,122 @@ int LED_Cmd(int argc,char **argv)
     return 0;
 }
 
+
+int color_Cmd(int argc,char **argv)
+{
+
+    int LED_brt;
+    char *eptr;
+    int i;
+    long int temp;
+    int c[3];
+    LED_color color;
+
+
+    if(argc!=4)
+    {
+        printf("Expected 4 arguments but got %i\r\n",argc);
+        return 1;
+    }
+
+    //parse brightness
+    temp=strtol(argv[1],&eptr,10);
+
+    //check if the whole string was parsed
+    if(*eptr)
+    {
+       //end of string not found
+       printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1],eptr);
+       return 2;
+    }
+
+    //check limits
+    if(temp>MAX_BRT)
+    {
+       printf("Error : LED brightness must be less than %i. got %li\r\n",MAX_BRT,temp);
+       return 4;
+    }
+    if(temp<0)
+    {
+       printf("Error : LED brightness can not be less than zero. got %li\r\n",temp);
+       return 5;
+    }
+    LED_brt=temp;
+
+    //parse color values
+    for(i=0;i<3;i++)
+    {
+        //parse value
+        temp=strtol(argv[2+i],&eptr,0);
+
+        //check if the whole string was parsed
+        if(*eptr)
+        {
+            //end of string not found
+            printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2+i],eptr);
+            return 2;
+        }
+
+        if(temp>0xFF)
+        {
+            printf("Error : color values must be less than 255. got %li\r\n",temp);
+            return 4;
+        }
+        if(temp<0)
+        {
+            printf("Error : color values must be greater than zero. got %li\r\n",temp);
+            return 5;
+        }
+        c[i]=temp;
+    }
+
+
+    //set values
+    color.r=c[0];
+    color.g=c[1];
+    color.b=c[2];
+    color.brt=LED_ST_BITS|LED_brt;
+
+    flashPattern_setColor(color);
+
+    return 0;
+}
+
+int value_Cmd(int argc,char **argv)
+{
+    char *eptr;
+    long int temp;
+
+    if(argc!=1)
+    {
+        printf("Expected 1 arguments but got %i\r\n",argc);
+        return 1;
+    }
+    //parse value
+    temp=strtol(argv[1],&eptr,0);
+
+    //check if the whole string was parsed
+    if(*eptr)
+    {
+        //end of string not found
+        printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1],eptr);
+        return 2;
+    }
+
+    if(temp>UINT_MAX)
+    {
+        printf("Error : color values must be less than %u. got %li\r\n",UINT_MAX,temp);
+        return 4;
+    }
+    if(temp<0)
+    {
+        printf("Error : value must be greater than or equal to zero. got %li\r\n",temp);
+        return 5;
+    }
+    flashPattern_setValue(temp);
+    return 0;
+}
+
 const struct {
     const char *name;
     int val;
@@ -339,5 +455,7 @@ const CMD_SPEC cmd_tbl[]={
                           {"pat","Change/query LED pattern",patternCmd},
                           {"ADC","get values from the ADC",ADC_Cmd},
                           {"pnext","switch to the next LED flash pattern",pnext_Cmd},
+                          {"value","Set pattern value",value_Cmd},
+                          {"color","Set pattern color",color_Cmd},
                           {NULL,NULL,NULL}
 };
