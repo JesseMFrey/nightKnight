@@ -195,7 +195,7 @@ void main (void)
                 {
                     flashPatternChange(LED_PAT_ST_USA);
                     nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
+                    chute_mode(NC_MODE_FLASH,NC_MAX_PWM,0,40,500);
                 }
                 //turn off chute under 5m
                 if(cpCmd.height<=10){
