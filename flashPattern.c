@@ -333,9 +333,6 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].r=(strp_idx==2||strp_idx==1)?0xFF:0;
             break;
             case LED_PAT_USA:
-                if(i==0){
-                    _NOP();
-                }
                 if(LED_idx<=75){
                     //set brightness
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
