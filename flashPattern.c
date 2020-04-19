@@ -143,7 +143,7 @@ static void new_particle(PARTICLE *n)
 void flashPatternAdvance(void)
 {
     int i,j;
-    int tmp;
+    int tmp1,tmp2;
     int red_idx,blue_idx,green_idx;
     int lin_idx,strp_idx;
     static int particle_pos[NUM_PARTICLES];
@@ -284,6 +284,22 @@ void flashPatternAdvance(void)
                 LED_idx=MAX_BRT;
                 //use dir for eye location
                 idx_dir=(rand()%(BOOST_LED+UPR_LED-3)) + FIN_LED;
+            }
+        break;
+        case LED_PAT_WAVE_BIG_U:
+        case LED_PAT_WAVE_SM_U:
+            LED_idx-=1;
+            if(LED_idx<0)
+            {
+                LED_idx=2*pat_val;
+            }
+        break;
+        case LED_PAT_WAVE_BIG_D:
+        case LED_PAT_WAVE_SM_D:
+            LED_idx+=1;
+            if(LED_idx>=2*pat_val)
+            {
+                LED_idx=0;
             }
         break;
     }
@@ -549,14 +565,14 @@ void flashPatternAdvance(void)
 
                 for(j=strp_idx;j<NUM_PARTICLES;j+=LED_STR)
                 {
-                    tmp=lin_idx-particle_pos[j];
-                    if(tmp>=0 && tmp<=5)
+                    tmp1=lin_idx-particle_pos[j];
+                    if(tmp1>=0 && tmp1<=5)
                     {
                         //set color
                         LED_stat[0].colors[i].r  =255;
                         LED_stat[0].colors[i].g  =150;
                         LED_stat[0].colors[i].b  =10;
-                        if(tmp==0)
+                        if(tmp1==0)
                         {
                             //set brightness
                             LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
@@ -566,7 +582,7 @@ void flashPatternAdvance(void)
                             //get brightness, mask out start bits
                             int tbrt=LED_stat[0].colors[i].brt&(~LED_ST_BITS);
                             //add brightness from particle
-                            tbrt+=(6-tmp);
+                            tbrt+=(6-tmp1);
                             //saturate brightness
                             if(tbrt>MAX_BRT)
                             {
@@ -594,6 +610,56 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].b  =0;
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_idx;
                 }
+            break;
+            case LED_PAT_WAVE_BIG_U:
+            case LED_PAT_WAVE_BIG_D:
+            case LED_PAT_WAVE_SM_U:
+            case LED_PAT_WAVE_SM_D:
+                //set color
+                LED_stat[0].colors[i].r  = pat_color.r;
+                LED_stat[0].colors[i].g  = pat_color.g;
+                LED_stat[0].colors[i].b  = pat_color.b;
+
+                /*tmp1=LED_idx-lin_idx;
+                if(tmp1<0)
+                {
+                    tmp1=-tmp1;
+                }
+                if(tmp1<pat_val)
+                {
+                    tmp1=(pat_color.brt)-2*(pat_val-tmp1);
+                    if(tmp1<0)
+                    {
+                        tmp1=0;
+                    }
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|tmp1;
+                }
+                else
+                {
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt
+                }*/
+                tmp1=lin_idx+LED_idx;
+                tmp1=tmp1%pat_val;
+
+                //calculate midpoint
+                tmp2=(pat_val+1)/2;
+                if(tmp1>tmp2)
+                {
+                    tmp1=(pat_val+1)-tmp1;
+                }
+
+                if(LED_pattern==LED_PAT_WAVE_SM_U || LED_pattern==LED_PAT_WAVE_SM_D)
+                {
+                    //multiply value by four
+                    tmp1*=4;
+                }
+
+                tmp1=(pat_color.brt)-tmp1;
+                if(tmp1<0)
+                {
+                    tmp1=0;
+                }
+                LED_stat[0].colors[i].brt=LED_ST_BITS|tmp1;
             break;
         }
     }
@@ -715,6 +781,14 @@ void flashPatternChange(int pattern)
             }
         break;
         case LED_PAT_EYES_H:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=70;
+        break;
+        case LED_PAT_WAVE_BIG_U:
+        case LED_PAT_WAVE_BIG_D:
+        case LED_PAT_WAVE_SM_U:
+        case LED_PAT_WAVE_SM_D:
             LED_idx=0;
             //set interrupt interval
             flash_per=70;

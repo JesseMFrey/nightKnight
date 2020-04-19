@@ -368,6 +368,10 @@ const struct {
                  {"USA_fl",LED_PAT_USA_FLOW},
                  {"particle",LED_PAT_PARTICLE},
                  {"eyes_h",LED_PAT_EYES_H},
+                 {"wave_bu",LED_PAT_WAVE_BIG_U},
+                 {"wave_bd",LED_PAT_WAVE_BIG_D},
+                 {"wave_su",LED_PAT_WAVE_SM_U},
+                 {"wave_sd",LED_PAT_WAVE_SM_D},
                  {NULL,0}
 };
 
