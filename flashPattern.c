@@ -620,34 +620,20 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].g  = pat_color.g;
                 LED_stat[0].colors[i].b  = pat_color.b;
 
-                /*tmp1=LED_idx-lin_idx;
-                if(tmp1<0)
-                {
-                    tmp1=-tmp1;
-                }
-                if(tmp1<pat_val)
-                {
-                    tmp1=(pat_color.brt)-2*(pat_val-tmp1);
-                    if(tmp1<0)
-                    {
-                        tmp1=0;
-                    }
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|tmp1;
-                }
-                else
-                {
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt
-                }*/
+                //calculate index in pattern
                 tmp1=lin_idx+LED_idx;
                 tmp1=tmp1%pat_val;
 
                 //calculate midpoint
                 tmp2=(pat_val+1)/2;
+                //check if we are past the midpoint
                 if(tmp1>tmp2)
                 {
+                    //shift so we get a V
                     tmp1=(pat_val+1)-tmp1;
                 }
 
+                //for the small patterns subtract more
                 if(LED_pattern==LED_PAT_WAVE_SM_U || LED_pattern==LED_PAT_WAVE_SM_D)
                 {
                     //multiply value by four
