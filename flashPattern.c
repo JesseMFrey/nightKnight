@@ -288,18 +288,28 @@ void flashPatternAdvance(void)
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_SM_U:
+        case LED_PAT_WAVE_HUE_U:
             LED_idx-=1;
             if(LED_idx<0)
             {
                 LED_idx=2*pat_val;
             }
+            if(LED_PAT_WAVE_HUE_U==LED_pattern)
+            {
+                idx_dir=(2*0xFF)/pat_val;
+            }
         break;
         case LED_PAT_WAVE_BIG_D:
         case LED_PAT_WAVE_SM_D:
+        case LED_PAT_WAVE_HUE_D:
             LED_idx+=1;
             if(LED_idx>=2*pat_val)
             {
                 LED_idx=0;
+            }
+            if(LED_PAT_WAVE_HUE_D==LED_pattern)
+            {
+                idx_dir=(2*0xFF)/pat_val;
             }
         break;
     }
@@ -644,6 +654,26 @@ void flashPatternAdvance(void)
                 }
                 LED_stat[0].colors[i].brt=LED_ST_BITS|tmp1;
             break;
+            case LED_PAT_WAVE_HUE_D:
+            case LED_PAT_WAVE_HUE_U:
+                //calculate index in pattern
+                tmp1=lin_idx+LED_idx;
+                tmp1=tmp1%pat_val;
+
+                //calculate midpoint
+                tmp2=(pat_val+1)/2;
+                //check if we are past the midpoint
+                if(tmp1>tmp2)
+                {
+                    //shift so we get a V
+                    tmp1=(pat_val+1)-tmp1;
+                }
+                //multiply value by 10
+                tmp1*=idx_dir;
+
+                //calculate color in RGB
+                HsvToLED(&LED_stat[0].colors[i],pat_color.brt,tmp1,pat_color.g,pat_color.b);
+            break;
         }
     }
     //send new info
@@ -772,6 +802,8 @@ void flashPatternChange(int pattern)
         case LED_PAT_WAVE_BIG_D:
         case LED_PAT_WAVE_SM_U:
         case LED_PAT_WAVE_SM_D:
+        case LED_PAT_WAVE_HUE_D:
+        case LED_PAT_WAVE_HUE_U:
             LED_idx=0;
             //set interrupt interval
             flash_per=70;
