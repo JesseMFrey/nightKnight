@@ -110,6 +110,8 @@ void init_FlashPattern(void)
 void flashPattern_setColor(LED_color color)
 {
     pat_color=color;
+    //clear status bits in color
+    pat_color.brt&=~LED_ST_BITS;
     //refresh pattern
     flashPatternAdvance();
 }
@@ -466,7 +468,7 @@ void flashPatternAdvance(void)
                 }
                 else
                 {
-                    LED_stat[0].colors[i].brt=pat_color.brt;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                     LED_stat[0].colors[i].r=0xFF;
                     LED_stat[0].colors[i].g=0xFF;
                     LED_stat[0].colors[i].b=0xFF;
