@@ -823,7 +823,7 @@ void flashPatternChange(int pattern)
         //turn off nosecone
         nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         //turn chute off
-        set_chute(0);
+        chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         //TODO: do more low power stuff??
     }
 }

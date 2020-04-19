@@ -148,7 +148,7 @@ void main (void)
                     //turn everything off
                     flashPatternChange(LED_PAT_OFF);
                     nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             case ao_flight_pad:
@@ -156,7 +156,7 @@ void main (void)
                 {
                     flashPatternChange(LED_PAT_PAD);
                     nosecone_mode(NC_MODE_STATIC,400,NC_NA,NC_NA,NC_NA);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             case ao_flight_boost:
@@ -164,7 +164,7 @@ void main (void)
                 {
                     flashPatternVC(LED_PAT_BOOST,0,LED_COLOR_BLUE);
                     nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             case ao_flight_fast:
@@ -173,7 +173,7 @@ void main (void)
                 {
                     maxSpeed=cpCmd.speed;
                     flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_RED);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 else
                 {
@@ -187,7 +187,7 @@ void main (void)
                 {
                     flashPatternChange(LED_PAT_USA);
                     nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             case ao_flight_main:
@@ -195,11 +195,11 @@ void main (void)
                 {
                     flashPatternChange(LED_PAT_ST_USA);
                     nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    set_chute(NC_MAX_PWM);
+                    chute_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
                 }
                 //turn off chute under 5m
                 if(cpCmd.height<=10){
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                     nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
                 }
                 break;
@@ -208,12 +208,12 @@ void main (void)
                 {
                     flashPatternChange(LED_PAT_USA);
                     nosecone_mode(NC_MODE_STATIC,300,NC_NA,NC_NA,NC_NA);
-                    set_chute(0);
+                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 }
                 break;
             default:
                 //turn off chute
-                set_chute(0);
+                chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
                 break;
             }
             //set last state

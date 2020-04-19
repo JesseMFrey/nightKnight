@@ -15,12 +15,13 @@
 
 void init_Nosecone(void);
 
+void NC_debug(void);
+void chute_debug(void);
+
 int nosecone_mode(int mode,int val1,int val2,int t1,int t2);
+int chute_mode(int mode,int val1,int val2,int t1,int t2);
 
 #define NC_NA           (0)
-
-void set_chute(uint16_t chute);
-
 
 #define getNoseconeLED()        ((OUTMOD_7==(TA0CCTL2&OUTMOD_7)?TA0CCR2:0))
 #define getChuteLED()           ((OUTMOD_7==(TA0CCTL1&OUTMOD_7)?TA0CCR1:0))

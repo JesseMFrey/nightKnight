@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <msp430.h>
+#include "Nosecone.h"
 
 
 int brt_Cmd(int argc,char **argv)
@@ -433,6 +436,7 @@ const struct {
 
 int ADC_Cmd(int argc,char **argv)
 {
+
     int i;
     //get values from telemitry structure
     int *vals=((int*)&cpTLM)+1;
@@ -452,6 +456,170 @@ int pnext_Cmd(int argc,char **argv)
     return 0;
 }
 
+const struct{
+    const char *name;
+    int value;
+} NC_modes[]={
+           {"static",NC_MODE_STATIC},
+           {"fade",NC_MODE_FADE},
+           {"flash",NC_MODE_FLASH},
+           {"blip",NC_MODE_ONE_SHOT}
+};
+
+int NC_Cmd(int argc,char **argv)
+{
+    int NC_args[5];
+    int i,j;
+    int found;
+    char *eptr;
+    long int temp;
+
+
+    if(argc==0)
+    {
+        unsigned short ncVal;
+        ncVal=getNoseconeLED();
+        printf("Nosecone PWM : 0X%03X = %.2f %%\r\n",ncVal,100.0*ncVal/(float)NC_MAX_PWM);
+        NC_debug();
+    }
+    else
+    {
+        for(i=0;i<5;i++)
+        {
+            //check if we have arguments to parse
+            if(i<argc)
+            {
+                found=0;
+                if(i==0)
+                {
+                    //on first argument check for mode names
+                    for(j=0;j<NC_MODE_NUM;j++)
+                    {
+                        if(!strcmp(argv[1+i],NC_modes[j].name))
+                        {
+                            NC_args[i]=NC_modes[j].value;
+                            //set flag
+                            found=1;
+                            //skip rest of check
+                            break;
+                        }
+                    }
+                }
+                //if we didn't find a matching mode, parse as number
+                if(!found)
+                {
+                    //parse value
+                    temp=strtol(argv[1+i],&eptr,0);
+
+                    //check if the whole string was parsed
+                    if(*eptr)
+                    {
+                        //end of string not found
+                        printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1+i],eptr);
+                        return 2;
+                    }
+
+                    if(temp>INT_MAX)
+                    {
+                        printf("Error : values must be less than %i. got %li\r\n",INT_MAX,temp);
+                        return 4;
+                    }
+                    if(temp<INT_MIN)
+                    {
+                        printf("Error : values must be greater than %i. got %li\r\n",INT_MIN,temp);
+                        return 5;
+                    }
+                    NC_args[i]=temp;
+                }
+            }
+            else
+            {
+                //no value given, pass don't care value
+                NC_args[i]=NC_NA;
+            }
+        }
+        nosecone_mode(NC_args[0],NC_args[1],NC_args[2],NC_args[3],NC_args[4]);
+    }
+    return 0;
+}
+int chute_Cmd(int argc,char **argv)
+{
+    int chute_args[5];
+    int i,j;
+    int found;
+    char *eptr;
+    long int temp;
+
+
+    if(argc==0)
+    {
+        unsigned short chuteVal;
+        chuteVal=getChuteLED();
+        printf("Chute PWM    : 0X%03X = %.2f %%\r\n",chuteVal,100.0*chuteVal/(float)NC_MAX_PWM);
+        chute_debug();
+    }
+    else
+    {
+        //parse chute mode
+        for(i=0;i<5;i++)
+        {
+            //check if we have arguments to parse
+            if(i<argc)
+            {
+                found=0;
+                if(i==0)
+                {
+                    //on first argument check for mode names
+                    for(j=0;j<NC_MODE_NUM;j++)
+                    {
+                        if(!strcmp(argv[1+i],NC_modes[j].name))
+                        {
+                            chute_args[i]=NC_modes[j].value;
+                            //set flag
+                            found=1;
+                            //skip rest of check
+                            break;
+                        }
+                    }
+                }
+                //if we didn't find a matching mode, parse as number
+                if(!found)
+                {
+                    //parse value
+                    temp=strtol(argv[1+i],&eptr,0);
+
+                    //check if the whole string was parsed
+                    if(*eptr)
+                    {
+                        //end of string not found
+                        printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1+i],eptr);
+                        return 2;
+                    }
+
+                    if(temp>INT_MAX)
+                    {
+                        printf("Error : color values must be less than %i. got %li\r\n",INT_MAX,temp);
+                        return 4;
+                    }
+                    if(temp<INT_MIN)
+                    {
+                        printf("Error : color values must be greater than %i. got %li\r\n",INT_MIN,temp);
+                        return 5;
+                    }
+                    chute_args[i]=temp;
+                }
+            }
+            else
+            {
+                //no value given, pass don't care value
+                chute_args[i]=NC_NA;
+            }
+        }
+        chute_mode(chute_args[0],chute_args[1],chute_args[2],chute_args[3],chute_args[4]);
+    }
+    return 0;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -461,5 +629,7 @@ const CMD_SPEC cmd_tbl[]={
                           {"pnext","switch to the next LED flash pattern",pnext_Cmd},
                           {"value","Set pattern value",value_Cmd},
                           {"color","Set pattern color",color_Cmd},
+                          {"NC","change nosecone LED mode",NC_Cmd},
+                          {"chute","change chute LED",chute_Cmd},
                           {NULL,NULL,NULL}
 };
