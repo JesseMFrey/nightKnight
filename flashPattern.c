@@ -28,7 +28,7 @@ static PARTICLE particles[NUM_PARTICLES];
 
 static unsigned short LED_int=102*2;
 
-static LED_color pat_color;
+static LED_color pat_color={LED_BRT_NORM,0xFF,0xFF,0xFF};
 unsigned int pat_val;
 
 LED_color RNBW_colors[6]={//start bits|brightness  , b  , g  , r
