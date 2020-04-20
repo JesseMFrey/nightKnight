@@ -289,12 +289,13 @@ void flashPatternAdvance(void)
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_SM_U:
         case LED_PAT_WAVE_HUE_U:
+        case LED_PAT_WAVE_SAT_U:
             LED_idx-=1;
             if(LED_idx<0)
             {
                 LED_idx=2*pat_val;
             }
-            if(LED_PAT_WAVE_HUE_U==LED_pattern)
+            if(LED_PAT_WAVE_HUE_U==LED_pattern || LED_PAT_WAVE_SAT_U==LED_pattern)
             {
                 idx_dir=(2*0xFF)/pat_val;
             }
@@ -302,12 +303,13 @@ void flashPatternAdvance(void)
         case LED_PAT_WAVE_BIG_D:
         case LED_PAT_WAVE_SM_D:
         case LED_PAT_WAVE_HUE_D:
+        case LED_PAT_WAVE_SAT_D:
             LED_idx+=1;
             if(LED_idx>=2*pat_val)
             {
                 LED_idx=0;
             }
-            if(LED_PAT_WAVE_HUE_D==LED_pattern)
+            if(LED_PAT_WAVE_HUE_D==LED_pattern || LED_PAT_WAVE_SAT_D==LED_pattern)
             {
                 idx_dir=(2*0xFF)/pat_val;
             }
@@ -668,11 +670,32 @@ void flashPatternAdvance(void)
                     //shift so we get a V
                     tmp1=(pat_val+1)-tmp1;
                 }
-                //multiply value by 10
+                //scale value to get to full scale
                 tmp1*=idx_dir;
 
-                //calculate color in RGB
+                //calculate color in RGB. Use the green and blue values from the pattern color as saturation and value
                 HsvToLED(&LED_stat[0].colors[i],pat_color.brt,tmp1,pat_color.g,pat_color.b);
+            break;
+            case LED_PAT_WAVE_SAT_D:
+            case LED_PAT_WAVE_SAT_U:
+
+                //calculate index in pattern
+                tmp1=lin_idx+LED_idx;
+                tmp1=tmp1%pat_val;
+
+                //calculate midpoint
+                tmp2=(pat_val+1)/2;
+                //check if we are past the midpoint
+                if(tmp1>tmp2)
+                {
+                    //shift so we get a V
+                    tmp1=(pat_val+1)-tmp1;
+                }
+                //scale value to get to full scale
+                tmp1*=idx_dir;
+
+                //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
+                HsvToLED(&LED_stat[0].colors[i],pat_color.brt,pat_color.r,tmp1,pat_color.b);
             break;
         }
     }
@@ -804,6 +827,8 @@ void flashPatternChange(int pattern)
         case LED_PAT_WAVE_SM_D:
         case LED_PAT_WAVE_HUE_D:
         case LED_PAT_WAVE_HUE_U:
+        case LED_PAT_WAVE_SAT_D:
+        case LED_PAT_WAVE_SAT_U:
             LED_idx=0;
             //set interrupt interval
             flash_per=70;

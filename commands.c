@@ -377,6 +377,8 @@ const struct {
                  {"wave_sd",LED_PAT_WAVE_SM_D},
                  {"hwave_d",LED_PAT_WAVE_HUE_D},
                  {"hwave_u",LED_PAT_WAVE_HUE_U},
+                 {"swave_d",LED_PAT_WAVE_SAT_D},
+                 {"swave_u",LED_PAT_WAVE_SAT_U},
                  {NULL,0}
 };
 
