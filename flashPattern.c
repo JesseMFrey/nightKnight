@@ -140,6 +140,21 @@ static void new_particle(PARTICLE *n)
     n->x=LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
 }
 
+static inline char brt_offset(unsigned char brt,int offset)
+{
+    offset+=brt;
+    //check lower limit
+    if(offset<1)
+    {
+        offset=1;
+    }
+    if(offset>MAX_BRT)
+    {
+        offset=MAX_BRT;
+    }
+    return offset;
+}
+
 void flashPatternAdvance(void)
 {
     int i,j;
@@ -326,7 +341,7 @@ void flashPatternAdvance(void)
         switch(LED_pattern){
             case LED_PAT_ST_COLORS:
                 //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 //set blue
                 LED_stat[0].colors[i].b=(strp_idx==0)?0xFF:0;
                 //set green
@@ -336,7 +351,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_ST_USA:
                 //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 //set blue
                 LED_stat[0].colors[i].b=(strp_idx==0||strp_idx==1)?0xFF:0;
                 //set green
@@ -346,8 +361,8 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_USA:
                 if(LED_idx<=75){
-                    //set brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //set brightness from color
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                     //red color
                     LED_stat[0].colors[i].r=0xFF;
                     LED_stat[0].colors[i].g=0;
@@ -355,7 +370,7 @@ void flashPatternAdvance(void)
                 }
                 else if(LED_idx<100)
                 {
-                    //set brightness
+                    //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
                     //LEDs off
                     LED_stat[0].colors[i].r=0;
@@ -364,8 +379,8 @@ void flashPatternAdvance(void)
                 }
                 else if(LED_idx<=175)
                 {
-                    //set brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //set brightness from color
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                     //white color
                     LED_stat[0].colors[i].r=0xFF;
                     LED_stat[0].colors[i].g=0xFF;
@@ -373,7 +388,7 @@ void flashPatternAdvance(void)
                 }
                 else if(LED_idx<200)
                 {
-                    //set brightness
+                    //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
                     //LEDs off
                     LED_stat[0].colors[i].r=0;
@@ -382,8 +397,8 @@ void flashPatternAdvance(void)
                 }
                 else if(LED_idx<=275)
                 {
-                    //set brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_HIGH;
+                    //set brightness from color
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                     //blue color
                     LED_stat[0].colors[i].r=0;
                     LED_stat[0].colors[i].g=0;
@@ -391,7 +406,7 @@ void flashPatternAdvance(void)
                 }
                 else if(LED_idx<300)
                 {
-                    //set brightness
+                    //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
                     //LEDs off
                     LED_stat[0].colors[i].r=0;
@@ -402,16 +417,13 @@ void flashPatternAdvance(void)
             case LED_PAT_BOOST:
                 //set color from pattern color
                 LED_stat[0].colors[i]=pat_color;
-                if(LED_idx>0)
+                if(LED_idx==0)
                 {
-                    //overide brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                    //make brighter
+                    LED_stat[0].colors[i].brt=brt_offset(pat_color.brt,14);
                 }
-                else
-                {
-                    //overide brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
-                }
+                //add brightness bits
+                LED_stat[0].colors[i].brt|=LED_ST_BITS;
             break;
             case LED_PAT_OFF:
                 //set color to zero
@@ -420,8 +432,8 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].brt=LED_ST_BITS;
             break;
             case LED_PAT_COLORTRAIN:
-                //set brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+                //set brightness from color
+                LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 //set red
                 LED_stat[0].colors[i].r=(lin_idx==red_idx)?0xFF:0;
                 //set blue
@@ -431,14 +443,14 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_PAD:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],LED_BRT_LOW,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],brt_offset(pat_color.brt,-9),strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
             case LED_PAT_HUE:
                 //is this the first loop
                 if(i==0)
                 {
                     //calculate color in RGB
-                    HsvToLED(&LED_stat[0].colors[0],LED_BRT_NORM,LED_idx,0xFF,0xFF);
+                    HsvToLED(&LED_stat[0].colors[0],pat_color.brt,LED_idx,0xFF,0xFF);
                 }else
                 {
                     //copy from first LED
@@ -450,7 +462,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_BURST:
                 //set to full brightness
-                LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_NORM;
+                LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
                 if(lin_idx>=(C_LEFT-LED_idx) && lin_idx<=(C_RIGHT+LED_idx))
@@ -484,7 +496,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_SATURATION:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],LED_BRT_NORM,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],pat_color.brt,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
             break;
             case LED_PAT_GRAPH:
                 if(lin_idx<pat_val)
@@ -507,13 +519,15 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =0xFF;
                     LED_stat[0].colors[i].b  =0xFF;
                     //high brightness for fins
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
                 else
                 {
                     //set color from array
                     LED_stat[0].colors[i]=RNBW_colors[(((lin_idx-11)/6)%6)];
+                    //set color from pattern color
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 }
             break;
             case LED_PAT_RNBW_FLASH:
@@ -527,13 +541,15 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =200;
                     LED_stat[0].colors[i].b  =150;
                     //high brightness for fins
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
                 else
                 {
                     //set color from array
                     LED_stat[0].colors[i]=RNBW_colors[( ((lin_idx+LED_idx)/6)%6 )];
+                    //set color from pattern color
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 }
             break;
             case LED_PAT_USA_FLOW:
@@ -544,7 +560,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =0;
                     LED_stat[0].colors[i].b  =0xFF;
                     //high brightness for fins
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_BRT_EXHIGH;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
                 else if( ((lin_idx+LED_idx)/3)%2 )
@@ -562,7 +578,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =200;
                     LED_stat[0].colors[i].b  =150;
                     //high brightness for fins
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_ST_BITS|LED_BRT_NORM;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_ST_BITS|pat_color.brt;
                 }
             break;
             case LED_PAT_PARTICLE:
@@ -613,7 +629,7 @@ void flashPatternAdvance(void)
                 }
                 else
                 {
-                    //turn of LED
+                    //fade out LED
                     LED_stat[0].colors[i].r  =0xFF;
                     LED_stat[0].colors[i].g  =0;
                     LED_stat[0].colors[i].b  =0;
