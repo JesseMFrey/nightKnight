@@ -303,31 +303,44 @@ void flashPatternAdvance(void)
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_SM_U:
-        case LED_PAT_WAVE_HUE_U:
         case LED_PAT_WAVE_SAT_U:
             LED_idx-=1;
             if(LED_idx<0)
             {
                 LED_idx=2*pat_val;
             }
-            if(LED_PAT_WAVE_HUE_U==LED_pattern || LED_PAT_WAVE_SAT_U==LED_pattern)
+            if(LED_PAT_WAVE_SAT_U==LED_pattern)
             {
                 idx_dir=(2*0xFF)/pat_val;
             }
         break;
+        case LED_PAT_WAVE_HUE_U:
+            LED_idx-=1;
+            if(LED_idx<0)
+            {
+                LED_idx=pat_val;
+            }
+            idx_dir=(0xFF)/pat_val;
+        break;
         case LED_PAT_WAVE_BIG_D:
         case LED_PAT_WAVE_SM_D:
-        case LED_PAT_WAVE_HUE_D:
         case LED_PAT_WAVE_SAT_D:
             LED_idx+=1;
             if(LED_idx>=2*pat_val)
             {
                 LED_idx=0;
             }
-            if(LED_PAT_WAVE_HUE_D==LED_pattern || LED_PAT_WAVE_SAT_D==LED_pattern)
+            if(LED_PAT_WAVE_SAT_D==LED_pattern)
             {
                 idx_dir=(2*0xFF)/pat_val;
             }
+        case LED_PAT_WAVE_HUE_D:
+            LED_idx+=1;
+            if(LED_idx>=pat_val)
+            {
+                LED_idx=0;
+            }
+            idx_dir=(0xFF)/pat_val;
         break;
         case LED_PAT_PANIC:
             LED_idx+=1;
@@ -685,14 +698,6 @@ void flashPatternAdvance(void)
                 tmp1=lin_idx+LED_idx;
                 tmp1=tmp1%pat_val;
 
-                //calculate midpoint
-                tmp2=(pat_val+1)/2;
-                //check if we are past the midpoint
-                if(tmp1>tmp2)
-                {
-                    //shift so we get a V
-                    tmp1=(pat_val+1)-tmp1;
-                }
                 //scale value to get to full scale
                 tmp1*=idx_dir;
 
