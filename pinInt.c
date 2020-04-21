@@ -7,6 +7,7 @@
 
 #include <msp430.h>
 #include "Companion.h"
+#include "flashPattern.h"
 
 // ======== P1 ISR ========
 
@@ -37,6 +38,7 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
         break;
         case P1IV_P1IFG6:
             //5V regulator power good interrupt
+            flashPatternChange(LED_PAT_PANIC);
         break;
     }
 }

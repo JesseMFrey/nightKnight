@@ -329,6 +329,13 @@ void flashPatternAdvance(void)
                 idx_dir=(2*0xFF)/pat_val;
             }
         break;
+        case LED_PAT_PANIC:
+            LED_idx+=1;
+            if(LED_idx>=6)
+            {
+                LED_idx=0;
+            }
+        break;
     }
 
 
@@ -713,6 +720,25 @@ void flashPatternAdvance(void)
                 //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
                 HsvToLED(&LED_stat[0].colors[i],pat_color.brt,pat_color.r,tmp1,pat_color.b);
             break;
+            case LED_PAT_PANIC:
+                if(LED_idx==1 ||LED_idx==3)
+                {
+                    //set color to red
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|8;
+                }
+                else
+                {
+                    //set LED's off
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+                }
         }
     }
     //send new info
@@ -848,6 +874,11 @@ void flashPatternChange(int pattern)
             LED_idx=0;
             //set interrupt interval
             flash_per=70;
+        break;
+        case LED_PAT_PANIC:
+            LED_idx=0;
+            //set interrupt interval
+            flash_per=200;
         break;
         case LED_PAT_OFF:
             //don't update

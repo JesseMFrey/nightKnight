@@ -379,6 +379,7 @@ const struct {
                  {"hwave_u",LED_PAT_WAVE_HUE_U},
                  {"swave_d",LED_PAT_WAVE_SAT_D},
                  {"swave_u",LED_PAT_WAVE_SAT_U},
+                 {"panic",LED_PAT_PANIC},
                  {NULL,0}
 };
 
