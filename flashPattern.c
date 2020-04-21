@@ -216,7 +216,7 @@ void flashPatternAdvance(void)
         break;
         case LED_PAT_BOOST:
             LED_idx+=1;
-            if(LED_idx>50){
+            if(LED_idx>100){
                 LED_idx=0;
             }
         break;
@@ -759,9 +759,9 @@ void flashPatternChange(int pattern)
             flash_per=20;
         break;
         case LED_PAT_BOOST:
-            LED_idx=0;
+            LED_idx=-1;
             //set interrupt interval
-            flash_per=600;
+            flash_per=2000;
         break;
         case LED_PAT_HUE:
             LED_idx=0;
