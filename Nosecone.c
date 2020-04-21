@@ -118,7 +118,7 @@ static inline void set_nosecone(uint16_t cone)
 void init_Nosecone(void)
 {
 
-    //TA2.2 and TA2.1 output pins
+    //TA0.2 and TA0.1 output pins
     P2DIR |=BIT1|BIT2;
     P2SEL0|=BIT1|BIT2;
 
