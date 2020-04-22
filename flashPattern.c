@@ -53,6 +53,16 @@ static int limit_idx(int i)
     return i;
 }
 
+void panicPattern(void)
+{
+    //check if we are in panic
+    if(LED_pattern!=LED_PAT_PANIC)
+    {
+        //PANIC!!
+        flashPatternChange(LED_PAT_PANIC);
+    }
+}
+
 void init_FlashPattern(void)
 {
     char sw_val;

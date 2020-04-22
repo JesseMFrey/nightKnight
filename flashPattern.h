@@ -41,6 +41,7 @@ void init_FlashPattern(void);
 void flashPattern_setColor(LED_color color);
 void flashPattern_setValue(unsigned int val);
 void flashPatternVC(int pattern,unsigned int val,LED_color color);
+void panicPattern(void);
 
 typedef struct{
     float v,x;
