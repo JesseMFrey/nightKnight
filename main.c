@@ -140,9 +140,6 @@ void main (void)
             switch(cpCmd.flight_state)
             {
             case ao_flight_idle:
-                //set LED's
-                P4OUT&=~BIT7;
-                P1OUT|= BIT0;
                 if(lastState!=cpCmd.flight_state)
                 {
                     //turn everything off
