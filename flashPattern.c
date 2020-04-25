@@ -17,14 +17,21 @@
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
 
-static int LED_idx=0;
 static int LED_pattern;
-static int idx_dir=0;
 
 #define NUM_PARTICLES (LED_STR*7)
 
-//particle stuff for particle pattern
-static PARTICLE particles[NUM_PARTICLES];
+static union{
+    struct{
+        int idx_dir;
+        int LED_idx;
+    }basic;
+    struct{
+        //particle stuff for particle pattern
+        PARTICLE particles[NUM_PARTICLES];
+        int particle_pos[NUM_PARTICLES];
+    }ptc;
+} pat_d;
 
 static unsigned short LED_int=102*2;
 
@@ -171,130 +178,129 @@ void flashPatternAdvance(void)
     int tmp1,tmp2;
     int red_idx,blue_idx,green_idx;
     int lin_idx,strp_idx;
-    static int particle_pos[NUM_PARTICLES];
 
     //advance index if needed
     switch(LED_pattern){
         case LED_PAT_COLORTRAIN:
             //calculate new index
-            LED_idx+=idx_dir;
+            pat_d.basic.LED_idx+=pat_d.basic.idx_dir;
             //check for overflow
-            if(LED_idx>=(LED_LEN))
+            if(pat_d.basic.LED_idx>=(LED_LEN))
             {
                 //reset index
-                LED_idx=(LED_LEN-1);
+                pat_d.basic.LED_idx=(LED_LEN-1);
                 //flip direction
-                idx_dir=-1;
+                pat_d.basic.idx_dir=-1;
             }
             //check for
-            if(LED_idx<=-3)
+            if(pat_d.basic.LED_idx<=-3)
             {
                 //reset index
-                LED_idx=-2;
+                pat_d.basic.LED_idx=-2;
                 //flip direction
-                idx_dir=1;
+                pat_d.basic.idx_dir=1;
             }
-            green_idx=limit_idx(LED_idx);
-            blue_idx =limit_idx(LED_idx+1);
-            red_idx  =limit_idx(LED_idx+2);
+            green_idx=limit_idx(pat_d.basic.LED_idx);
+            blue_idx =limit_idx(pat_d.basic.LED_idx+1);
+            red_idx  =limit_idx(pat_d.basic.LED_idx+2);
         break;
         case LED_PAT_PAD:
             //calculate new index
-            LED_idx+=(idx_dir&0x01)?-1:1;
+            pat_d.basic.LED_idx+=(pat_d.basic.idx_dir&0x01)?-1:1;
             //check for reversal
-            if(LED_idx>=(0xFF+50) || LED_idx<=0)
+            if(pat_d.basic.LED_idx>=(0xFF+50) || pat_d.basic.LED_idx<=0)
             {
                 //increment direction
-                idx_dir+=1;
+                pat_d.basic.idx_dir+=1;
                 //check for overflow
-                if(idx_dir>=6){
-                    idx_dir=0;
+                if(pat_d.basic.idx_dir>=6){
+                    pat_d.basic.idx_dir=0;
                 }
             }
         break;
         case LED_PAT_HUE:
             //calculate new index
-            LED_idx+=1;
+            pat_d.basic.LED_idx+=1;
             //limit 0-255
-            LED_idx&=0xFF;
+            pat_d.basic.LED_idx&=0xFF;
         break;
         case LED_PAT_SATURATION:
             //calculate new index
-            LED_idx+=(idx_dir&0x01)?-1:1;
+            pat_d.basic.LED_idx+=(pat_d.basic.idx_dir&0x01)?-1:1;
             //check for reversal
-            if(LED_idx>=(0xFF+50) || LED_idx<=0)
+            if(pat_d.basic.LED_idx>=(0xFF+50) || pat_d.basic.LED_idx<=0)
             {
                 //increment direction
-                idx_dir+=1;
+                pat_d.basic.idx_dir+=1;
                 //check for overflow
-                if(idx_dir>=6){
-                    idx_dir=0;
+                if(pat_d.basic.idx_dir>=6){
+                    pat_d.basic.idx_dir=0;
                 }
             }
         break;
         case LED_PAT_USA:
-            LED_idx+=1;
-            if(LED_idx>=300)
+            pat_d.basic.LED_idx+=1;
+            if(pat_d.basic.LED_idx>=300)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_BOOST:
-            LED_idx+=1;
-            if(LED_idx>100){
-                LED_idx=0;
+            pat_d.basic.LED_idx+=1;
+            if(pat_d.basic.LED_idx>100){
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_BURST:
             //calculate new index
-            LED_idx+=1;
+            pat_d.basic.LED_idx+=1;
             //limit 0 to LED_LEN
-            if(LED_idx>=(LED_LEN*5))
+            if(pat_d.basic.LED_idx>=(LED_LEN*5))
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_RNBW_FLASH:
             //calculate new index
-            LED_idx+=1;
+            pat_d.basic.LED_idx+=1;
             //limit 0 to 6
-            if(LED_idx>=6)
+            if(pat_d.basic.LED_idx>=6)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_RNBW_FLOW:
             //calculate new index
-            LED_idx+=1;
+            pat_d.basic.LED_idx+=1;
             //limit
-            if(LED_idx>=(LED_LEN-FIN_LED-2))
+            if(pat_d.basic.LED_idx>=(LED_LEN-FIN_LED-2))
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_USA_FLOW:
             //calculate new index
-            LED_idx+=1;
+            pat_d.basic.LED_idx+=1;
             //limit
-            if(LED_idx>=6)
+            if(pat_d.basic.LED_idx>=6)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
         case LED_PAT_PARTICLE:
             //shift all particles by their velocity
             for(j=0;j<NUM_PARTICLES;j++)
             {
-                particles[j].x-=particles[j].v;
-                particle_pos[j]=round(particles[j].x);
+                pat_d.ptc.particles[j].x-=pat_d.ptc.particles[j].v;
+                pat_d.ptc.particle_pos[j]=round(pat_d.ptc.particles[j].x);
                 //check if we have gone off the end
-                if(particle_pos[j]<0)
+                if(pat_d.ptc.particle_pos[j]<0)
                 {
                     //create new particle
-                    new_particle(&particles[j]);
+                    new_particle(&pat_d.ptc.particles[j]);
                 }
                 //check if particle is about to start
-                else if(particle_pos[j]==LED_LEN)
+                else if(pat_d.ptc.particle_pos[j]==LED_LEN)
                 {
                     //blip the nosecone
                     nosecone_mode(NC_MODE_ONE_SHOT,700,0,5,NC_NA);
@@ -302,61 +308,61 @@ void flashPatternAdvance(void)
             }
         break;
         case LED_PAT_EYES_H:
-            LED_idx-=1;
-            if(LED_idx<-20)
+            pat_d.basic.LED_idx-=1;
+            if(pat_d.basic.LED_idx<-20)
             {
                 //reset
-                LED_idx=MAX_BRT;
+                pat_d.basic.LED_idx=MAX_BRT;
                 //use dir for eye location
-                idx_dir=(rand()%(BOOST_LED+UPR_LED-3)) + FIN_LED;
+                pat_d.basic.idx_dir=(rand()%(BOOST_LED+UPR_LED-3)) + FIN_LED;
             }
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_SM_U:
         case LED_PAT_WAVE_SAT_U:
-            LED_idx-=1;
-            if(LED_idx<0)
+            pat_d.basic.LED_idx-=1;
+            if(pat_d.basic.LED_idx<0)
             {
-                LED_idx=2*pat_val;
+                pat_d.basic.LED_idx=2*pat_val;
             }
             if(LED_PAT_WAVE_SAT_U==LED_pattern)
             {
-                idx_dir=(2*0xFF)/pat_val;
+                pat_d.basic.idx_dir=(2*0xFF)/pat_val;
             }
         break;
         case LED_PAT_WAVE_HUE_U:
-            LED_idx-=1;
-            if(LED_idx<0)
+            pat_d.basic.LED_idx-=1;
+            if(pat_d.basic.LED_idx<0)
             {
-                LED_idx=pat_val;
+                pat_d.basic.LED_idx=pat_val;
             }
-            idx_dir=(0xFF)/pat_val;
+            pat_d.basic.idx_dir=(0xFF)/pat_val;
         break;
         case LED_PAT_WAVE_BIG_D:
         case LED_PAT_WAVE_SM_D:
         case LED_PAT_WAVE_SAT_D:
-            LED_idx+=1;
-            if(LED_idx>=2*pat_val)
+            pat_d.basic.LED_idx+=1;
+            if(pat_d.basic.LED_idx>=2*pat_val)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
             if(LED_PAT_WAVE_SAT_D==LED_pattern)
             {
-                idx_dir=(2*0xFF)/pat_val;
+                pat_d.basic.idx_dir=(2*0xFF)/pat_val;
             }
         case LED_PAT_WAVE_HUE_D:
-            LED_idx+=1;
-            if(LED_idx>=pat_val)
+            pat_d.basic.LED_idx+=1;
+            if(pat_d.basic.LED_idx>=pat_val)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
-            idx_dir=(0xFF)/pat_val;
+            pat_d.basic.idx_dir=(0xFF)/pat_val;
         break;
         case LED_PAT_PANIC:
-            LED_idx+=1;
-            if(LED_idx>=6)
+            pat_d.basic.LED_idx+=1;
+            if(pat_d.basic.LED_idx>=6)
             {
-                LED_idx=0;
+                pat_d.basic.LED_idx=0;
             }
         break;
     }
@@ -390,7 +396,7 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].r=(strp_idx==2||strp_idx==1)?0xFF:0;
             break;
             case LED_PAT_USA:
-                if(LED_idx<=75){
+                if(pat_d.basic.LED_idx<=75){
                     //set brightness from color
                     LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                     //red color
@@ -398,7 +404,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0;
                     LED_stat[0].colors[i].b=0;
                 }
-                else if(LED_idx<100)
+                else if(pat_d.basic.LED_idx<100)
                 {
                     //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
@@ -407,7 +413,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0;
                     LED_stat[0].colors[i].b=0;
                 }
-                else if(LED_idx<=175)
+                else if(pat_d.basic.LED_idx<=175)
                 {
                     //set brightness from color
                     LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
@@ -416,7 +422,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0xFF;
                     LED_stat[0].colors[i].b=0xFF;
                 }
-                else if(LED_idx<200)
+                else if(pat_d.basic.LED_idx<200)
                 {
                     //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
@@ -425,7 +431,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0;
                     LED_stat[0].colors[i].b=0;
                 }
-                else if(LED_idx<=275)
+                else if(pat_d.basic.LED_idx<=275)
                 {
                     //set brightness from color
                     LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
@@ -434,7 +440,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g=0;
                     LED_stat[0].colors[i].b=0xFF;
                 }
-                else if(LED_idx<300)
+                else if(pat_d.basic.LED_idx<300)
                 {
                     //set brightness to zero
                     LED_stat[0].colors[i].brt=LED_ST_BITS;
@@ -447,7 +453,7 @@ void flashPatternAdvance(void)
             case LED_PAT_BOOST:
                 //set color from pattern color
                 LED_stat[0].colors[i]=pat_color;
-                if(LED_idx==0)
+                if(pat_d.basic.LED_idx==0)
                 {
                     //make brighter
                     LED_stat[0].colors[i].brt=brt_offset(pat_color.brt,14);
@@ -473,14 +479,14 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_PAD:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],brt_offset(pat_color.brt,-9),strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],brt_offset(pat_color.brt,-9),strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
             break;
             case LED_PAT_HUE:
                 //is this the first loop
                 if(i==0)
                 {
                     //calculate color in RGB
-                    HsvToLED(&LED_stat[0].colors[0],pat_color.brt,LED_idx,0xFF,0xFF);
+                    HsvToLED(&LED_stat[0].colors[0],pat_color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
                 }else
                 {
                     //copy from first LED
@@ -495,9 +501,9 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 //LEDs are red or whit, red always max
                 LED_stat[0].colors[i].r  =0xFF;
-                if(lin_idx>=(C_LEFT-LED_idx) && lin_idx<=(C_RIGHT+LED_idx))
+                if(lin_idx>=(C_LEFT-pat_d.basic.LED_idx) && lin_idx<=(C_RIGHT+pat_d.basic.LED_idx))
                 {
-                    if(LED_idx>=3 && lin_idx>=(C_LEFT-(LED_idx-3)) && lin_idx<=(C_RIGHT+(LED_idx-3)))
+                    if(pat_d.basic.LED_idx>=3 && lin_idx>=(C_LEFT-(pat_d.basic.LED_idx-3)) && lin_idx<=(C_RIGHT+(pat_d.basic.LED_idx-3)))
                     {
                         //LED is black, clear red
                         LED_stat[0].colors[i].r  =0x00;
@@ -512,21 +518,21 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].g  =0xFF;
                     LED_stat[0].colors[i].b  =0xFF;
                 }
-                if(LED_idx>=6)
+                if(pat_d.basic.LED_idx>=6)
                 {
-                    //HsvToLED(&LED_stat[0].colors[i],0,0,0xFF/(25-6)*(LED_idx-5));
+                    //HsvToLED(&LED_stat[0].colors[i],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
                     //LED is white
                     LED_stat[0].colors[i].r  =0xFF;
                     LED_stat[0].colors[i].g  =0xFF;
                     LED_stat[0].colors[i].b  =0xFF;
                     //ramp up brightness
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(LED_idx-5)));
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
 
                 }
             break;
             case LED_PAT_SATURATION:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[i],pat_color.brt,strp_idx*85+(idx_dir>>1)*85,(LED_idx>0xFF)?0xFF:LED_idx,0xFF);
+                HsvToLED(&LED_stat[0].colors[i],pat_color.brt,strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
             break;
             case LED_PAT_GRAPH:
                 if(lin_idx<pat_val)
@@ -561,7 +567,7 @@ void flashPatternAdvance(void)
                 }
             break;
             case LED_PAT_RNBW_FLASH:
-                LED_stat[0].colors[i]=RNBW_colors[LED_idx];
+                LED_stat[0].colors[i]=RNBW_colors[pat_d.basic.LED_idx];
             break;
             case LED_PAT_RNBW_FLOW:
                 if(lin_idx<FIN_LED)
@@ -577,7 +583,7 @@ void flashPatternAdvance(void)
                 else
                 {
                     //set color from array
-                    LED_stat[0].colors[i]=RNBW_colors[( ((lin_idx+LED_idx)/6)%6 )];
+                    LED_stat[0].colors[i]=RNBW_colors[( ((lin_idx+pat_d.basic.LED_idx)/6)%6 )];
                     //set color from pattern color
                     LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
                 }
@@ -593,7 +599,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
-                else if( ((lin_idx+LED_idx)/3)%2 )
+                else if( ((lin_idx+pat_d.basic.LED_idx)/3)%2 )
                 {
                     //set color to red
                     LED_stat[0].colors[i]=LED_COLOR_RED;
@@ -620,7 +626,7 @@ void flashPatternAdvance(void)
 
                 for(j=strp_idx;j<NUM_PARTICLES;j+=LED_STR)
                 {
-                    tmp1=lin_idx-particle_pos[j];
+                    tmp1=lin_idx-pat_d.ptc.particle_pos[j];
                     if(tmp1>=0 && tmp1<=5)
                     {
                         //set color
@@ -649,7 +655,7 @@ void flashPatternAdvance(void)
                 }
             break;
             case LED_PAT_EYES_H:
-                if((lin_idx!=idx_dir && lin_idx!=idx_dir+2) || LED_idx<=0)
+                if((lin_idx!=pat_d.basic.idx_dir && lin_idx!=pat_d.basic.idx_dir+2) || pat_d.basic.LED_idx<=0)
                 {
                     //turn of LED
                     LED_stat[0].colors[i].r  =0;
@@ -663,7 +669,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].r  =0xFF;
                     LED_stat[0].colors[i].g  =0;
                     LED_stat[0].colors[i].b  =0;
-                    LED_stat[0].colors[i].brt=LED_ST_BITS|LED_idx;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|pat_d.basic.LED_idx;
                 }
             break;
             case LED_PAT_WAVE_BIG_U:
@@ -676,7 +682,7 @@ void flashPatternAdvance(void)
                 LED_stat[0].colors[i].b  = pat_color.b;
 
                 //calculate index in pattern
-                tmp1=lin_idx+LED_idx;
+                tmp1=lin_idx+pat_d.basic.LED_idx;
                 tmp1=tmp1%pat_val;
 
                 //calculate midpoint
@@ -710,11 +716,11 @@ void flashPatternAdvance(void)
             case LED_PAT_WAVE_HUE_D:
             case LED_PAT_WAVE_HUE_U:
                 //calculate index in pattern
-                tmp1=lin_idx+LED_idx;
+                tmp1=lin_idx+pat_d.basic.LED_idx;
                 tmp1=tmp1%pat_val;
 
                 //scale value to get to full scale
-                tmp1*=idx_dir;
+                tmp1*=pat_d.basic.idx_dir;
 
                 //calculate color in RGB. Use the green and blue values from the pattern color as saturation and value
                 HsvToLED(&LED_stat[0].colors[i],pat_color.brt,tmp1,pat_color.g,pat_color.b);
@@ -723,7 +729,7 @@ void flashPatternAdvance(void)
             case LED_PAT_WAVE_SAT_U:
 
                 //calculate index in pattern
-                tmp1=lin_idx+LED_idx;
+                tmp1=lin_idx+pat_d.basic.LED_idx;
                 tmp1=tmp1%pat_val;
 
                 //calculate midpoint
@@ -735,7 +741,7 @@ void flashPatternAdvance(void)
                     tmp1=(pat_val+1)-tmp1;
                 }
                 //scale value to get to full scale
-                tmp1*=idx_dir;
+                tmp1*=pat_d.basic.idx_dir;
 
                 //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
                 HsvToLED(&LED_stat[0].colors[i],pat_color.brt,pat_color.r,tmp1,pat_color.b);
@@ -746,7 +752,7 @@ void flashPatternAdvance(void)
                 }
             break;
             case LED_PAT_PANIC:
-                if(LED_idx==1 ||LED_idx==3)
+                if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                 {
                     //set color to red
                     LED_stat[0].colors[i].r  =0xFF;
@@ -815,66 +821,66 @@ void flashPatternChange(int pattern)
     switch(LED_pattern)
     {
         case LED_PAT_COLORTRAIN:
-            idx_dir=1;
-            LED_idx=-2;
+            pat_d.basic.idx_dir=1;
+            pat_d.basic.LED_idx=-2;
             //set interrupt interval
             flash_per=102*2;
         break;
         case LED_PAT_USA:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=20;
         break;
         case LED_PAT_BOOST:
-            LED_idx=-1;
+            pat_d.basic.LED_idx=-1;
             //set interrupt interval
             flash_per=2000;
         break;
         case LED_PAT_HUE:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=51;
         break;
         case LED_PAT_PAD:
-            idx_dir=0;
-            LED_idx=0;
+            pat_d.basic.idx_dir=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=51;
         break;
         case LED_PAT_SATURATION:
-            idx_dir=0;
-            LED_idx=0;
+        pat_d.basic.idx_dir=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=51;
         break;
         case LED_PAT_BURST:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=102;
         break;
         case LED_PAT_RNBW_FLASH:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=2048;
         break;
         case LED_PAT_RNBW_FLOW:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=70;
         break;
         case LED_PAT_USA_FLOW:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=200;
         break;
         case LED_PAT_PARTICLE:
-            LED_idx=LED_LEN;
+            pat_d.basic.LED_idx=LED_LEN;
             //set interrupt interval
             flash_per=10;
             string=0;
             for(i=0;i<NUM_PARTICLES;i++)
             {
-                new_particle(&particles[i]);
+                new_particle(&pat_d.ptc.particles[i]);
                 string+=1;
                 if(string>=LED_STR)
                 {
@@ -884,7 +890,7 @@ void flashPatternChange(int pattern)
             }
         break;
         case LED_PAT_EYES_H:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=70;
         break;
@@ -896,12 +902,12 @@ void flashPatternChange(int pattern)
         case LED_PAT_WAVE_HUE_U:
         case LED_PAT_WAVE_SAT_D:
         case LED_PAT_WAVE_SAT_U:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=70;
         break;
         case LED_PAT_PANIC:
-            LED_idx=0;
+            pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=200;
         break;
