@@ -701,6 +701,11 @@ void flashPatternAdvance(void)
                     tmp1=0;
                 }
                 LED_stat[0].colors[i].brt=LED_ST_BITS|tmp1;
+
+                if(lin_idx==(LED_LEN-1) && strp_idx==0)
+                {
+                    nosecone_mode(NC_MODE_STATIC,tmp1*128+127,NC_NA,NC_NA,NC_NA);
+                }
             break;
             case LED_PAT_WAVE_HUE_D:
             case LED_PAT_WAVE_HUE_U:
@@ -734,6 +739,11 @@ void flashPatternAdvance(void)
 
                 //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
                 HsvToLED(&LED_stat[0].colors[i],pat_color.brt,pat_color.r,tmp1,pat_color.b);
+                //set nosecone brightness based on saturation
+                if(lin_idx==(LED_LEN-1) && strp_idx==0)
+                {
+                    nosecone_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
+                }
             break;
             case LED_PAT_PANIC:
                 if(LED_idx==1 ||LED_idx==3)
