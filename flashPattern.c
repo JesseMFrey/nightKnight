@@ -861,6 +861,8 @@ void flashPatternChange(int pattern)
         case LED_PAT_RNBW_FLASH:
             pat_d.basic.LED_idx=0;
             //set interrupt interval
+            //turn off nosecone
+            nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
             flash_per=2048;
         break;
         case LED_PAT_RNBW_FLOW:
@@ -893,6 +895,8 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=70;
+            //turn off nosecone
+            nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_BIG_D:
