@@ -380,6 +380,9 @@ const struct {
                  {"swave_d",LED_PAT_WAVE_SAT_D},
                  {"swave_u",LED_PAT_WAVE_SAT_U},
                  {"panic",LED_PAT_PANIC},
+                 {"cparticle",LED_PAT_COLOR_PARTICLE},
+                 {"uparticle",LED_PAT_UNIFORM_PARTICLE},
+                 {"cuparticle",LED_PAT_COLOR_UNIFORM_PARTICLE},
                  {NULL,0}
 };
 

@@ -150,11 +150,24 @@ void flashPatternVC(int pattern,unsigned int val,LED_color color)
     flashPatternChange(pattern);
 }
 
-static void new_particle(PARTICLE *n)
+static void new_particle(PARTICLE *n,int color)
 {
+    int tmp;
     //create new particle
     n->v=0.3*(rand()/(float)RAND_MAX)+0.1;
     n->x=LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
+    //check if color is random
+    if(!color)
+    {
+        //set color from pattern
+        n->color=pat_color;
+    }
+    else
+    {
+        tmp=rand();
+        //set color with random hue and saturation
+        HsvToLED(&n->color,pat_color.brt,tmp,(tmp>>8)|0x80,0xFF);
+    }
 }
 
 static inline char brt_offset(unsigned char brt,int offset)
@@ -288,8 +301,32 @@ void flashPatternAdvance(void)
             }
         break;
         case LED_PAT_PARTICLE:
+        case LED_PAT_COLOR_PARTICLE:
+        case LED_PAT_UNIFORM_PARTICLE:
+        case LED_PAT_COLOR_UNIFORM_PARTICLE:
+            //calculate number of particles from pattern value
+            tmp2=pat_val;
+            //check if we have independent strings
+            if(LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_PARTICLE)
+            {
+                if(tmp2>(NUM_PARTICLES/LED_STR))
+                {
+                    //limit to number of particles
+                    tmp2=(NUM_PARTICLES/LED_STR);
+                }
+                //each string is independent so account for that
+                tmp2*=LED_STR;
+            }
+            else
+            {
+                if(tmp2>NUM_PARTICLES)
+                {
+                    //limit to number of particles
+                    tmp2=NUM_PARTICLES;
+                }
+            }
             //shift all particles by their velocity
-            for(j=0;j<NUM_PARTICLES;j++)
+            for(j=0;j<tmp2;j++)
             {
                 pat_d.ptc.particles[j].x-=pat_d.ptc.particles[j].v;
                 pat_d.ptc.particle_pos[j]=round(pat_d.ptc.particles[j].x);
@@ -297,10 +334,10 @@ void flashPatternAdvance(void)
                 if(pat_d.ptc.particle_pos[j]<0)
                 {
                     //create new particle
-                    new_particle(&pat_d.ptc.particles[j]);
+                    new_particle(&pat_d.ptc.particles[j],LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_COLOR_UNIFORM_PARTICLE );
                 }
                 //check if particle is about to start
-                else if(pat_d.ptc.particle_pos[j]==LED_LEN)
+                else if(pat_d.ptc.particle_pos[j]==(LED_LEN-1))
                 {
                     //blip the nosecone
                     nosecone_mode(NC_MODE_ONE_SHOT,700,0,5,NC_NA);
@@ -617,6 +654,7 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].brt=LED_ST_BITS|LED_ST_BITS|pat_color.brt;
                 }
             break;
+            case LED_PAT_COLOR_PARTICLE:
             case LED_PAT_PARTICLE:
 
                 //set to off
@@ -624,19 +662,56 @@ void flashPatternAdvance(void)
                 //set brightness to zero
                 LED_stat[0].colors[i].brt=LED_ST_BITS|0;
 
-                for(j=strp_idx;j<NUM_PARTICLES;j+=LED_STR)
+                for(j=strp_idx;j<tmp2;j+=LED_STR)
                 {
                     tmp1=lin_idx-pat_d.ptc.particle_pos[j];
                     if(tmp1>=0 && tmp1<=5)
                     {
                         //set color
-                        LED_stat[0].colors[i].r  =255;
-                        LED_stat[0].colors[i].g  =150;
-                        LED_stat[0].colors[i].b  =10;
+                        LED_stat[0].colors[i].r  =pat_d.ptc.particles[j].color.r;
+                        LED_stat[0].colors[i].g  =pat_d.ptc.particles[j].color.g;
+                        LED_stat[0].colors[i].b  =pat_d.ptc.particles[j].color.b;
                         if(tmp1==0)
                         {
                             //set brightness
-                            LED_stat[0].colors[i].brt=LED_ST_BITS|MAX_BRT;
+                            LED_stat[0].colors[i].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
+                        }
+                        else
+                        {
+                            //get brightness, mask out start bits
+                            int tbrt=LED_stat[0].colors[i].brt&(~LED_ST_BITS);
+                            //add brightness from particle
+                            tbrt+=(6-tmp1);
+                            //saturate brightness
+                            if(tbrt>MAX_BRT)
+                            {
+                                tbrt=MAX_BRT;
+                            }
+                            LED_stat[0].colors[i].brt=LED_ST_BITS|(tbrt);
+                        }
+                    }
+                }
+            break;
+            case LED_PAT_UNIFORM_PARTICLE:
+            case LED_PAT_COLOR_UNIFORM_PARTICLE:
+                //set to off
+                LED_stat[0].colors[i].r=LED_stat[0].colors[i].g=LED_stat[0].colors[i].b=0;
+                //set brightness to zero
+                LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+
+                for(j=0;j<tmp2;j+=1)
+                {
+                    tmp1=lin_idx-pat_d.ptc.particle_pos[j];
+                    if(tmp1>=0 && tmp1<=5)
+                    {
+                        //set color
+                        LED_stat[0].colors[i].r  =pat_d.ptc.particles[j].color.r;
+                        LED_stat[0].colors[i].g  =pat_d.ptc.particles[j].color.g;
+                        LED_stat[0].colors[i].b  =pat_d.ptc.particles[j].color.b;
+                        if(tmp1==0)
+                        {
+                            //set brightness
+                            LED_stat[0].colors[i].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
                         }
                         else
                         {
@@ -795,7 +870,6 @@ int flashPatternGet(void)
 
 void flashPatternChange(int pattern)
 {
-    int string;
     int i;
     //check if LED's will be on
     if(pattern!=LED_PAT_OFF)
@@ -875,20 +949,16 @@ void flashPatternChange(int pattern)
             //set interrupt interval
             flash_per=200;
         break;
+        case LED_PAT_COLOR_PARTICLE:
         case LED_PAT_PARTICLE:
+        case LED_PAT_UNIFORM_PARTICLE:
+        case LED_PAT_COLOR_UNIFORM_PARTICLE:
             pat_d.basic.LED_idx=LED_LEN;
             //set interrupt interval
             flash_per=10;
-            string=0;
             for(i=0;i<NUM_PARTICLES;i++)
             {
-                new_particle(&pat_d.ptc.particles[i]);
-                string+=1;
-                if(string>=LED_STR)
-                {
-                    string=0;
-                }
-
+                new_particle(&pat_d.ptc.particles[i],LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_COLOR_UNIFORM_PARTICLE);
             }
         break;
         case LED_PAT_EYES_H:
