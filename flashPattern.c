@@ -110,6 +110,9 @@ void init_FlashPattern(void)
     case 7:
         flashPatternChange(LED_PAT_RNBW_FLASH);
         break;
+    case 8:
+        flashPatternVC(LED_PAT_PARTICLE,NUM_PARTICLES,(LED_color){MAX_BRT,255,150,10});
+        break;
     default:
         //set LED's off
         flashPatternChange(LED_PAT_OFF);
