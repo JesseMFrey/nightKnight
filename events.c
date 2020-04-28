@@ -17,7 +17,7 @@ e_type e_get_clear(void)
     //get flags
     tmp=e_flags;
 
-    e_flags&=tmp;
+    e_flags&=~tmp;
     __enable_interrupt();
 
     return tmp;
