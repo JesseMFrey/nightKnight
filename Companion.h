@@ -48,7 +48,8 @@ enum ao_flight_state {
     ao_flight_main = 7,
     ao_flight_landed = 8,
     ao_flight_invalid = 9,
-    ao_flight_test = 10
+    ao_flight_test = 10,
+    AO_FLIGHT_NUM
 };
 
 enum TLM_flags{TLM_ADC_OV=0x0001,TLM_PG=0x0002};

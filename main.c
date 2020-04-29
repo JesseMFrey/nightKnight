@@ -43,6 +43,7 @@
 #include "UART.h"
 #include "terminal.h"
 #include <stdio.h>
+#include "flightPattern.h"
 
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
@@ -137,84 +138,7 @@ void main (void)
         wake_e=e_get_clear();
         if(wake_e&COMP_RX_CMD)
         {
-            switch(cpCmd.flight_state)
-            {
-            case ao_flight_idle:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    //turn everything off
-                    flashPatternChange(LED_PAT_OFF);
-                    nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            case ao_flight_pad:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    flashPatternChange(LED_PAT_PAD);
-                    nosecone_mode(NC_MODE_STATIC,400,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            case ao_flight_boost:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    flashPatternVC(LED_PAT_BOOST,0,LED_COLOR_BLUE);
-                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            case ao_flight_fast:
-            case ao_flight_coast:
-                if(lastState!=cpCmd.flight_state && lastState!=ao_flight_fast)
-                {
-                    maxSpeed=cpCmd.speed;
-                    flashPatternVC(LED_PAT_GRAPH,0,LED_COLOR_RED);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                else
-                {
-                    flashPattern_setValue(50-(cpCmd.speed*50)/maxSpeed);
-                }
-                //set nosecone based on speed
-                nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM*(cpCmd.speed/(float)maxSpeed),NC_NA,NC_NA,NC_NA);
-                break;
-            case ao_flight_drogue:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    flashPatternChange(LED_PAT_USA);
-                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            case ao_flight_main:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    flashPatternChange(LED_PAT_ST_USA);
-                    nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_FLASH,NC_MAX_PWM,0,40,500);
-                }
-                //turn off chute under 5m
-                if(cpCmd.height<=10){
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                    nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            case ao_flight_landed:
-                if(lastState!=cpCmd.flight_state)
-                {
-                    flashPatternChange(LED_PAT_USA);
-                    nosecone_mode(NC_MODE_STATIC,300,NC_NA,NC_NA,NC_NA);
-                    chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                }
-                break;
-            default:
-                //turn off chute
-                chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
-                break;
-            }
-            //set last state
-            lastState=cpCmd.flight_state;
+            lastState=proc_flightP(&cpCmd,&patterns[0],lastState);
         }
 
     }  // while(1)

@@ -15,6 +15,9 @@
 #include <limits.h>
 #include <msp430.h>
 #include "Nosecone.h"
+#include "flightPattern.h"
+#include "Companion.h"
+#include "events.h"
 
 
 int brt_Cmd(int argc,char **argv)
@@ -628,6 +631,33 @@ int chute_Cmd(int argc,char **argv)
     return 0;
 }
 
+int sim_Cmd(int argc,char **argv)
+{
+    const struct ao_companion_command *dat_ptr=flight_dat;
+    int i;
+    uint8_t last=ao_flight_invalid;
+    e_type wake_e;
+
+    for(i=0;dat_ptr[i].command!=0;i++)
+    {
+        printf("Time = %0.1f  Alt = %0.2f Speed = %0.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height/((float)16),dat_ptr[i].speed/((float)16));
+        last=proc_flightP(&dat_ptr[i],&patterns[0],last);
+        //wait for the interval to elapse
+        do
+        {
+            // Enter LPM0
+            __bis_SR_register(LPM0_bits + GIE);
+            _NOP();
+            //read interrupts
+            wake_e=e_get_clear();
+        }
+        while(!(wake_e&FM_SIM_ADVANCE));
+    }
+
+    return 0;
+
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -639,5 +669,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"color","Set pattern color",color_Cmd},
                           {"NC","change nosecone LED mode",NC_Cmd},
                           {"chute","change chute LED",chute_Cmd},
+                          {"sim","simulate a flight",sim_Cmd},
                           {NULL,NULL,NULL}
 };

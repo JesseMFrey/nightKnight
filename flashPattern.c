@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "Nosecone.h"
+#include "events.h"
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -37,6 +38,10 @@ static unsigned short LED_int=102*2;
 
 static LED_color pat_color={LED_BRT_NORM,0xFF,0xFF,0xFF};
 unsigned int pat_val;
+
+//interval for simulations
+unsigned int sim_int=1000;
+
 
 LED_color RNBW_colors[6]={//start bits|brightness  , b  , g  , r
                            //{LED_ST_BITS|LED_BRT_NORM,0x03,0x03,0xE4},   //Red
@@ -119,6 +124,9 @@ void init_FlashPattern(void)
         break;
     }
 
+    //setup TA1CCR1 for sim timer
+    TA1CCR1=sim_int;
+    TA1CCTL1=CCIE;
     //set input divider expansion to /4
     TA1EX0=TAIDEX_3;
     //setup TA1 to run in continuous mode
@@ -206,7 +214,7 @@ void flashPatternAdvance(void)
                 //reset index
                 pat_d.basic.LED_idx=(LED_LEN-1);
                 //flip direction
-                pat_d.basic.idx_dir=-1;
+                pat_d.basic.idx_dir=-1;break;
             }
             //check for
             if(pat_d.basic.LED_idx<=-3)
@@ -1114,4 +1122,29 @@ void __attribute__ ((interrupt(TIMER1_A0_VECTOR))) flash_ISR (void)
         //set next flash pattern
         flashPatternAdvance();
     }
+}
+
+// ============ TA1.1 ISR ============
+
+#if defined(__TI_COMPILER_VERSION__) || (__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMER1_A1_VECTOR
+__interrupt void sim_ISR (void)
+#elif defined(__GNUC__) && (__MSP430__)
+void __attribute__ ((interrupt(TIMER1_A1_VECTOR))) sim_ISR (void)
+#else
+#error Compiler not found!
+#endif
+{
+    switch(__even_in_range(TA1IV,TA1IV_TAIFG))
+    {
+    case TA1IV_TACCR1:
+        //set next interrupt time
+        TA1CCR1+=sim_int;
+        //set sim advance flag
+        e_flags|=FM_SIM_ADVANCE;
+        //exit low power mode
+        LPM0_EXIT;
+    break;
+    }
+
 }
