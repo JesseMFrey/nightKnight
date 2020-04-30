@@ -342,7 +342,7 @@ void flashPatternAdvance(void)
                 pat_d.ptc.particles[j].x-=pat_d.ptc.particles[j].v;
                 pat_d.ptc.particle_pos[j]=round(pat_d.ptc.particles[j].x);
                 //check if we have gone off the end
-                if(pat_d.ptc.particle_pos[j]<0)
+                if(pat_d.ptc.particle_pos[j]<-4)
                 {
                     //create new particle
                     new_particle(&pat_d.ptc.particles[j],LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_COLOR_UNIFORM_PARTICLE );
