@@ -82,7 +82,6 @@ static TERM_DAT term;
 void main (void)
 {
     e_type wake_e;
-    unsigned int maxSpeed=0;
     uint8_t lastState=ao_flight_invalid;
     int c;
 
