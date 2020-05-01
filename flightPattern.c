@@ -103,7 +103,7 @@ void fp_speedGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *
     }
     else
     {
-        flashPattern_setValue(50-(cmd_dat->speed*50)/maxSpeed);
+        flashPattern_setValue(LED_LEN-(cmd_dat->speed*LED_LEN)/maxSpeed);
     }
     //set nosecone based on speed
     nosecone_mode(NC_MODE_STATIC,NC_MAX_PWM*(cmd_dat->speed/(float)maxSpeed),NC_NA,NC_NA,NC_NA);
