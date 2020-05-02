@@ -31,6 +31,20 @@
 
 #define LED_COLOR_WHITE         ((LED_color){LED_ST_BITS|LED_BRT_NORM,0xFF,0xFF,0xFF})
 
+typedef struct{
+    float v,x;
+    LED_color color;
+}PARTICLE;
+
+typedef struct
+{
+    int num_colors;
+    struct
+    {
+        int alt;
+        LED_color color;
+    }alt_color[];
+}COLOR_LIST;
 
 void flashPatternChange(int pattern);
 void flashPatternAdvance(void);
@@ -40,21 +54,20 @@ int flashPatternGet(void);
 void init_FlashPattern(void);
 void flashPattern_setColor(LED_color color);
 void flashPattern_setValue(unsigned int val);
+void flashPattern_setList(const COLOR_LIST *list);
 void flashPatternVC(int pattern,unsigned int val,LED_color color);
 void panicPattern(void);
 
-typedef struct{
-    float v,x;
-    LED_color color;
-}PARTICLE;
-
-
 //flash patterns
-enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_ST_COLORS,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
-    LED_PAT_ST_USA,LED_PAT_USA,LED_PAT_PAD,LED_PAT_BOOST,LED_PAT_GRAPH,LED_PAT_RNBW_ST,LED_PAT_RNBW_FLASH,
-    LED_PAT_RNBW_FLOW,LED_PAT_USA_FLOW,LED_PAT_PARTICLE,LED_PAT_EYES_H,LED_PAT_WAVE_BIG_U,LED_PAT_WAVE_BIG_D,
-    LED_PAT_WAVE_SM_U,LED_PAT_WAVE_SM_D,LED_PAT_WAVE_HUE_D,LED_PAT_WAVE_HUE_U,LED_PAT_WAVE_SAT_D,LED_PAT_WAVE_SAT_U,
-    LED_PAT_PANIC,LED_PAT_COLOR_PARTICLE,LED_PAT_UNIFORM_PARTICLE,LED_PAT_COLOR_UNIFORM_PARTICLE,LED_NUM_PAT};
+enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
+    LED_PAT_FLASH_GAP,LED_PAT_FLASH_NOGAP,LED_PAT_ST_LIST,LED_PAT_FLOW_LIST,LED_PAT_STR_ST,
+    LED_PAT_BOOST,LED_PAT_GRAPH,
+    LED_PAT_EYES_H,
+    //wave patterns
+    LED_PAT_WAVE_BIG_U,LED_PAT_WAVE_BIG_D,LED_PAT_WAVE_SM_U,LED_PAT_WAVE_SM_D,LED_PAT_WAVE_HUE_D,LED_PAT_WAVE_HUE_U,LED_PAT_WAVE_SAT_D,LED_PAT_WAVE_SAT_U,
+    LED_PAT_PANIC,
+    //particle patterns
+    LED_PAT_PARTICLE,LED_PAT_COLOR_PARTICLE,LED_PAT_UNIFORM_PARTICLE,LED_PAT_COLOR_UNIFORM_PARTICLE,LED_NUM_PAT};
 
 #define LED_PAT_MIN         LED_PAT_OFF
 #define LED_PAT_MAX         (LED_NUM_PAT-1)
