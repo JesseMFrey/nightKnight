@@ -646,14 +646,13 @@ int chute_Cmd(int argc,char **argv)
 int sim_Cmd(int argc,char **argv)
 {
     const struct ao_companion_command *dat_ptr=flight_dat;
-    const FLIGHT_PATTERN *pat_ptr;
+    const FLIGHT_PATTERN *pat_ptr=patterns;
     int i;
     uint8_t last=ao_flight_invalid;
     e_type wake_e;
 
     if(argc==0)
     {
-        pat_ptr=patterns;
         while(pat_ptr->name!=NULL)
         {
             printf("%s\r\n",pat_ptr->name);
