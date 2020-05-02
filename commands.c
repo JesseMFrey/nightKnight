@@ -364,7 +364,7 @@ const struct {
                  {"burst",LED_PAT_BURST},
                  {"sat",LED_PAT_SATURATION},
                  {"USAst",LED_PAT_ST_USA},
-                 {"USA",LED_PAT_USA},
+                 {"fs_list",LED_PAT_FLASH_LIST},
                  {"pad",LED_PAT_PAD},
                  {"boost",LED_PAT_BOOST},
                  {"graph",LED_PAT_GRAPH},
@@ -394,6 +394,9 @@ int patternCmd(int argc,char **argv)
 {
     int i,val;
     const char *name;
+    char *eptr;
+    unsigned long int temp;
+
     if(argc==0)
     {
         //get current pattern
@@ -420,14 +423,26 @@ int patternCmd(int argc,char **argv)
         }
         if(val==-1)
         {
-            printf("Error : Unknown pattern \"%s\"\r\n",argv[1]);
-            return 1;
+            //parse value
+            temp=strtoul(argv[1],&eptr,0);
+            if(*eptr)
+            {
+                printf("Error : Unknown pattern \"%s\"\r\n",argv[1]);
+                return 1;
+            }
+            if(temp>=LED_NUM_PAT)
+            {
+                printf("Error : valid patterns are 0 to %u\r\n",LED_NUM_PAT-1);
+                return 2;
+            }
+            val=temp;
+            printf("LED pattern set to #%u\r\n",val);
         }
         else
         {
-            flashPatternChange(val);
             printf("LED pattern set to \'%s\"\r\n",name);
         }
+        flashPatternChange(val);
     }
     return  0;
 }
