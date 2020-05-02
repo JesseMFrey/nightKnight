@@ -586,6 +586,8 @@ void flashPatternAdvance(void)
                 if(lin_idx<pat_val)
                 {
                     LED_stat[0].colors[i]=pat_color;
+                    //add status bits
+                    LED_stat[0].colors[i].brt|=LED_ST_BITS;
                 }
                 else
                 {
