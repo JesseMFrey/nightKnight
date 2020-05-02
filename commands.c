@@ -683,7 +683,7 @@ int sim_Cmd(int argc,char **argv)
 
         for(i=0;dat_ptr[i].command!=0;i++)
         {
-            printf("Time = %0.1f  Alt = %0.2f Speed = %0.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height/((float)16),dat_ptr[i].speed/((float)16));
+            printf("Time = %4.1f  Alt = %6i Speed = %6.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height,dat_ptr[i].speed/((float)16));
             last=proc_flightP(&dat_ptr[i],pat_ptr,last);
             //wait for the interval to elapse
             do
