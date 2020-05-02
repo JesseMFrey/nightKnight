@@ -647,9 +647,12 @@ int sim_Cmd(int argc,char **argv)
 {
     const struct ao_companion_command *dat_ptr=flight_dat;
     const FLIGHT_PATTERN *pat_ptr=patterns;
+    unsigned int mul=1;
     int i;
     uint8_t last=ao_flight_invalid;
     e_type wake_e;
+    char *eptr;
+    unsigned long int temp;
 
     if(argc==0)
     {
@@ -676,10 +679,36 @@ int sim_Cmd(int argc,char **argv)
             printf("Error : could not find pattern matching \"%s\"\r\n",argv[1]);
             return 1;
         }
+        if(argc>1)
+        {
+            //parse value
+            temp=strtoul(argv[2],&eptr,0);
+
+            //check if the whole string was parsed
+            if(*eptr)
+            {
+                //end of string not found
+                printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
+                return 2;
+            }
+
+            if(temp>UINT_MAX)
+            {
+                printf("Error : multiplier must be less than %u. got %li\r\n",UINT_MAX,temp);
+                return 4;
+            }
+            if(temp<=0)
+            {
+                printf("Error : multiplier must be greater than zero\r\n");
+                return 5;
+            }
+            mul=temp;
+        }
+
         //print pattern name
         printf("Starting simulation of \"%s\"\r\n",pat_ptr->name);
         //set interval to the time separation in the first two packets
-        sim_int=(dat_ptr[1].tick-dat_ptr[0].tick)*10;
+        sim_int=(dat_ptr[1].tick-dat_ptr[0].tick)*10*mul;
 
         for(i=0;dat_ptr[i].command!=0;i++)
         {
