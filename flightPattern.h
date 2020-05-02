@@ -46,7 +46,9 @@ extern const FLIGHT_PATTERN patterns[];
 int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN *pattern,int last);
 
 //functions used in flight modes
-void fp_speedGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *data);
+void fp_speedGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
+void fp_heightGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
+void fp_heightParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
 
 //sim interval in ms
 extern unsigned int sim_int;
