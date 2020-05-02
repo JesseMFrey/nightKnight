@@ -634,26 +634,59 @@ int chute_Cmd(int argc,char **argv)
 int sim_Cmd(int argc,char **argv)
 {
     const struct ao_companion_command *dat_ptr=flight_dat;
+    const FLIGHT_PATTERN *pat_ptr;
     int i;
     uint8_t last=ao_flight_invalid;
     e_type wake_e;
 
-    for(i=0;dat_ptr[i].command!=0;i++)
+    if(argc==0)
     {
-        printf("Time = %0.1f  Alt = %0.2f Speed = %0.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height/((float)16),dat_ptr[i].speed/((float)16));
-        last=proc_flightP(&dat_ptr[i],&patterns[0],last);
-        //wait for the interval to elapse
-        do
+        pat_ptr=patterns;
+        while(pat_ptr->name!=NULL)
         {
-            // Enter LPM0
-            __bis_SR_register(LPM0_bits + GIE);
-            _NOP();
-            //read interrupts
-            wake_e=e_get_clear();
+            printf("%s\r\n",pat_ptr->name);
+            pat_ptr+=1;
         }
-        while(!(wake_e&FM_SIM_ADVANCE));
+        return 0;
     }
+    else
+    {
+        while(pat_ptr->name!=NULL)
+        {
+            if(!strcmp(pat_ptr->name,argv[1]))
+            {
+                break;
+            }
+            pat_ptr+=1;
+        }
+        //check if pattern was found
+        if(pat_ptr==NULL)
+        {
+            printf("Error : could not find pattern matching \"%s\"\r\n",argv[1]);
+            return 1;
+        }
+        //print pattern name
+        printf("Starting simulation of \"%s\"\r\n",pat_ptr->name);
+        //set interval to the time separation in the first two packets
+        sim_int=(dat_ptr[1].tick-dat_ptr[0].tick)*10;
 
+        for(i=0;dat_ptr[i].command!=0;i++)
+        {
+            printf("Time = %0.1f  Alt = %0.2f Speed = %0.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height/((float)16),dat_ptr[i].speed/((float)16));
+            last=proc_flightP(&dat_ptr[i],pat_ptr,last);
+            //wait for the interval to elapse
+            do
+            {
+                // Enter LPM0
+                __bis_SR_register(LPM0_bits + GIE);
+                _NOP();
+                //read interrupts
+                wake_e=e_get_clear();
+            }
+            while(!(wake_e&FM_SIM_ADVANCE));
+        }
+        printf("Flight complete!\r\n");
+    }
     return 0;
 
 }

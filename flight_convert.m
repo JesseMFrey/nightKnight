@@ -62,11 +62,14 @@ function out_dat=flight_convert(in_name,out_name)
         error('Multiple time columns found');
     end
 
+    %time between samples
+    time_interval=0.1;
+
     %get time data
     time=dat{time_col};
 
     %only sample data every second
-    sample_times=floor(min(time)):ceil(max(time));
+    sample_times=(floor(min(time))-10):time_interval:ceil(max(time));
 
     %preallocate for output
     out_dat=zeros(length(sample_times),length(output_cols));
@@ -79,13 +82,19 @@ function out_dat=flight_convert(in_name,out_name)
             out_dat(:,k)=interp1(time,dat{col_idx},sample_times);
             %check if the first point is NAN
             if(isnan(out_dat(1,k)))
-                %fill in start points with first value
-                out_dat(1,k)=dat{col_idx}(1);
+                if(strcmp(output_cols{k},'state'))
+                    %set to pad mode
+                    out_dat(1,k)=2;
+                else
+                    %fill in start points with first value
+                    out_dat(1,k)=dat{col_idx}(1);
+                end
             end
-            %check if the last point is NAN
-            if(isnan(out_dat(end,k)))
-                %fill in end points with first value
-                out_dat(end,k)=dat{col_idx}(end);
+            nan_idx=find(isnan(out_dat(:,k)));
+            %loop through the indicies so that values propigate
+            for kk=1:length(nan_idx)
+                %fill in from prevous point
+                out_dat(nan_idx(kk),k)=out_dat(nan_idx(kk)-1,k);
             end
             %scale to companion value and round
             out_dat(:,k)=round(out_dat(:,k)*output_scales(k));
@@ -98,7 +107,8 @@ function out_dat=flight_convert(in_name,out_name)
         %check for motor number column
         elseif(strcmp('motor_number',output_cols{k}))
            %assume that there is only one motor fired 
-           out_dat(:,k)=1;
+           %should be 1 after pad mode
+           out_dat(:,k)=out_dat(:,strcmp(output_cols,'state'))>2;
         else
             error('No column matching ''%s''\n',output_cols{k});
         end
