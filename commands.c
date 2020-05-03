@@ -733,6 +733,57 @@ int sim_Cmd(int argc,char **argv)
 
 }
 
+
+#define CUSTOM_LIST_COLORS      (10)
+
+static char custom_clist[sizeof(COLOR_LIST)+CUSTOM_LIST_COLORS*(sizeof(LED_color)+sizeof(int))];
+
+const struct{
+    const char * name;
+    const COLOR_LIST *list;
+} clists[]={
+          {"rnbw",&RNBW_colors},
+          {"USA",&USA_colors},
+          {"RGB",&RGB_colors},
+          {"USA_RW",&USA_RW_colors},
+          {"custom",(COLOR_LIST*)custom_clist},
+          {NULL,NULL}
+};
+
+
+
+int clist_Cmd(int argc,char **argv)
+{
+    const COLOR_LIST *list=NULL;
+    int i;
+    if(argc==0)
+    {
+        printf("Color Lists:\r\n");
+        for(i=0;clists[i].name!=NULL;i++)
+        {
+            printf("\t%s\r\n",clists[i].name);
+        }
+    }
+    else
+    {
+        for(i=0;clists[i].name!=NULL;i++)
+        {
+            if(!strcmp(clists[i].name,argv[1]))
+            {
+                list=clists[i].list;
+                break;
+            }
+        }
+        if(list==NULL)
+        {
+            printf("Error : \"%s\" is not a valid color list\r\n",argv[1]);
+            return 1;
+        }
+        flashPattern_setList(list);
+    }
+    return 0;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -745,5 +796,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"NC","change nosecone LED mode",NC_Cmd},
                           {"chute","change chute LED",chute_Cmd},
                           {"sim","simulate a flight",sim_Cmd},
+                          {"clist","set color list",clist_Cmd},
                           {NULL,NULL,NULL}
 };
