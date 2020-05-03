@@ -590,6 +590,14 @@ void flashPatternAdvance(void)
                     LED_stat[0].colors[i].b=0xFF;
                 }
             break;
+            case LED_SOLID_ST:
+                //set all LEDs from color
+                LED_stat[0].colors[i].r  =pat_color.r;
+                LED_stat[0].colors[i].g  =pat_color.g;
+                LED_stat[0].colors[i].b  =pat_color.b;
+                //set brightness
+                LED_stat[0].colors[i].brt=LED_ST_BITS|pat_color.brt;
+            break;
             case LED_PAT_ST_LIST:
                 if(lin_idx<FIN_LED)
                 {
