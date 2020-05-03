@@ -77,6 +77,12 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
             {
                 flashPattern_setColor(handler->basic.color);
             }
+        case FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST:
+            if(fm_new)
+            {
+                flashPatternVCL(handler->basic.pattern,handler->basic.value,handler->basic.color,handler->basic.list);
+            }
+        break;
         case FLIGHT_TYPE_PATTERN_COMPLEX:
             handler->cb.callback(new_dat,fm_new,handler->cb.data);
         break;

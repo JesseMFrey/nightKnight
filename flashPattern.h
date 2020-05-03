@@ -56,6 +56,7 @@ void flashPattern_setColor(LED_color color);
 void flashPattern_setValue(unsigned int val);
 void flashPattern_setList(const COLOR_LIST *list);
 void flashPatternVC(int pattern,unsigned int val,LED_color color);
+void flashPatternVCL(int pattern,unsigned int val,LED_color color,const COLOR_LIST *list);
 void panicPattern(void);
 
 //flash patterns

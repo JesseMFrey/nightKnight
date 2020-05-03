@@ -194,6 +194,16 @@ void flashPatternVC(int pattern,unsigned int val,LED_color color)
     flashPatternChange(pattern);
 }
 
+void flashPatternVCL(int pattern,unsigned int val,LED_color color,const COLOR_LIST *list)
+{
+    pat_color=color;
+    //set value
+    pat_val=val;
+    //set list
+    pat_list=list;
+    flashPatternChange(pattern);
+}
+
 static void new_particle(PARTICLE *n,int type)
 {
     int tmp;

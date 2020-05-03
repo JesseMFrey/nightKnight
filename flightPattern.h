@@ -21,6 +21,7 @@ typedef struct{
             int pattern;
             int value;
             LED_color color;
+            const COLOR_LIST *list;
         }basic;
         struct{
             FLIGHT_UPDATE callback;
@@ -34,7 +35,7 @@ typedef struct{
     FLIGHT_MODE_HANDLER handlers[AO_FLIGHT_NUM];
 }FLIGHT_PATTERN;
 
-enum {FLIGHT_TYPE_INVALID=0,FLIGHT_TYPE_NO_CHANGE,FLIGHT_TYPE_PATTERN,FLIGHT_TYPE_PATTERN_VAL_COLOR,FLIGHT_TYPE_COLOR,FLIGHT_TYPE_PATTERN_COMPLEX};
+enum {FLIGHT_TYPE_INVALID=0,FLIGHT_TYPE_NO_CHANGE,FLIGHT_TYPE_PATTERN,FLIGHT_TYPE_PATTERN_VAL_COLOR,FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,FLIGHT_TYPE_COLOR,FLIGHT_TYPE_PATTERN_COMPLEX};
 
 //flight data for replay
 extern const struct ao_companion_command flight_dat[];
