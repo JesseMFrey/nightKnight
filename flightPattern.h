@@ -50,6 +50,8 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
 void fp_speedGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
 void fp_heightGraph(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
 void fp_heightParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
+void fp_heightListParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
+void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void *list);
 
 //sim interval in ms
 extern unsigned int sim_int;

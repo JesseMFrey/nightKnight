@@ -152,3 +152,50 @@ void fp_heightParticle(const struct ao_companion_command *cmd_dat,int fm_new, vo
         flashPattern_setValue(16-(cmd_dat->height*12)/maxHeight);
     }
 }
+void fp_heightListParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *list)
+{
+    static int maxHeight=0;
+    if(fm_new)
+    {
+        if(cmd_dat->height>maxHeight)
+        {
+            maxHeight=cmd_dat->height;
+        }
+        flashPatternVCL(LED_PAT_LIST_UNIFORM_PARTICLE,4,(LED_color){.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},(COLOR_LIST*)list);
+        chute_mode(NC_MODE_FLASH,NC_MAX_PWM,0,100,500);
+    }
+    else
+    {
+        flashPattern_setValue(16-(cmd_dat->height*12)/maxHeight);
+    }
+}
+
+void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void *_list)
+{
+    COLOR_LIST *list=(COLOR_LIST*)_list;
+    LED_color color=color=list->alt_color[0].color;
+    int i;
+    for(i=0;i<list->num_colors;i++)
+    {
+        if(cmd_dat->height>list->alt_color[i].alt)
+        {
+            color=list->alt_color[i].color;
+        }
+        if(cmd_dat->height<list->alt_color[i].alt)
+        {
+            break;
+        }
+    }
+    //set maximum brightness
+    color.brt=MAX_BRT;
+
+    if(fm_new)
+    {
+        flashPatternVC(LED_SOLID_ST,0,color);
+    }
+    else
+    {
+        flashPattern_setColor(color);
+    }
+}
+
