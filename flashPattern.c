@@ -194,23 +194,33 @@ void flashPatternVC(int pattern,unsigned int val,LED_color color)
     flashPatternChange(pattern);
 }
 
-static void new_particle(PARTICLE *n,int color)
+static void new_particle(PARTICLE *n,int type)
 {
     int tmp;
     //create new particle
     n->v=0.3*(rand()/(float)RAND_MAX)+0.1;
     n->x=LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
-    //check if color is random
-    if(!color)
+
+    switch(type)
     {
+
+    case LED_PAT_PARTICLE:
+    case LED_PAT_UNIFORM_PARTICLE:
         //set color from pattern
         n->color=pat_color;
-    }
-    else
-    {
+    break;
+    case LED_PAT_COLOR_PARTICLE:
+    case LED_PAT_COLOR_UNIFORM_PARTICLE:
         tmp=rand();
         //set color with random hue and saturation
         HsvToLED(&n->color,pat_color.brt,tmp,(tmp>>8)|0x80,0xFF);
+    break;
+    case LED_PAT_LIST_UNIFORM_PARTICLE:
+    case LED_PAT_LIST_PARTICLE:
+        n->color=pat_list->alt_color[rand()%pat_list->num_colors].color;
+        //set brightness from color
+        n->color.brt=LED_ST_BITS|pat_color.brt;
+    break;
     }
 }
 
@@ -345,10 +355,12 @@ void flashPatternAdvance(void)
         case LED_PAT_COLOR_PARTICLE:
         case LED_PAT_UNIFORM_PARTICLE:
         case LED_PAT_COLOR_UNIFORM_PARTICLE:
+        case LED_PAT_LIST_PARTICLE:
+        case LED_PAT_LIST_UNIFORM_PARTICLE:
             //calculate number of particles from pattern value
             tmp2=pat_val;
             //check if we have independent strings
-            if(LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_PARTICLE)
+            if(LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_PARTICLE || LED_pattern==LED_PAT_LIST_PARTICLE)
             {
                 if(tmp2>(NUM_PARTICLES/LED_STR))
                 {
@@ -375,7 +387,7 @@ void flashPatternAdvance(void)
                 if(pat_d.ptc.particle_pos[j]<-4)
                 {
                     //create new particle
-                    new_particle(&pat_d.ptc.particles[j],LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_COLOR_UNIFORM_PARTICLE );
+                    new_particle(&pat_d.ptc.particles[j],LED_pattern);
                 }
                 //check if particle is about to start
                 else if(pat_d.ptc.particle_pos[j]==(LED_LEN-1))
@@ -624,6 +636,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_COLOR_PARTICLE:
             case LED_PAT_PARTICLE:
+            case LED_PAT_LIST_PARTICLE:
 
                 //set to off
                 LED_stat[0].colors[i].r=LED_stat[0].colors[i].g=LED_stat[0].colors[i].b=0;
@@ -662,6 +675,7 @@ void flashPatternAdvance(void)
             break;
             case LED_PAT_UNIFORM_PARTICLE:
             case LED_PAT_COLOR_UNIFORM_PARTICLE:
+            case LED_PAT_LIST_UNIFORM_PARTICLE:
                 //set to off
                 LED_stat[0].colors[i].r=LED_stat[0].colors[i].g=LED_stat[0].colors[i].b=0;
                 //set brightness to zero
@@ -915,12 +929,14 @@ void flashPatternChange(int pattern)
         case LED_PAT_PARTICLE:
         case LED_PAT_UNIFORM_PARTICLE:
         case LED_PAT_COLOR_UNIFORM_PARTICLE:
+        case LED_PAT_LIST_UNIFORM_PARTICLE:
+        case LED_PAT_LIST_PARTICLE:
             pat_d.basic.LED_idx=LED_LEN;
             //set interrupt interval
             flash_per=10;
             for(i=0;i<NUM_PARTICLES;i++)
             {
-                new_particle(&pat_d.ptc.particles[i],LED_pattern==LED_PAT_COLOR_PARTICLE || LED_pattern==LED_PAT_COLOR_UNIFORM_PARTICLE);
+                new_particle(&pat_d.ptc.particles[i],LED_pattern);
             }
         break;
         case LED_PAT_EYES_H:

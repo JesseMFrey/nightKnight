@@ -383,6 +383,8 @@ const struct {
                  {"cparticle",LED_PAT_COLOR_PARTICLE},
                  {"uparticle",LED_PAT_UNIFORM_PARTICLE},
                  {"cuparticle",LED_PAT_COLOR_UNIFORM_PARTICLE},
+                 {"luparticle",LED_PAT_LIST_UNIFORM_PARTICLE},
+                 {"lparticle",LED_PAT_LIST_PARTICLE},
                  {NULL,0}
 };
 
