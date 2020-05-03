@@ -37,6 +37,31 @@ const FLIGHT_PATTERN patterns[]={
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                          }
                                  },
+                                 {"USA",{
+                                          //Startup pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
+                                          //Idle pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
+                                          //Pad pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=3,.color={.brt=8,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}}},
+                                          //Boost pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_colors}}},
+                                          //Fast pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_colors}}},
+                                          //Coast pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_colors}}},
+                                          //Drogue pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLASH_GAP,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_RW_colors}}},
+                                          //Main pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightListParticle,.data=(void*)&USA_colors}}},
+                                          //Landed pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=2,.color={.brt=4,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}}},
+                                          //Invalid pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PANIC}}},
+                                          //Test pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
+                                         }
+                                 },
                                  {NULL,{}}
 };
 
