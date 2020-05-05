@@ -755,7 +755,14 @@ const struct{
 int clist_Cmd(int argc,char **argv)
 {
     const COLOR_LIST *list=NULL;
-    int i;
+    COLOR_LIST *cust_list=(COLOR_LIST*)custom_clist;
+    int LED_brt;
+    char *eptr;
+    int i,j;
+    long int temp;
+    int height;
+    int c[3];
+
     if(argc==0)
     {
         printf("Color Lists:\r\n");
@@ -766,20 +773,186 @@ int clist_Cmd(int argc,char **argv)
     }
     else
     {
-        for(i=0;clists[i].name!=NULL;i++)
+        if(!strcmp("print",argv[1]))
         {
-            if(!strcmp(clists[i].name,argv[1]))
+            list=(COLOR_LIST*)custom_clist;
+            printf("idx\t""alt\t""Brt\t""Red\t""Green\t""Blue\r\n");
+            for(i=0;i<list->num_colors;i++)
             {
-                list=clists[i].list;
-                break;
+                printf("%i\t%i\t%u\t%u\t%u\t%u\r\n",i,list->alt_color[i].alt,list->alt_color[i].color.brt,list->alt_color[i].color.r,list->alt_color[i].color.g,list->alt_color[i].color.b);
             }
+            return 0;
         }
-        if(list==NULL)
+        else if(!strcmp("add",argv[1]))
         {
-            printf("Error : \"%s\" is not a valid color list\r\n",argv[1]);
-            return 1;
+            if(cust_list->num_colors>=CUSTOM_LIST_COLORS)
+            {
+                printf("Error : list can not have more than %u entries\r\n",CUSTOM_LIST_COLORS);
+                return 1;
+            }
+            if(argc<6)
+            {
+                printf("Error : add requires 5 extra arguments\r\n");
+                return 2;
+            }
+            //parse height
+            temp=strtol(argv[2],&eptr,0);
+
+            //check if the whole string was parsed
+            if(*eptr)
+            {
+              //end of string not found
+              printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
+              return 2;
+            }
+
+            if(temp>INT_MAX)
+            {
+              printf("Error : altitude must be less than %i. got %li\r\n",UINT_MAX,temp);
+              return 4;
+            }
+            if(temp<INT_MIN)
+            {
+              printf("Error : altitude must be greater than %i but got %li\r\n",INT_MIN,temp);
+              return 5;
+            }
+            //set height
+            height=temp;
+
+            //parse brightness
+            temp=strtol(argv[3],&eptr,10);
+
+            //check if the whole string was parsed
+            if(*eptr)
+            {
+               //end of string not found
+               printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[3],eptr);
+               return 2;
+            }
+
+            //check limits
+            if(temp>MAX_BRT)
+            {
+               printf("Error : LED brightness must be less than %i. got %li\r\n",MAX_BRT,temp);
+               return 4;
+            }
+            if(temp<0)
+            {
+               printf("Error : LED brightness can not be less than zero. got %li\r\n",temp);
+               return 5;
+            }
+            LED_brt=temp;
+
+            //parse color values
+            for(i=0;i<3;i++)
+            {
+                //parse value
+                temp=strtol(argv[4+i],&eptr,0);
+
+                //check if the whole string was parsed
+                if(*eptr)
+                {
+                    //end of string not found
+                    printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[4+i],eptr);
+                    return 2;
+                }
+
+                if(temp>0xFF)
+                {
+                    printf("Error : color values must be less than 255. got %li\r\n",temp);
+                    return 4;
+                }
+                if(temp<0)
+                {
+                    printf("Error : color values must be greater than zero. got %li\r\n",temp);
+                    return 5;
+                }
+                c[i]=temp;
+            }
+
+            for(i=0;i<cust_list->num_colors;i++)
+            {
+                if(cust_list->alt_color[i].alt>height)
+                {
+                    break;
+                }
+            }
+            for(j=cust_list->num_colors;j>i;j--)
+            {
+                //shift up colors after new color
+                cust_list->alt_color[j]=cust_list->alt_color[j-1];
+            }
+
+            //set values
+            cust_list->alt_color[i].color.r=c[0];
+            cust_list->alt_color[i].color.g=c[1];
+            cust_list->alt_color[i].color.b=c[2];
+            cust_list->alt_color[i].color.brt=LED_brt;
+            cust_list->alt_color[i].alt=height;
+            //increment count
+            cust_list->num_colors+=1;
+            return 0;
         }
-        flashPattern_setList(list);
+        else if(!strcmp("remove",argv[1]))
+        {
+            if(cust_list->num_colors<=0)
+            {
+                printf("Error : cant remove from an empty list\r\n");
+                return 7;
+            }
+            if(argc<2)
+            {
+                printf("Error : \"remove\" requires one extra argument\r\n");
+                return 6;
+            }
+            //parse value
+            temp=strtol(argv[2],&eptr,0);
+
+            //check if the whole string was parsed
+            if(*eptr)
+            {
+                //end of string not found
+                printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
+                return 2;
+            }
+
+            if(cust_list->num_colors>=0xFF)
+            {
+                printf("Error : removal index must be less than %i for current list. got %li\r\n",cust_list->num_colors,temp);
+                return 4;
+            }
+            if(temp<0)
+            {
+                printf("Error : removal index must be greater than zero. got %li\r\n",temp);
+                return 5;
+            }
+
+            //shrink list size
+            cust_list->num_colors-=1;
+            //shift entries down
+            for(i=temp;i<cust_list->num_colors;i++)
+            {
+                cust_list->alt_color[i]=cust_list->alt_color[i+1];
+            }
+
+        }
+        else
+        {
+            for(i=0;clists[i].name!=NULL;i++)
+            {
+                if(!strcmp(clists[i].name,argv[1]))
+                {
+                    list=clists[i].list;
+                    break;
+                }
+            }
+            if(list==NULL)
+            {
+                printf("Error : \"%s\" is not a valid color list\r\n",argv[1]);
+                return 1;
+            }
+            flashPattern_setList(list);
+        }
     }
     return 0;
 }
