@@ -28,9 +28,6 @@ void init5Vreg(void)
     P1IFG&=~BIT6;
     P1IE |= BIT6;
 
-    //turn on regulator
-    reg5V_on();
-
 }
 
 
