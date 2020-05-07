@@ -18,6 +18,7 @@
 #include "flightPattern.h"
 #include "Companion.h"
 #include "events.h"
+#include "reset.h"
 
 
 int brt_Cmd(int argc,char **argv)
@@ -957,6 +958,14 @@ int clist_Cmd(int argc,char **argv)
     return 0;
 }
 
+
+int resets_Cmd(int argc,char **argv)
+{
+    printf("Number of resets = %u\r\n",nr_resets);
+    printf("Reset reason : %s\r\n",reset_to_string(reset_reason));
+    return 0;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -970,5 +979,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"chute","change chute LED",chute_Cmd},
                           {"sim","simulate a flight",sim_Cmd},
                           {"clist","set color list",clist_Cmd},
+                          {"resets","Print number of resets",resets_Cmd},
                           {NULL,NULL,NULL}
 };

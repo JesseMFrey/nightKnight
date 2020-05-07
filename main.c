@@ -44,6 +44,7 @@
 #include "terminal.h"
 #include <stdio.h>
 #include "flightPattern.h"
+#include "reset.h"
 
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
@@ -74,6 +75,7 @@ int fputs(const char *_ptr, register FILE *_fp)
     return len;
 }
 
+
 static TERM_DAT term;
 
 /*  
@@ -89,6 +91,7 @@ void main (void)
 
     setupDIP();
     init5Vreg();
+    init_reset();
 
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
