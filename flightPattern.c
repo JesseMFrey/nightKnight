@@ -32,7 +32,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_SATURATION,.color={.brt=2,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                           //Invalid pattern
-                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PANIC}}},
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PATTERN_PANIC}}},
                                           //Test pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                          }
@@ -57,7 +57,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=2,.color={.brt=4,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}}},
                                           //Invalid pattern
-                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PANIC}}},
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PATTERN_PANIC}}},
                                           //Test pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                          }
@@ -82,7 +82,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=9,.color={.brt=4,.r=255,.g=200,.b=150},.list=&RNBW_colors}}},
                                           //Invalid pattern
-                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PANIC}}},
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PATTERN_PANIC}}},
                                           //Test pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                          }
@@ -99,7 +99,7 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
     if(new_dat->command>=AO_FLIGHT_NUM)
     {
         //set panic mode
-        panicPattern();
+        panic(LED_PAT_MODE_PANIC);
         //invalid mode, nothing left to do
         return new_dat->flight_state;
     }
@@ -138,7 +138,7 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
         break;
         default:
             //not a valid pattern, Panic!!
-            panicPattern();
+            panic(LED_PAT_PATTERN_PANIC);
         break;
     }
     //return current mode

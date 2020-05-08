@@ -41,7 +41,7 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
             //5V regulator power good interrupt
             if(reg5V_is_on() && !reg_startup)
             {
-                panicPattern();
+                panic(LED_PAT_POWER_PANIC);
             }
         break;
     }

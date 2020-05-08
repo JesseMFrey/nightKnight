@@ -57,7 +57,7 @@ void flashPattern_setValue(unsigned int val);
 void flashPattern_setList(const COLOR_LIST *list);
 void flashPatternVC(int pattern,unsigned int val,LED_color color);
 void flashPatternVCL(int pattern,unsigned int val,LED_color color,const COLOR_LIST *list);
-void panicPattern(void);
+void panic(int type);
 
 //flash patterns
 enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_PAT_SATURATION,
@@ -67,7 +67,7 @@ enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_
     //wave patterns
     LED_PAT_WAVE_BIG_U,LED_PAT_WAVE_BIG_D,LED_PAT_WAVE_SM_U,LED_PAT_WAVE_SM_D,LED_PAT_WAVE_HUE_D,LED_PAT_WAVE_HUE_U,LED_PAT_WAVE_SAT_D,LED_PAT_WAVE_SAT_U,
     //panic pattern
-    LED_PAT_PANIC,
+    LED_PAT_POWER_PANIC,LED_PAT_MODE_PANIC,LED_PAT_RESET_PANIC,LED_PAT_PATTERN_PANIC,
     //particle patterns
     LED_PAT_PARTICLE,LED_PAT_COLOR_PARTICLE,LED_PAT_UNIFORM_PARTICLE,LED_PAT_COLOR_UNIFORM_PARTICLE,LED_PAT_LIST_PARTICLE,LED_PAT_LIST_UNIFORM_PARTICLE,
     //end of list, get number of elements

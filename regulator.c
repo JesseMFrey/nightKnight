@@ -64,6 +64,6 @@ void __attribute__ ((interrupt(TIMER3_A0_VECTOR))) PG_inhibit (void)
     //check PG pin
     if(!(P1IN&BIT6))
     {
-        panicPattern();
+        panic(LED_PAT_POWER_PANIC);
     }
 }

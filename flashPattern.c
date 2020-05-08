@@ -86,13 +86,36 @@ static int limit_idx(int i)
     return i;
 }
 
-void panicPattern(void)
+int isPanic(int type)
+{
+    switch(type)
+    {
+        case LED_PAT_POWER_PANIC:
+		case LED_PAT_MODE_PANIC:
+		case LED_PAT_RESET_PANIC:
+		case LED_PAT_PATTERN_PANIC:
+		    return 1;
+		default:
+		    return 0;
+    }
+}
+
+void panic(int type)
 {
     //check if we are in panic
-    if(LED_pattern!=LED_PAT_PANIC)
+    if(!isPanic(LED_pattern))
     {
-        //PANIC!!
-        flashPatternChange(LED_PAT_PANIC);
+        //check if we actually have a panic pattern
+        if(isPanic(type))
+        {
+            //PANIC!!
+            flashPatternChange(type);
+        }
+        else
+        {
+            //use pattern panic for incorrect panic
+            flashPatternChange(LED_PAT_PATTERN_PANIC);
+        }
     }
 }
 
@@ -118,8 +141,8 @@ void init_FlashPattern(void)
         break;
     case 2:
         //set flash pattern
-        flashPattern_setList(&USA_colors);
-        flashPatternChange(LED_PAT_ST_LIST);
+        flashPattern_setList(&USA_RW_colors);
+        flashPatternVC(LED_PAT_ST_LIST,3,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=0,.b=255});
         break;
     case 3:
         //set flash pattern
@@ -131,18 +154,43 @@ void init_FlashPattern(void)
         break;
     case 5:
         flashPattern_setList(&RNBW_colors);
-        flashPatternChange(LED_PAT_FLOW_LIST);
+        flashPatternVC(LED_PAT_FLOW_LIST,6,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=200,.b=150});
         break;
     case 6:
         flashPattern_setList(&RNBW_colors);
-        flashPatternChange(LED_PAT_ST_LIST);
+        flashPatternVC(LED_PAT_ST_LIST,6,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=200,.b=150});
         break;
     case 7:
         flashPattern_setList(&RNBW_colors);
         flashPatternChange(LED_PAT_FLASH_NOGAP);
         break;
     case 8:
-        flashPatternVC(LED_PAT_PARTICLE,NUM_PARTICLES,(LED_color){MAX_BRT,255,150,10});
+        flashPatternVC(LED_PAT_PARTICLE,NUM_PARTICLES,(LED_color){.brt=MAX_BRT,.r=255,.g=150,.b=10});
+        break;
+    case 9:
+        flashPattern_setList(&RNBW_colors);
+        flashPatternVC(LED_PAT_LIST_PARTICLE,6,(LED_color){.brt=MAX_BRT,.r=255,.g=200,.b=150});
+        break;
+    case 10:
+        //set flash pattern
+        flashPattern_setList(&USA_RW_colors);
+        flashPatternVC(LED_PAT_FLOW_LIST,3,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=0,.b=255});
+        break;
+    case 11:
+        //set flash pattern
+        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=0,.b=0});
+        break;
+    case 12:
+        //set flash pattern
+        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=255,.b=0});
+        break;
+    case 13:
+        //set flash pattern
+        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=150,.b=10});
+        break;
+    case 14:
+        //set flash pattern
+        flashPatternChange(LED_PAT_EYES_H);
         break;
     default:
         //set LED's off
@@ -458,7 +506,10 @@ void flashPatternAdvance(void)
             }
             pat_d.basic.idx_dir=(0xFF)/pat_val;
         break;
-        case LED_PAT_PANIC:
+        case LED_PAT_POWER_PANIC:
+        case LED_PAT_MODE_PANIC:
+        case LED_PAT_RESET_PANIC:
+        case LED_PAT_PATTERN_PANIC:
             pat_d.basic.LED_idx+=1;
             if(pat_d.basic.LED_idx>=6)
             {
@@ -826,7 +877,26 @@ void flashPatternAdvance(void)
                     nosecone_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
                 }
             break;
-            case LED_PAT_PANIC:
+            case LED_PAT_POWER_PANIC:
+                if((pat_d.basic.LED_idx==1 || pat_d.basic.LED_idx==3) && lin_idx&1)
+                {
+                    //set color to red
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|8;
+                }
+                else
+                {
+                    //set LED's off
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+                }
+            break;
+            case LED_PAT_MODE_PANIC:
                 if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                 {
                     //set color to red
@@ -845,6 +915,56 @@ void flashPatternAdvance(void)
                     //set fixed, medium brightness
                     LED_stat[0].colors[i].brt=LED_ST_BITS|0;
                 }
+            break;
+            case LED_PAT_RESET_PANIC:
+                if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
+                {
+                    //set color to red yellow
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0xFF;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|8;
+                }
+                else
+                {
+                    //set LED's off
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+                }
+            break;
+            case LED_PAT_PATTERN_PANIC:
+                if(pat_d.basic.LED_idx==1)
+                {
+                    //set color to red
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|8;
+                }
+                else if(pat_d.basic.LED_idx==3)
+                {
+                    //set color to yellow
+                    LED_stat[0].colors[i].r  =0xFF;
+                    LED_stat[0].colors[i].g  =0xFF;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|8;
+                }
+                else
+                {
+                    //set LED's off
+                    LED_stat[0].colors[i].r  =0;
+                    LED_stat[0].colors[i].g  =0;
+                    LED_stat[0].colors[i].b  =0;
+                    //set fixed, medium brightness
+                    LED_stat[0].colors[i].brt=LED_ST_BITS|0;
+                }
+            break;
         }
     }
     //send new info
@@ -976,7 +1096,10 @@ void flashPatternChange(int pattern)
             //set interrupt interval
             flash_per=70;
         break;
-        case LED_PAT_PANIC:
+        case LED_PAT_POWER_PANIC:
+        case LED_PAT_MODE_PANIC:
+        case LED_PAT_RESET_PANIC:
+        case LED_PAT_PATTERN_PANIC:
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=200;
