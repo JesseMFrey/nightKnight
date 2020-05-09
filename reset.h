@@ -18,7 +18,7 @@ enum{RST_SRC_INVALID=0,RST_SRC_BOR,RST_SRC_RSTNMI,RST_SRC_DOBOR,RST_SRC_LPM5WU,R
     RST_SRC_WDTTO,RST_SRC_WDTKEY,RST_SRC_KEYV,RST_SRC_PERF,RST_SRC_PMMKEY,RST_SRC_UNKNOWN
 };
 
-void init_reset(void);
+int init_reset(void);
 const char *reset_to_string(unsigned int reason);
 
 

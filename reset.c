@@ -12,8 +12,9 @@ unsigned int __attribute__((noinit)) nr_resets;
 
 unsigned int reset_reason;
 
-void init_reset(void)
+int init_reset(void)
 {
+    int normal=0;
     switch(SYSRSTIV)
     {
         case SYSRSTIV_NONE:
@@ -23,11 +24,13 @@ void init_reset(void)
 			reset_reason = RST_SRC_BOR;
 			//clear number of resets
 			nr_resets=0;
+			normal=1;
 		break;
         case SYSRSTIV_RSTNMI:
 			reset_reason = RST_SRC_RSTNMI;
             //clear number of resets
             nr_resets=0;
+            normal=1;
 		break;
         case SYSRSTIV_DOBOR:
 			reset_reason = RST_SRC_DOBOR;
@@ -43,6 +46,9 @@ void init_reset(void)
 		break;
         case SYSRSTIV_SVSH:
 			reset_reason = RST_SRC_SVSH;
+            //clear number of resets
+            nr_resets=0;
+            normal=1;
 		break;
         case SYSRSTIV_SVML_OVP:
 			reset_reason = RST_SRC_SVML_OVP;
@@ -74,6 +80,8 @@ void init_reset(void)
     }
     //increment number of resets
     nr_resets++;
+    //return true if reset was normal, false otherwise
+    return normal;
 }
 
 const char *reset_to_string(unsigned int reason)

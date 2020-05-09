@@ -86,12 +86,13 @@ void main (void)
     e_type wake_e;
     uint8_t lastState=ao_flight_invalid;
     int c;
+    int expected_reset;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
     setupDIP();
     init5Vreg();
-    init_reset();
+    expected_reset=init_reset();
 
     PMM_setVCore(PMM_CORE_LEVEL_3);
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
@@ -103,6 +104,11 @@ void main (void)
 
     init_FlashPattern();
 
+    //check if this was unusual
+    if(!expected_reset)
+    {
+        panic(LED_PAT_RESET_PANIC);
+    }
 
     __enable_interrupt();  // Enable interrupts globally
     
