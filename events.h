@@ -8,11 +8,12 @@
 #ifndef EVENTS_H_
 #define EVENTS_H_
 
-enum{COMP_RX_CMD=0x01,FM_SIM_ADVANCE=0x02};
+enum{COMP_RX_CMD=1<<0,FM_SIM_ADVANCE=1<<1,FP_ADVANCE=1<<2};
 
 typedef unsigned int e_type;
 
 e_type e_get_clear(void);
+void LPM0_check(void);
 
 extern e_type e_flags;
 

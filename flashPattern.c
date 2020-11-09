@@ -299,6 +299,12 @@ static inline char brt_offset(unsigned char brt,int offset)
 
 void flashPatternAdvance(void)
 {
+    //set event for flash pattern
+    e_flags|=FP_ADVANCE;
+}
+
+void _flashPatternAdvance(void)
+{
     int i,j;
     int tmp1,tmp2;
     int red_idx,blue_idx,green_idx;
@@ -1229,6 +1235,8 @@ void __attribute__ ((interrupt(TIMER1_A0_VECTOR))) flash_ISR (void)
 
         //set next flash pattern
         flashPatternAdvance();
+        //we need to exit LPM to update flash pattern
+        LPM0_EXIT;
     }
 }
 

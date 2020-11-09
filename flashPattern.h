@@ -48,6 +48,7 @@ typedef struct
 
 void flashPatternChange(int pattern);
 void flashPatternAdvance(void);
+void _flashPatternAdvance(void);
 void HsvToLED(LED_color *dest,unsigned char brt,unsigned char hue,unsigned char saturation,unsigned char value);
 void flashPatternNext(void);
 int flashPatternGet(void);

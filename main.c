@@ -113,40 +113,33 @@ void main (void)
     __enable_interrupt();  // Enable interrupts globally
     
 
-    printf("NightKnight Command mode\r\n>");
+    printf("NightKnight Ready!\r\n>");
 
     //initialize command vars
     terminal_init(&term);
 
-    //interactive loop for commandline
-    while(cpCmd.flight_state<ao_flight_pad || cpCmd.flight_state>ao_flight_landed)
-    {
-        c=UART_CheckKey();
-        if(c==EOF)
-        {
-            //no char from user, sleep
-            // Enter LPM0
-            __bis_SR_register(LPM0_bits + GIE);
-            _NOP();
-        }
-        else
-        {
-            terminal_proc_char(c,&term);
-        }
-    }
-
-    printf("Flight detected command mode exited\n");
 
     while (1)
     {
-        // Enter LPM0
-        __bis_SR_register(LPM0_bits + GIE);
-        _NOP();
         //read interrupts
         wake_e=e_get_clear();
         if(wake_e&COMP_RX_CMD)
         {
             lastState=proc_flightP(&cpCmd,&patterns[0],lastState);
+        }
+        if(wake_e&FP_ADVANCE)
+        {
+            //advance flash pattern
+            _flashPatternAdvance();
+        }
+        c=UART_CheckKey();
+        if(c==EOF)
+        {
+            LPM0_check();
+        }
+        else
+        {
+            terminal_proc_char(c,&term);
         }
 
     }  // while(1)
