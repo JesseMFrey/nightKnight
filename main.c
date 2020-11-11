@@ -87,6 +87,8 @@ void main (void)
     uint8_t lastState=ao_flight_invalid;
     int c;
     int expected_reset;
+    //true if flash pattern has been updated
+    int fp_done=0;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
@@ -98,7 +100,7 @@ void main (void)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
     initUART();
-    initADC();
+    //initADC();
     init_Nosecone();
     init_Companion();
 
@@ -127,19 +129,18 @@ void main (void)
         {
             lastState=proc_flightP(&cpCmd,&patterns[0],lastState);
         }
-        if(wake_e&FP_ADVANCE)
-        {
-            //advance flash pattern
-            _flashPatternAdvance();
-        }
+        //advance flash pattern
+        fp_done=flashPatternStep();
+
         c=UART_CheckKey();
-        if(c==EOF)
-        {
-            LPM0_check();
-        }
-        else
+        if(c!=EOF)
         {
             terminal_proc_char(c,&term);
+        }
+        else if(fp_done)
+        {
+            //go into LPM0 if flash pattern is updated and there are no event flags
+            LPM0_check();
         }
 
     }  // while(1)
