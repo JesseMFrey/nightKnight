@@ -100,7 +100,7 @@ void main (void)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     initLEDs();
     initUART();
-    //initADC();
+    initADC();
     init_Nosecone();
     init_Companion();
 
