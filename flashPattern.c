@@ -22,6 +22,8 @@ static int LED_pattern;
 
 #define NUM_PARTICLES (LED_STR*7)
 
+static int buffer_idx=0;
+
 static union{
     struct{
         int idx_dir;
@@ -323,6 +325,10 @@ int flashPatternStep(void)
 
     if(pat_i==0){
 
+        //increment buffer index
+        buffer_idx+=1;
+        //limit to 1 bit
+        buffer_idx&=0x01;
         //advance index if needed
         switch(LED_pattern){
             case LED_PAT_COLORTRAIN:
@@ -546,9 +552,9 @@ int flashPatternStep(void)
         switch(LED_pattern){
             case LED_PAT_STR_ST:
                 //set color
-                LED_stat[0].colors[pat_i-1]=pat_list->alt_color[(strp_idx%pat_list->num_colors)].color;
+                LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[(strp_idx%pat_list->num_colors)].color;
                 //set brightness
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
             break;
             case LED_PAT_FLASH_GAP:
                 if(pat_d.basic.LED_idx&1)
@@ -561,179 +567,179 @@ int flashPatternStep(void)
                         switch(LED_pattern){
                             case LED_PAT_STR_ST:
                                 //set color
-                                LED_stat[0].colors[pat_i-1]=pat_list->alt_color[(strp_idx%pat_list->num_colors)].color;
+                                LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[(strp_idx%pat_list->num_colors)].color;
                                 //set brightness
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                             break;
                             case LED_PAT_FLASH_GAP:
                                 if(pat_d.basic.LED_idx&1)
                                 {
                                     //odd, off
                                     //set brightness to zero
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
                                     //LEDs off
-                                    LED_stat[0].colors[pat_i-1].r=0;
-                                    LED_stat[0].colors[pat_i-1].g=0;
-                                    LED_stat[0].colors[pat_i-1].b=0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r=0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g=0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b=0;
                                 }
                                 else
                                 {
                                     //even,on
                                     //set brightness from color
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                                     //color index
                                     tmp1=pat_d.basic.LED_idx/2;
                                     //set color from list
-                                    LED_stat[0].colors[pat_i-1].r=pat_list->alt_color[tmp1].color.r;
-                                    LED_stat[0].colors[pat_i-1].g=pat_list->alt_color[tmp1].color.g;
-                                    LED_stat[0].colors[pat_i-1].b=pat_list->alt_color[tmp1].color.b;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r=pat_list->alt_color[tmp1].color.r;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g=pat_list->alt_color[tmp1].color.g;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b=pat_list->alt_color[tmp1].color.b;
                                 }
                             break;
                             case LED_PAT_BOOST:
                                 //set color from pattern color
-                                LED_stat[0].colors[pat_i-1]=pat_color;
+                                LED_stat[buffer_idx].colors[pat_i-1]=pat_color;
                                 if(pat_d.basic.LED_idx==0)
                                 {
                                     //make brighter
-                                    LED_stat[0].colors[pat_i-1].brt=brt_offset(pat_color.brt,14);
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=brt_offset(pat_color.brt,14);
                                 }
                                 //add brightness bits
-                                LED_stat[0].colors[pat_i-1].brt|=LED_ST_BITS;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt|=LED_ST_BITS;
                             break;
                             case LED_PAT_OFF:
                                 //set color to zero
-                                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].b=LED_stat[0].colors[pat_i-1].g;
+                                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].b=LED_stat[buffer_idx].colors[pat_i-1].g;
                                 //set brightness to zero
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
                             break;
                             case LED_PAT_COLORTRAIN:
                                 //set brightness from color
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                                 //set red
-                                LED_stat[0].colors[pat_i-1].r=(lin_idx==pat_d.basic.red_idx)?0xFF:0;
+                                LED_stat[buffer_idx].colors[pat_i-1].r=(lin_idx==pat_d.basic.red_idx)?0xFF:0;
                                 //set blue
-                                LED_stat[0].colors[pat_i-1].b=(lin_idx==pat_d.basic.blue_idx)?0xFF:0;
+                                LED_stat[buffer_idx].colors[pat_i-1].b=(lin_idx==pat_d.basic.blue_idx)?0xFF:0;
                                 //set green
-                                LED_stat[0].colors[pat_i-1].g=(lin_idx==pat_d.basic.green_idx)?0xFF:0;
+                                LED_stat[buffer_idx].colors[pat_i-1].g=(lin_idx==pat_d.basic.green_idx)?0xFF:0;
                             break;
                             case LED_PAT_HUE:
                                 //is this the first loop
                                 if((pat_i-1)==0)
                                 {
                                     //calculate color in RGB
-                                    HsvToLED(&LED_stat[0].colors[0],pat_color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
+                                    HsvToLED(&LED_stat[buffer_idx].colors[0],pat_color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
                                 }else
                                 {
                                     //copy from first LED
-                                    LED_stat[0].colors[pat_i-1].brt=LED_stat[0].colors[0].brt;
-                                    LED_stat[0].colors[pat_i-1].r  =LED_stat[0].colors[0].r;
-                                    LED_stat[0].colors[pat_i-1].g  =LED_stat[0].colors[0].g;
-                                    LED_stat[0].colors[pat_i-1].b  =LED_stat[0].colors[0].b;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_stat[buffer_idx].colors[0].brt;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =LED_stat[buffer_idx].colors[0].r;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =LED_stat[buffer_idx].colors[0].g;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =LED_stat[buffer_idx].colors[0].b;
                                 }
                             break;
                             case LED_PAT_BURST:
                                 //set to full brightness
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                                 //LEDs are red or whit, red always max
-                                LED_stat[0].colors[pat_i-1].r  =0xFF;
+                                LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
                                 if(lin_idx>=(C_LEFT-pat_d.basic.LED_idx) && lin_idx<=(C_RIGHT+pat_d.basic.LED_idx))
                                 {
                                     if(pat_d.basic.LED_idx>=3 && lin_idx>=(C_LEFT-(pat_d.basic.LED_idx-3)) && lin_idx<=(C_RIGHT+(pat_d.basic.LED_idx-3)))
                                     {
                                         //LED is black, clear red
-                                        LED_stat[0].colors[pat_i-1].r  =0x00;
+                                        LED_stat[buffer_idx].colors[pat_i-1].r  =0x00;
                                     }
                                     //LED is red
-                                    LED_stat[0].colors[pat_i-1].g  =0x00;
-                                    LED_stat[0].colors[pat_i-1].b  =0x00;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0x00;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0x00;
                                 }
                                 else
                                 {
                                     //LED is white
-                                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].b  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
                                 }
                                 if(pat_d.basic.LED_idx>=6)
                                 {
-                                    //HsvToLED(&LED_stat[0].colors[pat_i-1],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
+                                    //HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
                                     //LED is white
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].b  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
                                     //ramp up brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
 
                                 }
                             break;
                             case LED_PAT_SATURATION:
                                 //calculate color in RGB
-                                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
+                                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
                             break;
                             case LED_PAT_GRAPH:
                                 if(lin_idx<pat_val)
                                 {
-                                    LED_stat[0].colors[pat_i-1]=pat_color;
+                                    LED_stat[buffer_idx].colors[pat_i-1]=pat_color;
                                     //add status bits
-                                    LED_stat[0].colors[pat_i-1].brt|=LED_ST_BITS;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt|=LED_ST_BITS;
                                 }
                                 else
                                 {
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
-                                    LED_stat[0].colors[pat_i-1].r=0xFF;
-                                    LED_stat[0].colors[pat_i-1].g=0xFF;
-                                    LED_stat[0].colors[pat_i-1].b=0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r=0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g=0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b=0xFF;
                                 }
                             break;
                             case LED_SOLID_ST:
                                 //set all LEDs from color
-                                LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                                LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                                LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                                LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                                LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                                LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                                 //set brightness
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                             break;
                             case LED_PAT_ST_LIST:
                                 if(lin_idx<FIN_LED)
                                 {
                                     //fins bright white
-                                    LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                                    LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                                    LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                                     //high brightness for fins
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                                 }
                                 else
                                 {
                                     //set color from array
-                                    LED_stat[0].colors[pat_i-1]=pat_list->alt_color[(((lin_idx-FIN_LED)/pat_val)%pat_list->num_colors)].color;
+                                    LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[(((lin_idx-FIN_LED)/pat_val)%pat_list->num_colors)].color;
                                     //set brightens from pattern color
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                                 }
                             break;
                             case LED_PAT_FLASH_NOGAP:
                                 //set color from list
-                                LED_stat[0].colors[pat_i-1]=pat_list->alt_color[pat_d.basic.LED_idx].color;
+                                LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[pat_d.basic.LED_idx].color;
                                 //set brightens from pattern color
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                             break;
                             case LED_PAT_FLOW_LIST:
                                 if(lin_idx<FIN_LED)
                                 {
                                     //fins bright white
-                                    LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                                    LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                                    LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                                     //high brightness for fins
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                                 }
                                 else
                                 {
                                     //set color from array
-                                    LED_stat[0].colors[pat_i-1]=pat_list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/pat_val)%pat_list->num_colors)].color;
+                                    LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/pat_val)%pat_list->num_colors)].color;
                                     //set color from pattern color
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                                 }
                             break;
                             case LED_PAT_COLOR_PARTICLE:
@@ -741,9 +747,9 @@ int flashPatternStep(void)
                             case LED_PAT_LIST_PARTICLE:
 
                                 //set to off
-                                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].g=LED_stat[0].colors[pat_i-1].b=0;
+                                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].g=LED_stat[buffer_idx].colors[pat_i-1].b=0;
                                 //set brightness to zero
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
 
                                 for(j=strp_idx;j<pat_d.ptc.num;j+=LED_STR)
                                 {
@@ -751,18 +757,18 @@ int flashPatternStep(void)
                                     if(tmp1>=0 && tmp1<=5)
                                     {
                                         //set color
-                                        LED_stat[0].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
-                                        LED_stat[0].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
-                                        LED_stat[0].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
+                                        LED_stat[buffer_idx].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
+                                        LED_stat[buffer_idx].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
+                                        LED_stat[buffer_idx].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
                                         if(tmp1==0)
                                         {
                                             //set brightness
-                                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
+                                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
                                         }
                                         else
                                         {
                                             //get brightness, mask out start bits
-                                            int tbrt=LED_stat[0].colors[pat_i-1].brt&(~LED_ST_BITS);
+                                            int tbrt=LED_stat[buffer_idx].colors[pat_i-1].brt&(~LED_ST_BITS);
                                             //add brightness from particle
                                             tbrt+=(6-tmp1);
                                             //saturate brightness
@@ -770,7 +776,7 @@ int flashPatternStep(void)
                                             {
                                                 tbrt=MAX_BRT;
                                             }
-                                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
+                                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
                                         }
                                     }
                                 }
@@ -779,9 +785,9 @@ int flashPatternStep(void)
                             case LED_PAT_COLOR_UNIFORM_PARTICLE:
                             case LED_PAT_LIST_UNIFORM_PARTICLE:
                                 //set to off
-                                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].g=LED_stat[0].colors[pat_i-1].b=0;
+                                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].g=LED_stat[buffer_idx].colors[pat_i-1].b=0;
                                 //set brightness to zero
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
 
                                 for(j=0;j<pat_d.ptc.num;j+=1)
                                 {
@@ -789,18 +795,18 @@ int flashPatternStep(void)
                                     if(tmp1>=0 && tmp1<=5)
                                     {
                                         //set color
-                                        LED_stat[0].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
-                                        LED_stat[0].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
-                                        LED_stat[0].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
+                                        LED_stat[buffer_idx].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
+                                        LED_stat[buffer_idx].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
+                                        LED_stat[buffer_idx].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
                                         if(tmp1==0)
                                         {
                                             //set brightness
-                                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
+                                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
                                         }
                                         else
                                         {
                                             //get brightness, mask out start bits
-                                            int tbrt=LED_stat[0].colors[pat_i-1].brt&(~LED_ST_BITS);
+                                            int tbrt=LED_stat[buffer_idx].colors[pat_i-1].brt&(~LED_ST_BITS);
                                             //add brightness from particle
                                             tbrt+=(6-tmp1);
                                             //saturate brightness
@@ -808,7 +814,7 @@ int flashPatternStep(void)
                                             {
                                                 tbrt=MAX_BRT;
                                             }
-                                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
+                                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
                                         }
                                     }
                                 }
@@ -817,18 +823,18 @@ int flashPatternStep(void)
                                 if((lin_idx!=pat_d.basic.idx_dir && lin_idx!=pat_d.basic.idx_dir+2) || pat_d.basic.LED_idx<=0)
                                 {
                                     //turn of LED
-                                    LED_stat[0].colors[pat_i-1].r  =0;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
                                 }
                                 else
                                 {
                                     //fade out LED
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.basic.LED_idx;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.basic.LED_idx;
                                 }
                             break;
                             case LED_PAT_WAVE_BIG_U:
@@ -836,9 +842,9 @@ int flashPatternStep(void)
                             case LED_PAT_WAVE_SM_U:
                             case LED_PAT_WAVE_SM_D:
                                 //set color
-                                LED_stat[0].colors[pat_i-1].r  = pat_color.r;
-                                LED_stat[0].colors[pat_i-1].g  = pat_color.g;
-                                LED_stat[0].colors[pat_i-1].b  = pat_color.b;
+                                LED_stat[buffer_idx].colors[pat_i-1].r  = pat_color.r;
+                                LED_stat[buffer_idx].colors[pat_i-1].g  = pat_color.g;
+                                LED_stat[buffer_idx].colors[pat_i-1].b  = pat_color.b;
 
                                 //calculate index in pattern
                                 tmp1=lin_idx+pat_d.basic.LED_idx;
@@ -865,7 +871,7 @@ int flashPatternStep(void)
                                 {
                                     tmp1=0;
                                 }
-                                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|tmp1;
+                                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|tmp1;
 
                                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                                 {
@@ -882,7 +888,7 @@ int flashPatternStep(void)
                                 tmp1*=pat_d.basic.idx_dir;
 
                                 //calculate color in RGB. Use the green and blue values from the pattern color as saturation and value
-                                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,tmp1,pat_color.g,pat_color.b);
+                                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,tmp1,pat_color.g,pat_color.b);
                             break;
                             case LED_PAT_WAVE_SAT_D:
                             case LED_PAT_WAVE_SAT_U:
@@ -903,7 +909,7 @@ int flashPatternStep(void)
                                 tmp1*=pat_d.basic.idx_dir;
 
                                 //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
-                                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,pat_color.r,tmp1,pat_color.b);
+                                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,pat_color.r,tmp1,pat_color.b);
                                 //set nosecone brightness based on saturation
                                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                                 {
@@ -914,257 +920,257 @@ int flashPatternStep(void)
                                 if((pat_d.basic.LED_idx==1 || pat_d.basic.LED_idx==3) && lin_idx&1)
                                 {
                                     //set color to red
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                                 }
                                 else
                                 {
                                     //set LED's off
-                                    LED_stat[0].colors[pat_i-1].r  =0;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                                 }
                             break;
                             case LED_PAT_MODE_PANIC:
                                 if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                                 {
                                     //set color to red
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                                 }
                                 else
                                 {
                                     //set LED's off
-                                    LED_stat[0].colors[pat_i-1].r  =0;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                                 }
                             break;
                             case LED_PAT_RESET_PANIC:
                                 if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                                 {
                                     //set color to red yellow
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                                 }
                                 else
                                 {
                                     //set LED's off
-                                    LED_stat[0].colors[pat_i-1].r  =0;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                                 }
                             break;
                             case LED_PAT_PATTERN_PANIC:
                                 if(pat_d.basic.LED_idx==1)
                                 {
                                     //set color to red
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                                 }
                                 else if(pat_d.basic.LED_idx==3)
                                 {
                                     //set color to yellow
-                                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                                 }
                                 else
                                 {
                                     //set LED's off
-                                    LED_stat[0].colors[pat_i-1].r  =0;
-                                    LED_stat[0].colors[pat_i-1].g  =0;
-                                    LED_stat[0].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                                     //set fixed, medium brightness
-                                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                                 }
                             break;
                         }
                     }
                     //set brightness to zero
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
                     //LEDs off
-                    LED_stat[0].colors[pat_i-1].r=0;
-                    LED_stat[0].colors[pat_i-1].g=0;
-                    LED_stat[0].colors[pat_i-1].b=0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r=0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g=0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b=0;
                 }
                 else
                 {
                     //even,on
                     //set brightness from color
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                     //color index
                     tmp1=pat_d.basic.LED_idx/2;
                     //set color from list
-                    LED_stat[0].colors[pat_i-1].r=pat_list->alt_color[tmp1].color.r;
-                    LED_stat[0].colors[pat_i-1].g=pat_list->alt_color[tmp1].color.g;
-                    LED_stat[0].colors[pat_i-1].b=pat_list->alt_color[tmp1].color.b;
+                    LED_stat[buffer_idx].colors[pat_i-1].r=pat_list->alt_color[tmp1].color.r;
+                    LED_stat[buffer_idx].colors[pat_i-1].g=pat_list->alt_color[tmp1].color.g;
+                    LED_stat[buffer_idx].colors[pat_i-1].b=pat_list->alt_color[tmp1].color.b;
                 }
             break;
             case LED_PAT_BOOST:
                 //set color from pattern color
-                LED_stat[0].colors[pat_i-1]=pat_color;
+                LED_stat[buffer_idx].colors[pat_i-1]=pat_color;
                 if(pat_d.basic.LED_idx==0)
                 {
                     //make brighter
-                    LED_stat[0].colors[pat_i-1].brt=brt_offset(pat_color.brt,14);
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=brt_offset(pat_color.brt,14);
                 }
                 //add brightness bits
-                LED_stat[0].colors[pat_i-1].brt|=LED_ST_BITS;
+                LED_stat[buffer_idx].colors[pat_i-1].brt|=LED_ST_BITS;
             break;
             case LED_PAT_OFF:
                 //set color to zero
-                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].b=LED_stat[0].colors[pat_i-1].g;
+                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].b=LED_stat[buffer_idx].colors[pat_i-1].g;
                 //set brightness to zero
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
             break;
             case LED_PAT_COLORTRAIN:
                 //set brightness from color
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                 //set red
-                LED_stat[0].colors[pat_i-1].r=(lin_idx==pat_d.basic.red_idx)?0xFF:0;
+                LED_stat[buffer_idx].colors[pat_i-1].r=(lin_idx==pat_d.basic.red_idx)?0xFF:0;
                 //set blue
-                LED_stat[0].colors[pat_i-1].b=(lin_idx==pat_d.basic.blue_idx)?0xFF:0;
+                LED_stat[buffer_idx].colors[pat_i-1].b=(lin_idx==pat_d.basic.blue_idx)?0xFF:0;
                 //set green
-                LED_stat[0].colors[pat_i-1].g=(lin_idx==pat_d.basic.green_idx)?0xFF:0;
+                LED_stat[buffer_idx].colors[pat_i-1].g=(lin_idx==pat_d.basic.green_idx)?0xFF:0;
             break;
             case LED_PAT_HUE:
                 //is this the first loop
                 if((pat_i-1)==0)
                 {
                     //calculate color in RGB
-                    HsvToLED(&LED_stat[0].colors[0],pat_color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
+                    HsvToLED(&LED_stat[buffer_idx].colors[0],pat_color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
                 }else
                 {
                     //copy from first LED
-                    LED_stat[0].colors[pat_i-1].brt=LED_stat[0].colors[0].brt;
-                    LED_stat[0].colors[pat_i-1].r  =LED_stat[0].colors[0].r;
-                    LED_stat[0].colors[pat_i-1].g  =LED_stat[0].colors[0].g;
-                    LED_stat[0].colors[pat_i-1].b  =LED_stat[0].colors[0].b;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_stat[buffer_idx].colors[0].brt;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =LED_stat[buffer_idx].colors[0].r;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =LED_stat[buffer_idx].colors[0].g;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =LED_stat[buffer_idx].colors[0].b;
                 }
             break;
             case LED_PAT_BURST:
                 //set to full brightness
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                 //LEDs are red or whit, red always max
-                LED_stat[0].colors[pat_i-1].r  =0xFF;
+                LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
                 if(lin_idx>=(C_LEFT-pat_d.basic.LED_idx) && lin_idx<=(C_RIGHT+pat_d.basic.LED_idx))
                 {
                     if(pat_d.basic.LED_idx>=3 && lin_idx>=(C_LEFT-(pat_d.basic.LED_idx-3)) && lin_idx<=(C_RIGHT+(pat_d.basic.LED_idx-3)))
                     {
                         //LED is black, clear red
-                        LED_stat[0].colors[pat_i-1].r  =0x00;
+                        LED_stat[buffer_idx].colors[pat_i-1].r  =0x00;
                     }
                     //LED is red
-                    LED_stat[0].colors[pat_i-1].g  =0x00;
-                    LED_stat[0].colors[pat_i-1].b  =0x00;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0x00;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0x00;
                 }
                 else
                 {
                     //LED is white
-                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                    LED_stat[0].colors[pat_i-1].b  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
                 }
                 if(pat_d.basic.LED_idx>=6)
                 {
-                    //HsvToLED(&LED_stat[0].colors[pat_i-1],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
+                    //HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
                     //LED is white
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                    LED_stat[0].colors[pat_i-1].b  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
                     //ramp up brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
 
                 }
             break;
             case LED_PAT_SATURATION:
                 //calculate color in RGB
-                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
+                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,strp_idx*85+(pat_d.basic.idx_dir>>1)*85,(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
             break;
             case LED_PAT_GRAPH:
                 if(lin_idx<pat_val)
                 {
-                    LED_stat[0].colors[pat_i-1]=pat_color;
+                    LED_stat[buffer_idx].colors[pat_i-1]=pat_color;
                     //add status bits
-                    LED_stat[0].colors[pat_i-1].brt|=LED_ST_BITS;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt|=LED_ST_BITS;
                 }
                 else
                 {
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
-                    LED_stat[0].colors[pat_i-1].r=0xFF;
-                    LED_stat[0].colors[pat_i-1].g=0xFF;
-                    LED_stat[0].colors[pat_i-1].b=0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                    LED_stat[buffer_idx].colors[pat_i-1].r=0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g=0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].b=0xFF;
                 }
             break;
             case LED_SOLID_ST:
                 //set all LEDs from color
-                LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                 //set brightness
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
             break;
             case LED_PAT_ST_LIST:
                 if(lin_idx<FIN_LED)
                 {
                     //fins bright white
-                    LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                    LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                    LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                     //high brightness for fins
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
                 else
                 {
                     //set color from array
-                    LED_stat[0].colors[pat_i-1]=pat_list->alt_color[(((lin_idx-FIN_LED)/pat_val)%pat_list->num_colors)].color;
+                    LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[(((lin_idx-FIN_LED)/pat_val)%pat_list->num_colors)].color;
                     //set brightens from pattern color
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                 }
             break;
             case LED_PAT_FLASH_NOGAP:
                 //set color from list
-                LED_stat[0].colors[pat_i-1]=pat_list->alt_color[pat_d.basic.LED_idx].color;
+                LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[pat_d.basic.LED_idx].color;
                 //set brightens from pattern color
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
             break;
             case LED_PAT_FLOW_LIST:
                 if(lin_idx<FIN_LED)
                 {
                     //fins bright white
-                    LED_stat[0].colors[pat_i-1].r  =pat_color.r;
-                    LED_stat[0].colors[pat_i-1].g  =pat_color.g;
-                    LED_stat[0].colors[pat_i-1].b  =pat_color.b;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =pat_color.r;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =pat_color.g;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =pat_color.b;
                     //high brightness for fins
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(pat_color.brt,9);
 
                 }
                 else
                 {
                     //set color from array
-                    LED_stat[0].colors[pat_i-1]=pat_list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/pat_val)%pat_list->num_colors)].color;
+                    LED_stat[buffer_idx].colors[pat_i-1]=pat_list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/pat_val)%pat_list->num_colors)].color;
                     //set color from pattern color
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
                 }
             break;
             case LED_PAT_COLOR_PARTICLE:
@@ -1172,9 +1178,9 @@ int flashPatternStep(void)
             case LED_PAT_LIST_PARTICLE:
 
                 //set to off
-                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].g=LED_stat[0].colors[pat_i-1].b=0;
+                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].g=LED_stat[buffer_idx].colors[pat_i-1].b=0;
                 //set brightness to zero
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
 
                 for(j=strp_idx;j<pat_d.ptc.num;j+=LED_STR)
                 {
@@ -1182,18 +1188,18 @@ int flashPatternStep(void)
                     if(tmp1>=0 && tmp1<=5)
                     {
                         //set color
-                        LED_stat[0].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
-                        LED_stat[0].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
-                        LED_stat[0].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
+                        LED_stat[buffer_idx].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
+                        LED_stat[buffer_idx].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
+                        LED_stat[buffer_idx].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
                         if(tmp1==0)
                         {
                             //set brightness
-                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
                         }
                         else
                         {
                             //get brightness, mask out start bits
-                            int tbrt=LED_stat[0].colors[pat_i-1].brt&(~LED_ST_BITS);
+                            int tbrt=LED_stat[buffer_idx].colors[pat_i-1].brt&(~LED_ST_BITS);
                             //add brightness from particle
                             tbrt+=(6-tmp1);
                             //saturate brightness
@@ -1201,7 +1207,7 @@ int flashPatternStep(void)
                             {
                                 tbrt=MAX_BRT;
                             }
-                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
                         }
                     }
                 }
@@ -1210,9 +1216,9 @@ int flashPatternStep(void)
             case LED_PAT_COLOR_UNIFORM_PARTICLE:
             case LED_PAT_LIST_UNIFORM_PARTICLE:
                 //set to off
-                LED_stat[0].colors[pat_i-1].r=LED_stat[0].colors[pat_i-1].g=LED_stat[0].colors[pat_i-1].b=0;
+                LED_stat[buffer_idx].colors[pat_i-1].r=LED_stat[buffer_idx].colors[pat_i-1].g=LED_stat[buffer_idx].colors[pat_i-1].b=0;
                 //set brightness to zero
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
 
                 for(j=0;j<pat_d.ptc.num;j+=1)
                 {
@@ -1220,18 +1226,18 @@ int flashPatternStep(void)
                     if(tmp1>=0 && tmp1<=5)
                     {
                         //set color
-                        LED_stat[0].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
-                        LED_stat[0].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
-                        LED_stat[0].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
+                        LED_stat[buffer_idx].colors[pat_i-1].r  =pat_d.ptc.particles[j].color.r;
+                        LED_stat[buffer_idx].colors[pat_i-1].g  =pat_d.ptc.particles[j].color.g;
+                        LED_stat[buffer_idx].colors[pat_i-1].b  =pat_d.ptc.particles[j].color.b;
                         if(tmp1==0)
                         {
                             //set brightness
-                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.ptc.particles[j].color.brt;
                         }
                         else
                         {
                             //get brightness, mask out start bits
-                            int tbrt=LED_stat[0].colors[pat_i-1].brt&(~LED_ST_BITS);
+                            int tbrt=LED_stat[buffer_idx].colors[pat_i-1].brt&(~LED_ST_BITS);
                             //add brightness from particle
                             tbrt+=(6-tmp1);
                             //saturate brightness
@@ -1239,7 +1245,7 @@ int flashPatternStep(void)
                             {
                                 tbrt=MAX_BRT;
                             }
-                            LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|(tbrt);
                         }
                     }
                 }
@@ -1248,18 +1254,18 @@ int flashPatternStep(void)
                 if((lin_idx!=pat_d.basic.idx_dir && lin_idx!=pat_d.basic.idx_dir+2) || pat_d.basic.LED_idx<=0)
                 {
                     //turn of LED
-                    LED_stat[0].colors[pat_i-1].r  =0;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
                 }
                 else
                 {
                     //fade out LED
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|pat_d.basic.LED_idx;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_d.basic.LED_idx;
                 }
             break;
             case LED_PAT_WAVE_BIG_U:
@@ -1267,9 +1273,9 @@ int flashPatternStep(void)
             case LED_PAT_WAVE_SM_U:
             case LED_PAT_WAVE_SM_D:
                 //set color
-                LED_stat[0].colors[pat_i-1].r  = pat_color.r;
-                LED_stat[0].colors[pat_i-1].g  = pat_color.g;
-                LED_stat[0].colors[pat_i-1].b  = pat_color.b;
+                LED_stat[buffer_idx].colors[pat_i-1].r  = pat_color.r;
+                LED_stat[buffer_idx].colors[pat_i-1].g  = pat_color.g;
+                LED_stat[buffer_idx].colors[pat_i-1].b  = pat_color.b;
 
                 //calculate index in pattern
                 tmp1=lin_idx+pat_d.basic.LED_idx;
@@ -1296,7 +1302,7 @@ int flashPatternStep(void)
                 {
                     tmp1=0;
                 }
-                LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|tmp1;
+                LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|tmp1;
 
                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                 {
@@ -1313,7 +1319,7 @@ int flashPatternStep(void)
                 tmp1*=pat_d.basic.idx_dir;
 
                 //calculate color in RGB. Use the green and blue values from the pattern color as saturation and value
-                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,tmp1,pat_color.g,pat_color.b);
+                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,tmp1,pat_color.g,pat_color.b);
             break;
             case LED_PAT_WAVE_SAT_D:
             case LED_PAT_WAVE_SAT_U:
@@ -1334,7 +1340,7 @@ int flashPatternStep(void)
                 tmp1*=pat_d.basic.idx_dir;
 
                 //calculate color in RGB. Use the red and blue values from the pattern color as hue and value
-                HsvToLED(&LED_stat[0].colors[pat_i-1],pat_color.brt,pat_color.r,tmp1,pat_color.b);
+                HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],pat_color.brt,pat_color.r,tmp1,pat_color.b);
                 //set nosecone brightness based on saturation
                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                 {
@@ -1345,88 +1351,88 @@ int flashPatternStep(void)
                 if((pat_d.basic.LED_idx==1 || pat_d.basic.LED_idx==3) && lin_idx&1)
                 {
                     //set color to red
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                 }
                 else
                 {
                     //set LED's off
-                    LED_stat[0].colors[pat_i-1].r  =0;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                 }
             break;
             case LED_PAT_MODE_PANIC:
                 if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                 {
                     //set color to red
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                 }
                 else
                 {
                     //set LED's off
-                    LED_stat[0].colors[pat_i-1].r  =0;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                 }
             break;
             case LED_PAT_RESET_PANIC:
                 if(pat_d.basic.LED_idx==1 ||pat_d.basic.LED_idx==3)
                 {
                     //set color to red yellow
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                 }
                 else
                 {
                     //set LED's off
-                    LED_stat[0].colors[pat_i-1].r  =0;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                 }
             break;
             case LED_PAT_PATTERN_PANIC:
                 if(pat_d.basic.LED_idx==1)
                 {
                     //set color to red
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                 }
                 else if(pat_d.basic.LED_idx==3)
                 {
                     //set color to yellow
-                    LED_stat[0].colors[pat_i-1].r  =0xFF;
-                    LED_stat[0].colors[pat_i-1].g  =0xFF;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|8;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|8;
                 }
                 else
                 {
                     //set LED's off
-                    LED_stat[0].colors[pat_i-1].r  =0;
-                    LED_stat[0].colors[pat_i-1].g  =0;
-                    LED_stat[0].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
                     //set fixed, medium brightness
-                    LED_stat[0].colors[pat_i-1].brt=LED_ST_BITS|0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|0;
                 }
             break;
         }
@@ -1434,7 +1440,7 @@ int flashPatternStep(void)
     else if(pat_i==NUM_LEDS+1)
     {
         //send new info
-        LEDs_send(&LED_stat[0]);
+        LEDs_send(&LED_stat[buffer_idx]);
         //done!
         return 1;
     }
