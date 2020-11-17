@@ -659,6 +659,8 @@ int sim_Cmd(int argc,char **argv)
     e_type wake_e;
     char *eptr;
     unsigned long int temp;
+    //true if flash pattern has been updated
+    int fp_done=0;
 
     if(argc==0)
     {
@@ -723,9 +725,13 @@ int sim_Cmd(int argc,char **argv)
             //wait for the interval to elapse
             do
             {
-                // Enter LPM0
-                __bis_SR_register(LPM0_bits + GIE);
-                _NOP();
+                //advance flash pattern
+                fp_done=flashPatternStep();
+                if(fp_done)
+                {
+                    //go into LPM0 if flash pattern is updated and there are no event flags
+                    LPM0_check();
+                }
                 //read interrupts
                 wake_e=e_get_clear();
             }
