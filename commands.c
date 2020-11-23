@@ -19,6 +19,7 @@
 #include "Companion.h"
 #include "events.h"
 #include "reset.h"
+#include "settings.h"
 
 
 int brt_Cmd(int argc,char **argv)
@@ -975,6 +976,100 @@ int resets_Cmd(int argc,char **argv)
     return 0;
 }
 
+int settings_Cmd(int argc,char **argv)
+{
+    int i;
+    const char *pat_name;
+    //temporary settings to write
+    SETTINGS tmp;
+
+    //check if we got arguments
+    if(argc!=0)
+    {
+        //check what argument was given
+        if(!strcmp(argv[1],"save"))
+        {
+            //get settings and store in structure
+            tmp.color=pat_color;
+            tmp.value=pat_val;
+            tmp.list=pat_list;
+            tmp.pattern=flashPatternGet();
+            //write settings to flash
+            write_settings(&tmp);
+            //reset flashpattern to reset timers and things
+            flashPatternChange(fl_settings.set.pattern);
+
+        }
+        else
+        {
+            //unknown argument
+            printf("Error : unknown argument \'%s\'\r\n",argv[1]);
+            return 1;
+        }
+    }
+
+    //check 'magic'
+    if(fl_settings.magic!=0xA5A3)
+    {
+        //magic is not correct, settings are not valid
+        printf("Settings are invalid!!\r\n");
+    }
+
+    //print out color
+    printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",fl_settings.set.color.brt,fl_settings.set.color.r,fl_settings.set.color.g,fl_settings.set.color.b);
+
+    //set pattern to NULL
+    pat_name=NULL;
+    //look for a matching pattern name
+    for(i=0;pattern_names[i].name!=NULL;i++)
+    {
+        if(pattern_names[i].val==fl_settings.set.pattern)
+        {
+            //found, set name and exit loop
+            pat_name=pattern_names[i].name;
+            break;
+        }
+    }
+    //check if we found a pattern name
+    if(pat_name==NULL)
+    {
+        //no, print address
+        printf("pattern : %i\r\n",fl_settings.set.pattern);
+    }
+    else
+    {
+        //yes, print name
+        printf("pattern : %s\r\n",pat_name);
+    }
+    //print value
+    printf("value : %u\r\n",fl_settings.set.value);
+
+    pat_name=NULL;
+    //look for a matching list name
+    for(i=0;clists[i].name!=NULL;i++)
+    {
+        if(clists[i].list==fl_settings.set.list)
+        {
+            //found, set name and exit loop
+            pat_name=clists[i].name;
+            break;
+        }
+    }
+    //check if we found a list name
+    if(pat_name==NULL)
+    {
+        //no, print address
+        printf("list : 0x%p\r\n");
+    }
+    else
+    {
+        //yes, print name
+        printf("list  : %s\r\n",pat_name);
+    }
+    return 0;
+}
+
+
 int rst_Cmd(int argc,char **argv)
 {
     //check number of arguments
@@ -1019,6 +1114,7 @@ const CMD_SPEC cmd_tbl[]={
                           {"sim","simulate a flight",sim_Cmd},
                           {"clist","set color list",clist_Cmd},
                           {"resets","Print number of resets",resets_Cmd},
+                          {"settings","Print out settings",settings_Cmd},
                           {"rst","Reset LED microcontroller",rst_Cmd},
                           {NULL,NULL,NULL}
 };

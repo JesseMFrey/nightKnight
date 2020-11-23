@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "Nosecone.h"
 #include "events.h"
+#include "settings.h"
 
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
@@ -139,8 +140,8 @@ void init_FlashPattern(void)
 
     switch(sw_val){
     case 0:
-        //set flash pattern
-        flashPatternChange(LED_PAT_SATURATION);
+        //set flash pattern from settings
+        flashPatternVCL(fl_settings.set.pattern,fl_settings.set.value,fl_settings.set.color,fl_settings.set.list);
         break;
     case 1:
         //set flash pattern
@@ -198,7 +199,8 @@ void init_FlashPattern(void)
         break;
     case 14:
         //set flash pattern
-        flashPatternChange(LED_PAT_EYES_H);
+        flashPattern_setColor((LED_color){.brt=LED_BRT_NORM,.r=255,.g=255,.b=255});
+        flashPatternChange(LED_PAT_SATURATION);
         break;
     default:
         //set LED's off

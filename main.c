@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include "flightPattern.h"
 #include "reset.h"
+#include "settings.h"
 
 /*
  * NOTE: Modify hal.h to select a specific evaluation board and customize for
@@ -105,6 +106,8 @@ void main (void)
     init_Companion();
 
     init_FlashPattern();
+
+    init_settings();
 
     //check if this was unusual
     if(!expected_reset)
