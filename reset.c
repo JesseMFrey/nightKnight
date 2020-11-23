@@ -34,6 +34,7 @@ int init_reset(void)
 		break;
         case SYSRSTIV_DOBOR:
 			reset_reason = RST_SRC_DOBOR;
+			normal=1;
 		break;
         case SYSRSTIV_LPM5WU:
 			reset_reason = RST_SRC_LPM5WU;
@@ -58,6 +59,7 @@ int init_reset(void)
 		break;
         case SYSRSTIV_DOPOR:
 			reset_reason = RST_SRC_DOPOR;
+            normal=1;
 		break;
         case SYSRSTIV_WDTTO:
 			reset_reason = RST_SRC_WDTTO;

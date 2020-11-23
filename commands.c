@@ -975,6 +975,36 @@ int resets_Cmd(int argc,char **argv)
     return 0;
 }
 
+int rst_Cmd(int argc,char **argv)
+{
+    //check number of arguments
+    if(argc==1)
+    {
+        //check what sort of reset
+        if(!strcmp("por",argv[1]))
+        {
+            //software power on reset
+            PMMCTL0=PMMPW|PMMSWPOR;
+            //code should never get here
+        }
+        else if(!strcmp("bor",argv[1]))
+        {
+            //software brown out reset
+            PMMCTL0=PMMPW|PMMSWBOR;
+            //code should never get here
+        }
+        else
+        {
+            printf("Error : unknown argument \'%s\'\r\n",argv[1]);
+        }
+    }
+    else
+    {
+        printf("Error : exactly one argument is required\r\n");
+    }
+    return 1;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -989,5 +1019,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"sim","simulate a flight",sim_Cmd},
                           {"clist","set color list",clist_Cmd},
                           {"resets","Print number of resets",resets_Cmd},
+                          {"rst","Reset LED microcontroller",rst_Cmd},
                           {NULL,NULL,NULL}
 };
