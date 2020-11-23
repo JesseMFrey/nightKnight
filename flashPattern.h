@@ -83,4 +83,8 @@ extern const COLOR_LIST USA_colors;
 extern const COLOR_LIST RGB_colors;
 extern const COLOR_LIST USA_RW_colors;
 
+extern const COLOR_LIST *pat_list;
+extern LED_color pat_color;
+extern unsigned int pat_val;
+
 #endif /* FLASHPATTERN_H_ */

@@ -44,7 +44,7 @@ static int pat_i;
 
 static unsigned short LED_int=102*2;
 
-static LED_color pat_color={LED_BRT_NORM,0xFF,0xFF,0xFF};
+LED_color pat_color={LED_BRT_NORM,0xFF,0xFF,0xFF};
 unsigned int pat_val;
 
 //interval for simulations
