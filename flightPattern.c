@@ -103,7 +103,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Coast pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&RNBW_colors}}},
                                           //Drogue pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLASH_GAP,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&RNBW_colors}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLASH_GAP,.color={.brt=MAX_SOLID_BRT+4,.r=0xFF,.g=0xFF,.b=0xFF},.list=&RNBW_colors}}},
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightListParticle,.data=(void*)&RNBW_colors}}},
                                           //Landed pattern
