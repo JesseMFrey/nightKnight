@@ -8,6 +8,7 @@
 #include "flightPattern.h"
 #include "flashPattern.h"
 #include "Nosecone.h"
+#include "regulator.h"
 #include <stddef.h>
 
 #define MAX_SOLID_BRT 15
@@ -152,6 +153,15 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
         //set panic mode
         panic(LED_PAT_MODE_PANIC);
         //invalid mode, nothing left to do
+        return new_dat->flight_state;
+    }
+
+    if(!fm_new && reg_flags&REG_FLAGS_ERROR)
+    {
+        //if regulator is having problems don't set pattern till flight mode changes
+        //this will let the power panic pattern flash and wait for a different flash pattern
+
+        //return current mode
         return new_dat->flight_state;
     }
     //get the handler for this mode

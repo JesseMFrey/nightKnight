@@ -9,7 +9,7 @@
 #include "regulator.h"
 #include "flashPattern.h"
 
-int reg_startup;
+int reg_flags=0;
 
 void init5Vreg(void)
 {
@@ -33,7 +33,8 @@ void init5Vreg(void)
 
 void reg5V_on(void)
 {
-    reg_startup=1;
+    //set startup flag
+    reg_flags|=REG_FLAGS_STARTUP;
     P1OUT|= BIT7;
     //stop timer
     TA3CTL=MC__STOP;
@@ -60,10 +61,12 @@ void __attribute__ ((interrupt(TIMER3_A0_VECTOR))) PG_inhibit (void)
     //disable further interrupts
     TA3CCTL0=0;
     //clear startup flag
-    reg_startup=0;
+    reg_flags&=~REG_FLAGS_STARTUP;
     //check PG pin
     if(!(P1IN&BIT6))
     {
+        //set error flag
+        reg_flags|=REG_FLAGS_ERROR;
         panic(LED_PAT_POWER_PANIC);
     }
 }

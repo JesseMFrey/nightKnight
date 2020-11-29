@@ -39,8 +39,10 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
         break;
         case P1IV_P1IFG6:
             //5V regulator power good interrupt
-            if(reg5V_is_on() && !reg_startup)
+            if(reg5V_is_on() && !(reg_flags&REG_FLAGS_STARTUP))
             {
+                //set error flag
+                reg_flags|=REG_FLAGS_ERROR;
                 panic(LED_PAT_POWER_PANIC);
             }
         break;
