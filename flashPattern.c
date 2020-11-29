@@ -21,6 +21,8 @@
 
 #define GRAPH_WHITE_BRT  (180)
 
+#define USA_WHITE_BRT   (90)
+
 static int LED_pattern;
 
 #define NUM_PARTICLES (LED_STR*7)
@@ -66,7 +68,7 @@ const COLOR_LIST RNBW_colors={ .num_colors=6,.alt_color={
 
 const COLOR_LIST USA_colors={ .num_colors=3,.alt_color={
                        {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
-                       {.alt=56 ,.color={.brt=LED_BRT_NORM,.r=180,.g=180,.b=180}},
+                       {.alt=56 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
                        {.alt=112,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
                     }
                   };
@@ -81,7 +83,7 @@ const COLOR_LIST RGB_colors={ .num_colors=3,.alt_color={
 const COLOR_LIST USA_RW_colors={
                     .num_colors=2,.alt_color={
                        {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
-                       {.alt=85 ,.color={.brt=LED_BRT_NORM,.r=180,.g=180,.b=180}},
+                       {.alt=85 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
                     }
                   };
 
