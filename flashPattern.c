@@ -19,6 +19,8 @@
 #define C_RIGHT ((LED_LEN  )/2)
 #define C_LEFT  ((LED_LEN-1)/2)
 
+#define GRAPH_WHITE_BRT  (180)
+
 static int LED_pattern;
 
 #define NUM_PARTICLES (LED_STR*7)
@@ -687,9 +689,9 @@ int flashPatternStep(void)
                                 else
                                 {
                                     LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
-                                    LED_stat[buffer_idx].colors[pat_i-1].r=0xFF;
-                                    LED_stat[buffer_idx].colors[pat_i-1].g=0xFF;
-                                    LED_stat[buffer_idx].colors[pat_i-1].b=0xFF;
+                                    LED_stat[buffer_idx].colors[pat_i-1].r=GRAPH_WHITE_BRT;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g=GRAPH_WHITE_BRT;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b=GRAPH_WHITE_BRT;
                                 }
                             break;
                             case LED_SOLID_ST:
@@ -1118,9 +1120,9 @@ int flashPatternStep(void)
                 else
                 {
                     LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|pat_color.brt;
-                    LED_stat[buffer_idx].colors[pat_i-1].r=0xFF;
-                    LED_stat[buffer_idx].colors[pat_i-1].g=0xFF;
-                    LED_stat[buffer_idx].colors[pat_i-1].b=0xFF;
+                    LED_stat[buffer_idx].colors[pat_i-1].r=GRAPH_WHITE_BRT;
+                    LED_stat[buffer_idx].colors[pat_i-1].g=GRAPH_WHITE_BRT;
+                    LED_stat[buffer_idx].colors[pat_i-1].b=GRAPH_WHITE_BRT;
                 }
             break;
             case LED_SOLID_ST:
