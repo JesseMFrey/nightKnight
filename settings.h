@@ -28,10 +28,12 @@ typedef union{
 } FL_SETTINGS;
 
 
-extern const FL_SETTINGS fl_settings;
+extern SETTINGS settings;
 
-void write_settings(const SETTINGS *settings);
+void write_settings(void);
 void init_settings(void);
+int settings_valid(void);
+void erase_settings(void);
 
 
 #endif /* SETTINGS_H_ */

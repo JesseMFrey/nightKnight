@@ -779,7 +779,7 @@ int clist_Cmd(int argc,char **argv)
         printf("Color Lists:\r\n");
         for(i=0;clists[i].name!=NULL;i++)
         {
-            printf("\t%s\r\n",clists[i].name);
+            printf("\t%c%s\r\n",(settings.list==clists[i].list)?'>':' ',clists[i].name);
         }
     }
     else
@@ -980,8 +980,6 @@ int settings_Cmd(int argc,char **argv)
 {
     int i;
     const char *pat_name;
-    //temporary settings to write
-    SETTINGS tmp;
 
     //check if we got arguments
     if(argc!=0)
@@ -989,16 +987,16 @@ int settings_Cmd(int argc,char **argv)
         //check what argument was given
         if(!strcmp(argv[1],"save"))
         {
-            //get settings and store in structure
-            tmp.color=pat_color;
-            tmp.value=pat_val;
-            tmp.list=pat_list;
-            tmp.pattern=flashPatternGet();
             //write settings to flash
-            write_settings(&tmp);
+            write_settings();
             //reset flashpattern to reset timers and things
-            flashPatternChange(fl_settings.set.pattern);
+            flashPatternChange(settings.pattern);
 
+        }
+        else if(!strcmp(argv[1],"clear"))
+        {
+            //write settings to flash
+            erase_settings();
         }
         else
         {
@@ -1008,22 +1006,22 @@ int settings_Cmd(int argc,char **argv)
         }
     }
 
-    //check 'magic'
-    if(fl_settings.magic!=0xA5A3)
+    //check if settings are valid
+    if(!settings_valid())
     {
-        //magic is not correct, settings are not valid
+        //settings are not valid
         printf("Settings are invalid!!\r\n");
     }
 
     //print out color
-    printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",fl_settings.set.color.brt,fl_settings.set.color.r,fl_settings.set.color.g,fl_settings.set.color.b);
+    printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",settings.color.brt,settings.color.r,settings.color.g,settings.color.b);
 
     //set pattern to NULL
     pat_name=NULL;
     //look for a matching pattern name
     for(i=0;pattern_names[i].name!=NULL;i++)
     {
-        if(pattern_names[i].val==fl_settings.set.pattern)
+        if(pattern_names[i].val==settings.pattern)
         {
             //found, set name and exit loop
             pat_name=pattern_names[i].name;
@@ -1034,7 +1032,7 @@ int settings_Cmd(int argc,char **argv)
     if(pat_name==NULL)
     {
         //no, print address
-        printf("pattern : %i\r\n",fl_settings.set.pattern);
+        printf("pattern : %i\r\n",settings.pattern);
     }
     else
     {
@@ -1042,13 +1040,13 @@ int settings_Cmd(int argc,char **argv)
         printf("pattern : %s\r\n",pat_name);
     }
     //print value
-    printf("value : %u\r\n",fl_settings.set.value);
+    printf("value : %u\r\n",settings.value);
 
     pat_name=NULL;
     //look for a matching list name
     for(i=0;clists[i].name!=NULL;i++)
     {
-        if(clists[i].list==fl_settings.set.list)
+        if(clists[i].list==settings.list)
         {
             //found, set name and exit loop
             pat_name=clists[i].name;
