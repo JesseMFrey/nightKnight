@@ -22,7 +22,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=8,.r=0xFF,.g=0x00,.b=0x00}}}},
                                           //Boost pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=0xFF,.g=0,.b=0}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=14,.color={.brt=MAX_SOLID_BRT,.r=0xFF,.g=0,.b=0}}}},
                                           //Fast pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedGraph,.data=&(LED_color){.brt=MAX_SOLID_BRT,.r=0xFF,.g=0,.b=0}}}},
                                           //Coast pattern
@@ -47,7 +47,7 @@ const FLIGHT_PATTERN patterns[]={
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=8,.r=0x00,.g=0xFF,.b=0x00}}}},
                                           //Boost pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=14,.color={.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}}},
                                           //Fast pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedGraph,.data=&(LED_color){.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}}},
                                           //Coast pattern
@@ -122,13 +122,13 @@ const FLIGHT_PATTERN patterns[]={
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_PARTICLE,.value=4,{.brt=LED_BRT_NORM,.r=255,.g=150,.b=10}}}},
                                           //Boost pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=255,.g=150,.b=10}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=12,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}}},
                                           //Fast pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=255,.g=150,.b=10}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}}},
                                           //Coast pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=255,.g=150,.b=10}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}}},
                                           //Drogue pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT,.r=255,.g=150,.b=10}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}}},
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=150,.b=10}}}},
                                           //Landed pattern
