@@ -650,10 +650,52 @@ int chute_Cmd(int argc,char **argv)
     return 0;
 }
 
+//flight pattern command
+int fpat_Cmd(int argc,char **argv)
+{
+    char current;
+    int pat_idx;
+
+    if(argc==0)
+    {
+        for(pat_idx=0;flight_patterns[pat_idx].name[0]!='\0';pat_idx++)
+        {
+            //check if this is the current flight pattern
+            if(!strncmp(flight_patterns[pat_idx].name,settings.flightp,FP_NAME_LEN))
+            {
+                //marker for current
+                current='>';
+            }
+            else
+            {
+                //not current
+                current=' ';
+            }
+            //print name
+            printf("\t%c%s\r\n",current,flight_patterns[pat_idx].name);
+        }
+        return 0;
+    }
+    else
+    {
+        pat_idx=find_flightP(argv[1]);
+        //check if pattern was found
+        if(pat_idx<0)
+        {
+            printf("Error : could not find pattern matching \"%s\"\r\n",argv[1]);
+            return 1;
+        }
+
+        strncpy(settings.flightp,flight_patterns[pat_idx].name,FP_NAME_LEN);
+
+        return 0;
+    }
+}
+
 int sim_Cmd(int argc,char **argv)
 {
     const struct ao_companion_command *dat_ptr=flight_dat;
-    const FLIGHT_PATTERN *pat_ptr=patterns;
+    int fp_idx;
     unsigned int mul=1;
     int i;
     uint8_t last=ao_flight_invalid;
@@ -663,83 +705,67 @@ int sim_Cmd(int argc,char **argv)
     //true if flash pattern has been updated
     int fp_done=0;
 
-    if(argc==0)
+    //find pattern from settings
+    fp_idx=find_flightP(settings.flightp);
+    //check if pattern was found
+    if(fp_idx<0)
     {
-        while(pat_ptr->name!=NULL)
-        {
-            printf("%s\r\n",pat_ptr->name);
-            pat_ptr+=1;
-        }
-        return 0;
+        printf("Error : could not find pattern matching \"%s\"\r\n",settings.flightp);
+        return 1;
     }
-    else
+
+    if(argc>0)
     {
-        while(pat_ptr->name!=NULL)
-        {
-            if(!strcmp(pat_ptr->name,argv[1]))
-            {
-                break;
-            }
-            pat_ptr+=1;
-        }
-        //check if pattern was found
-        if(pat_ptr==NULL)
-        {
-            printf("Error : could not find pattern matching \"%s\"\r\n",argv[1]);
-            return 1;
-        }
-        if(argc>1)
-        {
-            //parse value
-            temp=strtoul(argv[2],&eptr,0);
+        //parse value
+        temp=strtoul(argv[1],&eptr,0);
 
-            //check if the whole string was parsed
-            if(*eptr)
-            {
-                //end of string not found
-                printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
-                return 2;
-            }
-
-            if(temp>UINT_MAX)
-            {
-                printf("Error : multiplier must be less than %u. got %li\r\n",UINT_MAX,temp);
-                return 4;
-            }
-            if(temp<=0)
-            {
-                printf("Error : multiplier must be greater than zero\r\n");
-                return 5;
-            }
-            mul=temp;
+        //check if the whole string was parsed
+        if(*eptr)
+        {
+            //end of string not found
+            printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1],eptr);
+            return 2;
         }
 
-        //print pattern name
-        printf("Starting simulation of \"%s\"\r\n",pat_ptr->name);
-        //set interval to the time separation in the first two packets
-        sim_int=(dat_ptr[1].tick-dat_ptr[0].tick)*10*mul;
-
-        for(i=0;dat_ptr[i].command!=0;i++)
+        if(temp>UINT_MAX)
         {
-            printf("Time = %4.1f  Alt = %6i Speed = %6.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height,dat_ptr[i].speed/((float)16));
-            last=proc_flightP(&dat_ptr[i],pat_ptr,last);
-            //wait for the interval to elapse
-            do
-            {
-                //advance flash pattern
-                fp_done=flashPatternStep();
-                if(fp_done)
-                {
-                    //go into LPM0 if flash pattern is updated and there are no event flags
-                    LPM0_check();
-                }
-                //read interrupts
-                wake_e=e_get_clear();
-            }
-            while(!(wake_e&FM_SIM_ADVANCE));
+            printf("Error : multiplier must be less than %u. got %li\r\n",UINT_MAX,temp);
+            return 4;
         }
-        printf("Flight complete!\r\n");
+        if(temp<=0)
+        {
+            printf("Error : multiplier must be greater than zero\r\n");
+            return 5;
+        }
+        mul=temp;
     }
+
+    //print pattern name
+    printf("Starting simulation of \"%s\"\r\n",flight_patterns[fp_idx].name);
+    //set interval to the time separation in the first two packets
+    sim_int=(dat_ptr[1].tick-dat_ptr[0].tick)*10*mul;
+
+    for(i=0;dat_ptr[i].command!=0;i++)
+    {
+        printf("Time = %4.1f  Alt = %6i Speed = %6.2f\r\n",AO_TICKS_TO_SEC((float)dat_ptr[i].tick),dat_ptr[i].height,dat_ptr[i].speed/((float)16));
+        last=proc_flightP(&dat_ptr[i],&flight_patterns[fp_idx],last);
+        //wait for the interval to elapse
+        do
+        {
+            //advance flash pattern
+            fp_done=flashPatternStep();
+            if(fp_done)
+            {
+                //go into LPM0 if flash pattern is updated and there are no event flags
+                LPM0_check();
+            }
+            //read interrupts
+            wake_e=e_get_clear();
+        }
+        while(!(wake_e&FM_SIM_ADVANCE));
+    }
+    printf("Flight complete!\r\n");
+
     return 0;
 
 }
@@ -976,10 +1002,68 @@ int resets_Cmd(int argc,char **argv)
     return 0;
 }
 
-int settings_Cmd(int argc,char **argv)
+void print_settings(const SETTINGS *set)
 {
     int i;
     const char *pat_name;
+    //print out color
+    printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",set->color.brt,set->color.r,set->color.g,set->color.b);
+
+    //set pattern to NULL
+    pat_name=NULL;
+    //look for a matching pattern name
+    for(i=0;pattern_names[i].name!=NULL;i++)
+    {
+        if(pattern_names[i].val==set->pattern)
+        {
+            //found, set name and exit loop
+            pat_name=pattern_names[i].name;
+            break;
+        }
+    }
+    //check if we found a pattern name
+    if(pat_name==NULL)
+    {
+        //no, print address
+        printf("pattern : %i\r\n",set->pattern);
+    }
+    else
+    {
+        //yes, print name
+        printf("pattern : %s\r\n",pat_name);
+    }
+    //print value
+    printf("value : %u\r\n",set->value);
+
+    pat_name=NULL;
+    //look for a matching list name
+    for(i=0;clists[i].name!=NULL;i++)
+    {
+        if(clists[i].list==set->list)
+        {
+            //found, set name and exit loop
+            pat_name=clists[i].name;
+            break;
+        }
+    }
+    //check if we found a list name
+    if(pat_name==NULL)
+    {
+        //no, print address
+        printf("list : 0x%p\r\n");
+    }
+    else
+    {
+        //yes, print name
+        printf("list  : %s\r\n",pat_name);
+    }
+    //print flight pattern
+    printf("flight pattern : %s\r\n",set->flightp);
+}
+
+int settings_Cmd(int argc,char **argv)
+{
+    const SETTINGS *set=&settings;
 
     //check if we got arguments
     if(argc!=0)
@@ -998,6 +1082,11 @@ int settings_Cmd(int argc,char **argv)
             //write settings to flash
             erase_settings();
         }
+        else if(!strcmp(argv[1],"flash"))
+        {
+            set=&fl_settings.set;
+            printf("Showing settings from flash\r\n");
+        }
         else
         {
             //unknown argument
@@ -1010,60 +1099,12 @@ int settings_Cmd(int argc,char **argv)
     if(!settings_valid())
     {
         //settings are not valid
-        printf("Settings are invalid!!\r\n");
+        printf("Flash settings are invalid!!\r\n");
     }
 
-    //print out color
-    printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",settings.color.brt,settings.color.r,settings.color.g,settings.color.b);
+    //print out settings
+    print_settings(set);
 
-    //set pattern to NULL
-    pat_name=NULL;
-    //look for a matching pattern name
-    for(i=0;pattern_names[i].name!=NULL;i++)
-    {
-        if(pattern_names[i].val==settings.pattern)
-        {
-            //found, set name and exit loop
-            pat_name=pattern_names[i].name;
-            break;
-        }
-    }
-    //check if we found a pattern name
-    if(pat_name==NULL)
-    {
-        //no, print address
-        printf("pattern : %i\r\n",settings.pattern);
-    }
-    else
-    {
-        //yes, print name
-        printf("pattern : %s\r\n",pat_name);
-    }
-    //print value
-    printf("value : %u\r\n",settings.value);
-
-    pat_name=NULL;
-    //look for a matching list name
-    for(i=0;clists[i].name!=NULL;i++)
-    {
-        if(clists[i].list==settings.list)
-        {
-            //found, set name and exit loop
-            pat_name=clists[i].name;
-            break;
-        }
-    }
-    //check if we found a list name
-    if(pat_name==NULL)
-    {
-        //no, print address
-        printf("list : 0x%p\r\n");
-    }
-    else
-    {
-        //yes, print name
-        printf("list  : %s\r\n",pat_name);
-    }
     return 0;
 }
 
@@ -1114,5 +1155,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"resets","Print number of resets",resets_Cmd},
                           {"settings","Print out settings",settings_Cmd},
                           {"rst","Reset LED microcontroller",rst_Cmd},
+                          {"fpat","set flight pattern",fpat_Cmd},
                           {NULL,NULL,NULL}
 };

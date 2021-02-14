@@ -10,10 +10,12 @@
 #include "Nosecone.h"
 #include "regulator.h"
 #include <stddef.h>
+#include <string.h>
 
 #define MAX_SOLID_BRT 15
 
-const FLIGHT_PATTERN patterns[]={
+const FLIGHT_PATTERN
+              flight_patterns[]={
                                  {"red",{
                                           //Startup pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
@@ -139,9 +141,22 @@ const FLIGHT_PATTERN patterns[]={
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}}},
                                          }
                                  },
-                                 {NULL,{}}
+                                 {"",{}}
 };
 
+int find_flightP(const char *name)
+{
+    int i;
+    for(i=0;flight_patterns[i].name[0]!='\0';i++)
+    {
+        if(!strncmp(flight_patterns[i].name,name,FP_NAME_LEN))
+        {
+            return i;
+        }
+    }
+    //matching pattern not found
+    return -1;
+}
 
 int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN *pattern,int last)
 {

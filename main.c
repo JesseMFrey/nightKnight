@@ -90,6 +90,7 @@ void main (void)
     int expected_reset;
     //true if flash pattern has been updated
     int fp_done=0;
+    int fp_idx=0,tmp;
 
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
@@ -123,6 +124,14 @@ void main (void)
     //initialize command vars
     terminal_init(&term);
 
+    //find matching flight pattern
+    tmp=find_flightP(settings.flightp);
+    //check if a valid match was found
+    if(tmp>=0)
+    {
+        //set flight pattern index
+        fp_idx=tmp;
+    }
 
     while (1)
     {
@@ -130,7 +139,26 @@ void main (void)
         wake_e=e_get_clear();
         if(wake_e&COMP_RX_CMD)
         {
-            lastState=proc_flightP(&cpCmd,&patterns[0],lastState);
+            //check if we are in idle or pad mode
+            if(cpCmd.flight_state<=ao_flight_pad )
+            {
+                //find matching flight pattern
+                tmp=find_flightP(settings.flightp);
+                //check if a valid match was found
+                if(tmp>=0)
+                {
+                    //check if we changed patterns
+                    if(tmp!=fp_idx)
+                    {
+                        //set last state to startup to force a change
+                        lastState=ao_flight_startup;
+                    }
+                    //set new mode
+                    fp_idx=tmp;
+                }
+            }
+            //update LED's based on flight pattern
+            lastState=proc_flightP(&cpCmd,&flight_patterns[fp_idx],lastState);
         }
         //advance flash pattern
         fp_done=flashPatternStep();

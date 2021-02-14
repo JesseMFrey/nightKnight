@@ -9,6 +9,7 @@
 #define SETTINGS_H_
 
 #include "flashPattern.h"
+#include "flightPattern.h"
 
 #define SETTINGS_MAGIC  0xA5A3
 
@@ -17,6 +18,7 @@ typedef struct {
     int pattern;
     const COLOR_LIST *list;
     unsigned int value;
+    char flightp[FP_NAME_LEN];
 }SETTINGS;
 
 typedef union{
@@ -29,6 +31,7 @@ typedef union{
 
 
 extern SETTINGS settings;
+extern const FL_SETTINGS fl_settings;
 
 void write_settings(void);
 void init_settings(void);

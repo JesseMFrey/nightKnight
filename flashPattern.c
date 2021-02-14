@@ -23,6 +23,8 @@
 
 #define USA_WHITE_BRT   (90)
 
+static int LED_pattern;
+
 #define NUM_PARTICLES (LED_STR*7)
 
 static int buffer_idx=0;

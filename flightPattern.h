@@ -12,6 +12,8 @@
 #include "flashPattern.h"
 #include "Companion.h"
 
+#define FP_NAME_LEN (16)
+
 typedef void (*FLIGHT_UPDATE)(const struct ao_companion_command *cmd_dat,int new, void *data);
 
 typedef struct{
@@ -31,7 +33,7 @@ typedef struct{
 }FLIGHT_MODE_HANDLER;
 
 typedef struct{
-    const char *name;
+    char name[FP_NAME_LEN];
     FLIGHT_MODE_HANDLER handlers[AO_FLIGHT_NUM];
 }FLIGHT_PATTERN;
 
@@ -41,7 +43,10 @@ enum {FLIGHT_TYPE_INVALID=0,FLIGHT_TYPE_NO_CHANGE,FLIGHT_TYPE_PATTERN,FLIGHT_TYP
 extern const struct ao_companion_command flight_dat[];
 
 //flight pattern data
-extern const FLIGHT_PATTERN patterns[];
+extern const FLIGHT_PATTERN flight_patterns[];
+
+//find a flight pattern with a given name
+int find_flightP(const char *name);
 
 //process flight data
 int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN *pattern,int last);
