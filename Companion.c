@@ -28,7 +28,7 @@ static int cp_SPI_state;
 static char* rx_ptr,*rx_end;
 static const char* tx_ptr,*tx_end;
 
-void SPI_rx_ptr_setup(void *rxptr,size_t size)
+static void SPI_rx_ptr_setup(void *rxptr,size_t size)
 {
 
     //set tx pointer
@@ -38,7 +38,7 @@ void SPI_rx_ptr_setup(void *rxptr,size_t size)
     rx_end=((char*)rxptr)+size;
 }
 
-void SPI_tx_ptr_setup(const void *txptr,size_t size)
+static void SPI_tx_ptr_setup(const void *txptr,size_t size)
 {
 
     //set tx pointer
