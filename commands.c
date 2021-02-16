@@ -687,6 +687,8 @@ int fpat_Cmd(int argc,char **argv)
         }
 
         strncpy(settings.flightp,flight_patterns[pat_idx].name,FP_NAME_LEN);
+        //ensure there is a null byte
+        settings.flightp[FP_NAME_LEN-1]='\0';
 
         return 0;
     }
