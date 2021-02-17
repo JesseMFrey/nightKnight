@@ -22,7 +22,7 @@ const FLIGHT_PATTERN
                                           //Idle pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
                                           //Pad pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=8,.r=0xFF,.g=0x00,.b=0x00}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=7,.r=0xFF,.g=0x00,.b=0x00}}}},
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=14,.color={.brt=MAX_SOLID_BRT,.r=0xFF,.g=0,.b=0}}}},
                                           //Fast pattern
@@ -47,7 +47,7 @@ const FLIGHT_PATTERN
                                           //Idle pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
                                           //Pad pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=8,.r=0x00,.g=0xFF,.b=0x00}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_WAVE_BIG_D,.value=12,.color={.brt=7,.r=0x00,.g=0xFF,.b=0x00}}}},
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=14,.color={.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}}},
                                           //Fast pattern
@@ -72,7 +72,7 @@ const FLIGHT_PATTERN
                                           //Idle pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
                                           //Pad pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=3,.color={.brt=8,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_ST_LIST,.value=1,.color={.brt=8,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}}},
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_colors}}},
                                           //Fast pattern
@@ -97,7 +97,7 @@ const FLIGHT_PATTERN
                                           //Idle pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
                                           //Pad pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_FLOW_LIST,.value=6,.color={.brt=8,.r=255,.g=200,.b=150},.list=&RNBW_colors}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,{.basic={.pattern=LED_PAT_ST_LIST,.value=6,.color={.brt=1,.r=155,.g=100,.b=50},.list=&RNBW_colors}}},
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&RNBW_colors}}},
                                           //Fast pattern
@@ -122,7 +122,7 @@ const FLIGHT_PATTERN
                                           //Idle pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}}},
                                           //Pad pattern
-                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_PARTICLE,.value=4,{.brt=LED_BRT_NORM,.r=255,.g=150,.b=10}}}},
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_PARTICLE,.value=4,{.brt=5,.r=255,.g=150,.b=10}}}},
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_BOOST,.value=12,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}}},
                                           //Fast pattern
