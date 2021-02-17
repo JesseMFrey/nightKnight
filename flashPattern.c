@@ -698,6 +698,25 @@ int flashPatternStep(void)
                                 //set brightness
                                 LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                             break;
+                            case LED_PAT_DAY:
+                                if(lin_idx<FIN_LED)
+                                {
+                                    //set fins off
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
+                                }
+                                else
+                                {
+                                    //set all non-fin LEDs from color
+                                    LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
+                                    LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
+                                    LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
+                                    //set brightness
+                                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                                }
+                            break;
                             case LED_PAT_ST_LIST:
                                 if(lin_idx<FIN_LED)
                                 {
@@ -1128,6 +1147,25 @@ int flashPatternStep(void)
                 LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
                 //set brightness
                 LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+            break;
+            case LED_PAT_DAY:
+                if(lin_idx<FIN_LED)
+                {
+                    //set fins off
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =0;
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS;
+                }
+                else
+                {
+                    //set all non-fin LEDs from color
+                    LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
+                    LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
+                    LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
+                    //set brightness
+                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                }
             break;
             case LED_PAT_ST_LIST:
                 if(lin_idx<FIN_LED)

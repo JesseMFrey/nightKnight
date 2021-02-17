@@ -364,6 +364,7 @@ const struct {
                  {"fs_gap",LED_PAT_FLASH_GAP},
                  {"boost",LED_PAT_BOOST},
                  {"graph",LED_PAT_GRAPH},
+                 {"day",LED_PAT_DAY},
                  {"st_list",LED_PAT_ST_LIST},
                  {"fs_nogap",LED_PAT_FLASH_NOGAP},
                  {"fl_list",LED_PAT_FLOW_LIST},
