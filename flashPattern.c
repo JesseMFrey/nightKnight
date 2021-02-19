@@ -476,7 +476,7 @@ int flashPatternStep(void)
                     else if(pat_d.ptc.particle_pos[j]==(LED_LEN-1))
                     {
                         //blip the nosecone
-                        nosecone_mode(NC_MODE_ONE_SHOT,700,0,5,NC_NA);
+                        nosecone_pattern_mode(NC_MODE_ONE_SHOT,700,0,5,NC_NA);
                     }
                 }
             break;
