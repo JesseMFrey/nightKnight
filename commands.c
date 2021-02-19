@@ -490,7 +490,8 @@ const struct{
            {"static",NC_MODE_STATIC},
            {"fade",NC_MODE_FADE},
            {"flash",NC_MODE_FLASH},
-           {"blip",NC_MODE_ONE_SHOT}
+           {"blip",NC_MODE_ONE_SHOT},
+           {"pattern",NC_MODE_PATTERN}
 };
 
 int NC_Cmd(int argc,char **argv)

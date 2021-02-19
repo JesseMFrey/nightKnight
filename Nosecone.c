@@ -19,19 +19,31 @@ typedef struct {
     int dir;
 } LED_STATE;
 
+typedef struct{
+    int mode;
+    int val1,val2;
+    int t1,t2;
+} PAT_STATE;
+
+static PAT_STATE pat_NC_stat;
+
 static LED_STATE nosecone_status,chute_status;
 
 enum{NC_DIR_UP=0,NC_DIR_DOWN};
 
 static uint16_t NC_buf,chute_buf;
 
-const char* const mode_names[]={"static","fade","flash","blip"};
+const char* const mode_names[]={"static","fade","flash","blip","pattern"};
 
 void NC_print(LED_STATE *state)
 {
     if(state->mode<NC_MODE_NUM)
     {
         printf("\t""Mode : %s\r\n",mode_names[state->mode]);
+        if(state->mode==NC_MODE_PATTERN && pat_NC_stat.mode<NC_MODE_PATTERN)
+        {
+            printf("\t""Pattern Mode : %s\r\n",mode_names[pat_NC_stat.mode]);
+        }
     }
     else
     {
@@ -126,10 +138,12 @@ void init_Nosecone(void)
     //set timer period
     TA0CCR0=NC_MAX_PWM;
 
-    nosecone_mode(NC_MODE_FADE,0,200,10,60);
-    //nosecone_mode(NC_MODE_FLASH,0,NC_MAX_PWM,200,100);
+    //nosecone_mode(NC_MODE_FADE,0,200,10,60);
+    nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
     //turn off the chute light
     chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
+    //init NC pattern mode
+    nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
 
     //setup TA0 to run in up mode for PWM
     TA0CTL=TASSEL_2|ID_3|MC_1|TACLR|TAIE;
@@ -140,10 +154,21 @@ void init_Nosecone(void)
 
 int nosecone_mode(int mode,int val1,int val2,int t1,int t2)
 {
+    int new_mode=mode;
     //put in static mode while mode is being set
     nosecone_status.mode=NC_MODE_STATIC;
+
+    if(mode==NC_MODE_PATTERN)
+    {
+        //set values from pattern structure
+        val1=pat_NC_stat.val1;
+        val2=pat_NC_stat.val2;
+        t1=pat_NC_stat.t1;
+        t2=pat_NC_stat.t2;
+        new_mode=pat_NC_stat.mode;
+    }
     //mode based init
-    switch(mode)
+    switch(new_mode)
     {
     case NC_MODE_STATIC:
         //nothing to do here
@@ -174,6 +199,26 @@ int nosecone_mode(int mode,int val1,int val2,int t1,int t2)
     return 0;
 }
 
+
+int nosecone_pattern_mode(int mode,int val1,int val2,int t1,int t2)
+{
+    if(mode>NC_MODE_PATTERN)
+    {
+        //invalid mode
+        return 1;
+    }
+    pat_NC_stat.val1=val1;
+    pat_NC_stat.val2=val2;
+    pat_NC_stat.t1=t1;
+    pat_NC_stat.t2=t2;
+    pat_NC_stat.mode=mode;
+    if(nosecone_status.mode==NC_MODE_PATTERN)
+    {
+        //update mode
+        nosecone_mode(nosecone_status.mode,NC_NA,NC_NA,NC_NA,NC_NA);
+    }
+    return 0;
+}
 
 int chute_mode(int mode,int val1,int val2,int t1,int t2)
 {
@@ -213,9 +258,16 @@ int chute_mode(int mode,int val1,int val2,int t1,int t2)
 
 static inline void update(LED_STATE *state, void (*update_fcn)(uint16_t) )
 {
+    int mode=state->mode;
+    if(mode==NC_MODE_PATTERN)
+    {
+        //set mode from pattern mode
+        //this won't happen for chute
+        mode=pat_NC_stat.mode;
+    }
     //increment count
     state->count+=1;
-    switch(state->mode)
+    switch(mode)
     {
     case NC_MODE_STATIC:
         update_fcn(state->val1);

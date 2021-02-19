@@ -894,7 +894,7 @@ int flashPatternStep(void)
 
                                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                                 {
-                                    nosecone_mode(NC_MODE_STATIC,tmp1*128+127,NC_NA,NC_NA,NC_NA);
+                                    nosecone_pattern_mode(NC_MODE_STATIC,tmp1*128+127,NC_NA,NC_NA,NC_NA);
                                 }
                             break;
                             case LED_PAT_WAVE_HUE_D:
@@ -932,7 +932,7 @@ int flashPatternStep(void)
                                 //set nosecone brightness based on saturation
                                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                                 {
-                                    nosecone_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
+                                    nosecone_pattern_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
                                 }
                             break;
                             case LED_PAT_POWER_PANIC:
@@ -1344,7 +1344,7 @@ int flashPatternStep(void)
 
                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                 {
-                    nosecone_mode(NC_MODE_STATIC,tmp1*128+127,NC_NA,NC_NA,NC_NA);
+                    nosecone_pattern_mode(NC_MODE_STATIC,tmp1*128+127,NC_NA,NC_NA,NC_NA);
                 }
             break;
             case LED_PAT_WAVE_HUE_D:
@@ -1382,7 +1382,7 @@ int flashPatternStep(void)
                 //set nosecone brightness based on saturation
                 if(lin_idx==(LED_LEN-1) && strp_idx==0)
                 {
-                    nosecone_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
+                    nosecone_pattern_mode(NC_MODE_STATIC,tmp1*16+15,NC_NA,NC_NA,NC_NA);
                 }
             break;
             case LED_PAT_POWER_PANIC:
@@ -1541,6 +1541,8 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=-2;
             //set interrupt interval
             flash_per=102*2;
+            //turn off nosecone
+            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_FLASH_GAP:
             pat_d.basic.LED_idx=0;
@@ -1572,7 +1574,7 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             //turn off nosecone
-            nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
+            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
             flash_per=2048;
         break;
         case LED_PAT_STR_ST:
@@ -1604,7 +1606,7 @@ void flashPatternChange(int pattern)
             //set interrupt interval
             flash_per=70;
             //turn off nosecone
-            nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
+            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_BIG_D:
@@ -1654,6 +1656,7 @@ void flashPatternChange(int pattern)
         //turn off regulator
         reg5V_off();
         //turn off nosecone
+        //don't use nosecone_pattern_mode here so it is shut off always
         nosecone_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         //turn chute off
         chute_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);

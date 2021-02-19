@@ -19,6 +19,7 @@ void NC_debug(void);
 void chute_debug(void);
 
 int nosecone_mode(int mode,int val1,int val2,int t1,int t2);
+int nosecone_pattern_mode(int mode,int val1,int val2,int t1,int t2);
 int chute_mode(int mode,int val1,int val2,int t1,int t2);
 
 #define NC_NA           (0)
@@ -28,7 +29,7 @@ int chute_mode(int mode,int val1,int val2,int t1,int t2);
 
 #define NC_MAX_PWM     0XFFF
 
-enum{NC_MODE_STATIC=0,NC_MODE_FADE,NC_MODE_FLASH,NC_MODE_ONE_SHOT,NC_MODE_NUM};
+enum{NC_MODE_STATIC=0,NC_MODE_FADE,NC_MODE_FLASH,NC_MODE_ONE_SHOT,NC_MODE_PATTERN,NC_MODE_NUM};
 
 
 #endif /* NOSECONE_H_ */
