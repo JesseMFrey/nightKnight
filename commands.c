@@ -381,7 +381,7 @@ const struct {
                  {"ppanic",LED_PAT_POWER_PANIC},
                  {"mpanic",LED_PAT_MODE_PANIC},
                  {"rpanic",LED_PAT_RESET_PANIC},
-                 {"ppanic",LED_PAT_PATTERN_PANIC},
+                 {"ptpanic",LED_PAT_PATTERN_PANIC},
                  {"cparticle",LED_PAT_COLOR_PARTICLE},
                  {"uparticle",LED_PAT_UNIFORM_PARTICLE},
                  {"cuparticle",LED_PAT_COLOR_UNIFORM_PARTICLE},
