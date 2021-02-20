@@ -1627,6 +1627,8 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=200;
+            //set nosecone mode unconditionally
+            nosecone_mode(NC_MODE_FLASH,0xFFF,0,200,100);
         break;
         case LED_PAT_OFF:
             //don't update
