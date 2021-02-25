@@ -153,6 +153,7 @@ SECTIONS
 #else
     .const      : {} >> FLASH | FLASH2      /* Constant data                     */
 #endif
+    .far_const	: {} > FLASH2
     .cio        : {} > RAM                  /* C I/O Buffer                      */
 
     .pinit      : {} > FLASH                /* C++ Constructor tables            */
