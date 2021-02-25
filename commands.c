@@ -441,7 +441,7 @@ int patternCmd(int argc,char **argv)
         }
         else
         {
-            printf("LED pattern set to \'%s\"\r\n",name);
+            printf("LED pattern set to \'%s\'\r\n",name);
         }
         flashPatternChange(val);
     }
