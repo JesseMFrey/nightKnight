@@ -406,6 +406,7 @@ int flashPatternStep(void)
                 if(pat_d.basic.LED_idx>100){
                     pat_d.basic.LED_idx=0;
                 }
+                nosecone_pattern_mode(NC_MODE_STATIC,pat_d.basic.LED_idx==0?0xFFF:0x1F,NC_NA,NC_NA,NC_NA);
             break;
             case LED_PAT_BURST:
                 //calculate new index
@@ -1553,6 +1554,7 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=-1;
             //set interrupt interval
             flash_per=2000;
+            nosecone_pattern_mode(NC_MODE_STATIC,0xFFF,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_HUE:
             pat_d.basic.LED_idx=0;
