@@ -11,6 +11,7 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 #include "Companion.h"
+#include "Nosecone.h"
 
 #define FP_NAME_LEN (16)
 
@@ -30,6 +31,7 @@ typedef struct{
             void *data;
         }cb;
     };
+    LED_PARAMS NC_state,Chute_state;
 }FLIGHT_MODE_HANDLER;
 
 typedef struct{

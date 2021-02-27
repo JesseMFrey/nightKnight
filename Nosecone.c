@@ -19,13 +19,7 @@ typedef struct {
     int dir;
 } LED_STATE;
 
-typedef struct{
-    int mode;
-    int val1,val2;
-    int t1,t2;
-} PAT_STATE;
-
-static PAT_STATE pat_NC_stat;
+static LED_PARAMS pat_NC_stat;
 
 static LED_STATE nosecone_status,chute_status;
 

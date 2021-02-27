@@ -29,7 +29,16 @@ int chute_mode(int mode,int val1,int val2,int t1,int t2);
 
 #define NC_MAX_PWM     0XFFF
 
+//invalid mode
+#define NC_MODE_INVALID     (NC_MODE_NUM)
+
 enum{NC_MODE_STATIC=0,NC_MODE_FADE,NC_MODE_FLASH,NC_MODE_ONE_SHOT,NC_MODE_PATTERN,NC_MODE_NUM};
 
+
+typedef struct{
+    int mode;
+    int val1,val2;
+    int t1,t2;
+} LED_PARAMS;
 
 #endif /* NOSECONE_H_ */
