@@ -3,7 +3,7 @@
 #include "Companion.h"
 #include "flightPattern.h"
 
-const struct ao_companion_command flight_dat[]={
+const struct ao_companion_command flight_dat[]__attribute__((section(".far_const")))={
 		{AO_COMPANION_NOTIFY,2,48900,4945,3,0,0,0,0},
 		{AO_COMPANION_NOTIFY,2,48910,4945,3,0,0,0,0},
 		{AO_COMPANION_NOTIFY,2,48920,4945,3,0,0,0,0},
