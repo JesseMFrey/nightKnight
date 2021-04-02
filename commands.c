@@ -1071,6 +1071,8 @@ int settings_Cmd(int argc,char **argv)
         //check what argument was given
         if(!strcmp(argv[1],"save"))
         {
+            //copy pattern to settings
+            settings.pattern=flashPatternGet();
             //write settings to flash
             write_settings();
             //reset flashpattern to reset timers and things
