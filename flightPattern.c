@@ -9,6 +9,7 @@
 #include "flashPattern.h"
 #include "Nosecone.h"
 #include "regulator.h"
+#include "settings.h"
 #include <stddef.h>
 #include <string.h>
 
@@ -480,11 +481,11 @@ void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void 
     int i;
     for(i=0;i<list->num_colors;i++)
     {
-        if(cmd_dat->height>list->alt_color[i].alt)
+        if(cmd_dat->height > ((long)list->alt_color[i].alt_frac*(long)settings.alt)>>8)
         {
             color=list->alt_color[i].color;
         }
-        if(cmd_dat->height<list->alt_color[i].alt)
+        if(cmd_dat->height < ((long)list->alt_color[i].alt_frac*(long)settings.alt)>>8)
         {
             break;
         }

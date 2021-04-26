@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 
-const SETTINGS defaults={.color={.brt=31,.r=244,.g=244,.b=244},.pattern=LED_PAT_LIST_PARTICLE,.value=7,.list=&RNBW_colors};
+const SETTINGS defaults={.color={.brt=31,.r=244,.g=244,.b=244},.pattern=LED_PAT_LIST_PARTICLE,.value=7,.list=&RNBW_colors,.alt=160};
 
 #pragma DATA_SECTION(fl_settings, ".infoD")
 

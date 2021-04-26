@@ -41,7 +41,7 @@ typedef struct
     int num_colors;
     struct
     {
-        int alt;
+        char alt_frac;
         LED_color color;
     }alt_color[];
 }COLOR_LIST;

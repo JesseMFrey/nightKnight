@@ -54,33 +54,33 @@ unsigned int sim_int=1000;
 
 
 const COLOR_LIST RNBW_colors={ .num_colors=6,.alt_color={
-                       {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xF9,.g=0x03,.b=0x03}},   //Red
-                       {.alt=28 ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x30,.b=0x00}},   //Orange
-                       {.alt=56 ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0xB1,.b=0x00}},   //Yellow
-                       {.alt=84 ,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0xFF,.b=0x00}},   //Green
-                       {.alt=112,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x4D,.b=0xFF}},   //Blue
-                       {.alt=140,.color={.brt=LED_BRT_NORM,.r=0x75,.g=0x07,.b=0x78}}    //Purple
+                       {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xF9,.g=0x03,.b=0x03}},   //Red
+                       {.alt_frac=42 ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x30,.b=0x00}},   //Orange
+                       {.alt_frac=84,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0xB1,.b=0x00}},   //Yellow
+                       {.alt_frac=126,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0xFF,.b=0x00}},   //Green
+                       {.alt_frac=168,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x4D,.b=0xFF}},   //Blue
+                       {.alt_frac=210,.color={.brt=LED_BRT_NORM,.r=0x75,.g=0x07,.b=0x78}}    //Purple
                     }
                   };
 
 const COLOR_LIST USA_colors={ .num_colors=3,.alt_color={
-                       {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
-                       {.alt=56 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
-                       {.alt=112,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
+                       {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
+                       {.alt_frac=85 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
+                       {.alt_frac=170,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
                     }
                   };
 
 const COLOR_LIST RGB_colors={ .num_colors=3,.alt_color={
-                       {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
-                       {.alt=56 ,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0xFF,.b=0x00}},
-                       {.alt=112,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
+                       {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
+                       {.alt_frac=85 ,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0xFF,.b=0x00}},
+                       {.alt_frac=170,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
                     }
                   };
 
 const COLOR_LIST USA_RW_colors={
                     .num_colors=2,.alt_color={
-                       {.alt=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
-                       {.alt=85 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
+                       {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
+                       {.alt_frac=128 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
                     }
                   };
 

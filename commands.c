@@ -797,7 +797,8 @@ int clist_Cmd(int argc,char **argv)
     char *eptr;
     int i,j;
     long int temp;
-    int height;
+    float tempf;
+    int height_frac;
     int c[3];
 
     if(argc==0)
@@ -816,7 +817,7 @@ int clist_Cmd(int argc,char **argv)
             printf("idx\t""alt\t""Brt\t""Red\t""Green\t""Blue\r\n");
             for(i=0;i<list->num_colors;i++)
             {
-                printf("%i\t%i\t%u\t%u\t%u\t%u\r\n",i,list->alt_color[i].alt,list->alt_color[i].color.brt,list->alt_color[i].color.r,list->alt_color[i].color.g,list->alt_color[i].color.b);
+                printf("%i\t%.1f%%\t%u\t%u\t%u\t%u\r\n",i,100*(list->alt_color[i].alt_frac/(float)256),list->alt_color[i].color.brt,list->alt_color[i].color.r,list->alt_color[i].color.g,list->alt_color[i].color.b);
             }
             return 0;
         }
@@ -833,7 +834,7 @@ int clist_Cmd(int argc,char **argv)
                 return 2;
             }
             //parse height
-            temp=strtol(argv[2],&eptr,0);
+            tempf=strtof(argv[2],&eptr);
 
             //check if the whole string was parsed
             if(*eptr)
@@ -843,18 +844,18 @@ int clist_Cmd(int argc,char **argv)
               return 2;
             }
 
-            if(temp>INT_MAX)
+            if(tempf>100)
             {
-              printf("Error : altitude must be less than %i. got %li\r\n",UINT_MAX,temp);
+              printf("Error : altitude percent must be less than %i. got %li\r\n",100,tempf);
               return 4;
             }
-            if(temp<INT_MIN)
+            if(tempf<0)
             {
-              printf("Error : altitude must be greater than %i but got %li\r\n",INT_MIN,temp);
+              printf("Error : altitude percent must be greater than %i but got %li\r\n",0,tempf);
               return 5;
             }
             //set height
-            height=temp;
+            height_frac=256*tempf/(float)100;
 
             //parse brightness
             temp=strtol(argv[3],&eptr,10);
@@ -909,7 +910,7 @@ int clist_Cmd(int argc,char **argv)
 
             for(i=0;i<cust_list->num_colors;i++)
             {
-                if(cust_list->alt_color[i].alt>height)
+                if(cust_list->alt_color[i].alt_frac>height_frac)
                 {
                     break;
                 }
@@ -925,7 +926,7 @@ int clist_Cmd(int argc,char **argv)
             cust_list->alt_color[i].color.g=c[1];
             cust_list->alt_color[i].color.b=c[2];
             cust_list->alt_color[i].color.brt=LED_brt;
-            cust_list->alt_color[i].alt=height;
+            cust_list->alt_color[i].alt_frac=height_frac;
             //increment count
             cust_list->num_colors+=1;
             return 0;
@@ -1059,6 +1060,8 @@ void print_settings(const SETTINGS *set)
     }
     //print flight pattern
     printf("flight pattern : %s\r\n",set->flightp);
+    //print expected altitude
+    printf("Expected altitude %u m\r\n",set->alt);
 }
 
 int settings_Cmd(int argc,char **argv)
@@ -1141,6 +1144,41 @@ int rst_Cmd(int argc,char **argv)
     return 1;
 }
 
+int alt_Cmd(int argc,char **argv)
+{
+    char *eptr;
+    long int temp;
+
+    if(argc>0)
+    {
+        //parse value
+        temp=strtol(argv[1],&eptr,0);
+
+        //check if the whole string was parsed
+        if(*eptr)
+        {
+            //end of string not found
+            printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
+            return 2;
+        }
+
+        if(temp<0)
+        {
+            printf("Error : expected altitude must be greater than zero. got %li\r\n",temp);
+            return 3;
+        }
+
+        if(temp>INT_MAX)
+        {
+            printf("Error : expected altitude must be less than %li. got %li\r\n",INT_MAX,temp);
+            return 4;
+        }
+        settings.alt=temp;
+    }
+    printf("Expected altitude : %i m\r\n",settings.alt);
+    return 0;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -1158,5 +1196,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"settings","Print out settings",settings_Cmd},
                           {"rst","Reset LED microcontroller",rst_Cmd},
                           {"fpat","set flight pattern",fpat_Cmd},
+                          {"alt","set expected altitude",alt_Cmd},
                           {NULL,NULL,NULL}
 };

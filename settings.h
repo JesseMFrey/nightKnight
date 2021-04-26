@@ -19,6 +19,7 @@ typedef struct {
     const COLOR_LIST *list;
     unsigned int value;
     char flightp[FP_NAME_LEN];
+    unsigned short alt;
 }SETTINGS;
 
 typedef union{
