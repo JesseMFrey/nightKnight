@@ -230,7 +230,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Boost pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,
-                                               {.basic={.pattern=LED_PAT_BOOST,.value=12,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}},
+                                               {.basic={.pattern=LED_PAT_BOOST,.value=12,.color={.brt=MAX_SOLID_BRT-5,.r=255,.g=150,.b=10}}},
                                                {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Fast pattern
