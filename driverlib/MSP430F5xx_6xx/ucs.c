@@ -96,7 +96,7 @@
 // invoke UCS_getSMCLK, UCS_getMCLK or UCS_getACLK
 //
 //******************************************************************************
-static uint32_t privateXT1ClockFrequency = 0;
+static uint32_t privateXT1ClockFrequency = 32768;
 
 //******************************************************************************
 //

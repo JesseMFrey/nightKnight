@@ -125,7 +125,7 @@ void USBHAL_initClocks(uint32_t mclkFreq)
 
 	UCS_initClockSignal(
 	   UCS_ACLK,
-	   UCS_REFOCLK_SELECT,
+	   UCS_XT1CLK_SELECT,
 	   UCS_CLOCK_DIVIDER_1);
 
     UCS_initFLLSettle(

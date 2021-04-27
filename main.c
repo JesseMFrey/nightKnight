@@ -92,6 +92,9 @@ void main (void)
     int fp_done=0;
     int fp_idx=0,tmp;
 
+    //init low frequency clock
+    UCS_turnOnLFXT1(UCS_XT1_DRIVE_3,UCS_XCAP_0);
+
     WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
 
     setupDIP();
