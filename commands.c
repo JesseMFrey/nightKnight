@@ -813,7 +813,29 @@ int clist_Cmd(int argc,char **argv)
     {
         if(!strcmp("print",argv[1]))
         {
-            list=(COLOR_LIST*)custom_clist;
+            //check if we got an extra argument after print
+            if(argc>=2)
+            {
+                //yes, find matching list
+                for(i=0;clists[i].name!=NULL;i++)
+                {
+                    if(!strcmp(clists[i].name,argv[2]))
+                    {
+                        list=clists[i].list;
+                        break;
+                    }
+                }
+                if(list==NULL)
+                {
+                    printf("Error : \"%s\" is not a valid color list\r\n",argv[2]);
+                    return 1;
+                }
+            }
+            else
+            {
+                //default to custom list
+                list=(COLOR_LIST*)custom_clist;
+            }
             printf("idx\t""alt\t""Brt\t""Red\t""Green\t""Blue\r\n");
             for(i=0;i<list->num_colors;i++)
             {
