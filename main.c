@@ -108,10 +108,9 @@ void main (void)
     initADC();
     init_Nosecone();
     init_Companion();
-
-    init_FlashPattern();
-
     init_settings();
+    //init flash pattern after settings so we can use settings for flash pattern
+    init_FlashPattern();
 
     //check if this was unusual
     if(!expected_reset)

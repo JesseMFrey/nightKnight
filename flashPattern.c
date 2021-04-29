@@ -135,77 +135,17 @@ void init_FlashPattern(void)
 
     //read DIP switches
     sw_val=readDIP();
-
-    switch(sw_val){
-    case 0:
-        //set flash pattern from settings
-        flashPatternVCL(settings.pattern,settings.value,settings.color,settings.list);
-        break;
-    case 1:
-        //set flash pattern
-        flashPattern_setList(&USA_colors);
-        flashPatternChange(LED_PAT_FLASH_GAP);
-        break;
-    case 2:
-        //set flash pattern
-        flashPattern_setList(&USA_RW_colors);
-        flashPatternVC(LED_PAT_ST_LIST,3,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=0,.b=255});
-        break;
-    case 3:
-        //set flash pattern
-        flashPatternChange(LED_PAT_COLORTRAIN);
-        break;
-    case 4:
-        //set flash pattern
-        flashPatternChange(LED_PAT_HUE);
-        break;
-    case 5:
-        flashPattern_setList(&RNBW_colors);
-        flashPatternVC(LED_PAT_FLOW_LIST,6,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=200,.b=150});
-        break;
-    case 6:
-        flashPattern_setList(&RNBW_colors);
-        flashPatternVC(LED_PAT_ST_LIST,6,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=200,.b=150});
-        break;
-    case 7:
-        flashPattern_setList(&RNBW_colors);
-        flashPatternChange(LED_PAT_FLASH_NOGAP);
-        break;
-    case 8:
-        flashPatternVC(LED_PAT_PARTICLE,NUM_PARTICLES,(LED_color){.brt=MAX_BRT,.r=255,.g=150,.b=10});
-        break;
-    case 9:
-        flashPattern_setList(&RNBW_colors);
-        flashPatternVC(LED_PAT_LIST_PARTICLE,6,(LED_color){.brt=MAX_BRT,.r=255,.g=200,.b=150});
-        break;
-    case 10:
-        //set flash pattern
-        flashPattern_setList(&USA_RW_colors);
-        flashPatternVC(LED_PAT_FLOW_LIST,3,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=0,.b=255});
-        break;
-    case 11:
-        //set flash pattern
-        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=0,.b=0});
-        break;
-    case 12:
-        //set flash pattern
-        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=0,.g=255,.b=0});
-        break;
-    case 13:
-        //set flash pattern
-        flashPatternVC(LED_PAT_WAVE_BIG_D,12,(LED_color){.brt=LED_BRT_NORM,.r=255,.g=150,.b=10});
-        break;
-    case 14:
-        //set flash pattern
-        flashPattern_setColor((LED_color){.brt=LED_BRT_NORM,.r=255,.g=255,.b=255});
-        flashPatternChange(LED_PAT_SATURATION);
-        break;
-    default:
+    //check if we should be off on startup
+    if((sw_val&BIT0))
+    {
+        //set pattern from settings
+        flashPatternChange(settings.pattern);
+    }
+    else
+    {
         //set LED's off
         flashPatternChange(LED_PAT_OFF);
-        break;
     }
-
     //setup TA1CCR1 for sim timer
     TA1CCR1=sim_int;
     TA1CCTL1=CCIE;
