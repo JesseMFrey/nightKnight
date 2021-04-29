@@ -1534,6 +1534,9 @@ void flashPatternChange(int pattern)
     //set new pattern
     LED_pattern=pattern;
 
+    //set nosecone pattern mode off by default
+    nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
+
     //init indexes
     switch(LED_pattern)
     {
@@ -1542,8 +1545,6 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=-2;
             //set interrupt interval
             flash_per=102*2;
-            //turn off nosecone
-            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_FLASH_GAP:
             pat_d.basic.LED_idx=0;
@@ -1554,7 +1555,6 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=-1;
             //set interrupt interval
             flash_per=2000;
-            nosecone_pattern_mode(NC_MODE_STATIC,0xFFF,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_HUE:
             pat_d.basic.LED_idx=0;
@@ -1575,8 +1575,6 @@ void flashPatternChange(int pattern)
         case LED_PAT_FLASH_NOGAP:
             pat_d.basic.LED_idx=0;
             //set interrupt interval
-            //turn off nosecone
-            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
             flash_per=2048;
         break;
         case LED_PAT_STR_ST:
@@ -1607,8 +1605,6 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=70;
-            //turn off nosecone
-            nosecone_pattern_mode(NC_MODE_STATIC,0,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_WAVE_BIG_U:
         case LED_PAT_WAVE_BIG_D:
@@ -1629,8 +1625,9 @@ void flashPatternChange(int pattern)
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=200;
-            //set nosecone mode unconditionally
-            nosecone_mode(NC_MODE_FLASH,0xFFF,0,200,100);
+            // mode unconditionally
+            nosecone_pattern_mode(NC_MODE_FLASH,0xFFF,0,200,100);
+            nosecone_mode(NC_MODE_PATTERN,NC_NA,NC_NA,NC_NA,NC_NA);
         break;
         case LED_PAT_OFF:
             //don't update
