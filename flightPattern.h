@@ -59,6 +59,7 @@ void fp_heightGraph(const struct ao_companion_command *cmd_dat,int fm_new, void 
 void fp_heightParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
 void fp_heightListParticle(const struct ao_companion_command *cmd_dat,int fm_new, void *color);
 void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void *list);
+void fp_speedHue(const struct ao_companion_command *cmd_dat,int fm_new, void *_hsv);
 
 //sim interval in ms
 extern unsigned int sim_int;

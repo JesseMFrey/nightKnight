@@ -503,3 +503,27 @@ void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void 
     }
 }
 
+
+void fp_speedHue(const struct ao_companion_command *cmd_dat,int fm_new, void *_hsv)
+{
+    LED_color color,*hsv=(LED_color*)_hsv;
+    static int maxSpeed=0;
+    unsigned char hue_shift;
+    if(fm_new)
+    {
+        if(cmd_dat->speed>maxSpeed)
+        {
+            maxSpeed=cmd_dat->speed;
+        }
+        //set initial color
+        HsvToLED(&color,hsv->brt,hsv->h,hsv->s,hsv->v);
+        flashPatternVC(LED_SOLID_ST,0,color);
+    }
+    else
+    {
+        hue_shift=0xFF-(unsigned char)((((float)cmd_dat->speed)*0xFF)/((float)maxSpeed));
+        HsvToLED(&color,hsv->brt,hsv->h+hue_shift,hsv->s,hsv->v);
+        //set new color
+        flashPattern_setColor(color);
+    }
+}
