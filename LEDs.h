@@ -36,7 +36,32 @@ void initLEDs(void);
 
 typedef struct{
     unsigned char brt;
-    unsigned char b,g,r;
+    union
+    {
+        //blue
+        unsigned char b;
+        unsigned char blue;
+        //value
+        unsigned char v;
+    };
+    union
+    {
+        //green
+        unsigned char g;
+        unsigned char green;
+        //saturation
+        unsigned char s;
+        unsigned char sat;
+        unsigned char saturation;
+    };
+    union{
+        //red
+        unsigned char r;
+        unsigned char red;
+        //hue
+        unsigned char h;
+        unsigned char hue;
+    };
 }LED_color;
 
 typedef struct{
