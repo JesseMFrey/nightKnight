@@ -41,6 +41,9 @@ typedef struct{
 
 enum {FLIGHT_TYPE_INVALID=0,FLIGHT_TYPE_NO_CHANGE,FLIGHT_TYPE_PATTERN,FLIGHT_TYPE_PATTERN_VAL_COLOR,FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,FLIGHT_TYPE_COLOR,FLIGHT_TYPE_PATTERN_COMPLEX};
 
+#define FP_FLYING       (1)
+#define FP_NOT_FLYING   (0)
+
 //flight data for replay
 extern const struct ao_companion_command flight_dat[];
 

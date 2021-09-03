@@ -332,12 +332,16 @@ int find_flightP(const char *name)
     return -1;
 }
 
+struct {
+            int flying;
+        } flightP_dat={0};
+
 int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN *pattern,int last)
 {
     int fm_new=last!=new_dat->flight_state;
     const FLIGHT_MODE_HANDLER *handler;
 
-    if(new_dat->command>=AO_FLIGHT_NUM)
+    if(new_dat->flight_state>=AO_FLIGHT_NUM)
     {
         //set panic mode
         panic(LED_PAT_MODE_PANIC);
@@ -353,6 +357,25 @@ int proc_flightP(const struct ao_companion_command *new_dat,const FLIGHT_PATTERN
         //return current mode
         return new_dat->flight_state;
     }
+    //check if we went from flying to not flying
+    if(flightP_dat.flying && (new_dat->flight_state<ao_flight_boost || new_dat->flight_state>ao_flight_landed))
+    {
+        //set panic mode
+        panic(LED_PAT_MODE_PANIC);
+        //invalid mode, nothing left to do
+        return new_dat->flight_state;
+    }
+    //check if we are flying
+    if(new_dat->flight_state>ao_flight_pad && new_dat->flight_state<ao_flight_landed)
+    {
+        flightP_dat.flying=FP_FLYING;
+    }
+    //check if we have landed
+    if(new_dat->flight_state==ao_flight_landed)
+    {
+        flightP_dat.flying=FP_NOT_FLYING;
+    }
+
     //get the handler for this mode
     handler=&pattern->handlers[new_dat->flight_state];
     //check if this is a new flight mode
