@@ -1081,7 +1081,7 @@ void print_settings(const SETTINGS *set)
         printf("list  : %s\r\n",pat_name);
     }
     //print flight pattern
-    printf("flight pattern : %s\r\n",set->flightp);
+    printf("flight pattern : %s\r\n",set->flightp[0]==0xFF?"-Invalid-":set->flightp);
     //print expected altitude
     printf("Expected altitude : %u m\r\n",set->alt);
 }
