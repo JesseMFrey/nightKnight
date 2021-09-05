@@ -1083,7 +1083,7 @@ void print_settings(const SETTINGS *set)
     //print flight pattern
     printf("flight pattern : %s\r\n",set->flightp);
     //print expected altitude
-    printf("Expected altitude %u m\r\n",set->alt);
+    printf("Expected altitude : %u m\r\n",set->alt);
 }
 
 int settings_Cmd(int argc,char **argv)
