@@ -210,7 +210,7 @@ const FLIGHT_PATTERN
                                                   {.mode=NC_MODE_STATIC,.val1=100},{.mode=NC_MODE_STATIC,.val1=0}
                                              },
                                             }
-                                    },
+                                 },
                                  {"USA",{
                                           //Startup pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}},

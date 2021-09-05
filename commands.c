@@ -1201,6 +1201,28 @@ int alt_Cmd(int argc,char **argv)
     return 0;
 }
 
+int nightlight_Cmd(int argc,char **argv)
+{
+    if(argc>0)
+    {
+        if(!strcmp(argv[1],"on") || !strcmp(argv[1],"True") || !strcmp(argv[1],"true"))
+        {
+            only_fins = 1;
+        }
+        else if(!strcmp(argv[1],"off") || !strcmp(argv[1],"False") || !strcmp(argv[1],"false"))
+        {
+            only_fins = 0;
+        }
+        else
+        {
+            printf("Error : invalid value \"%s\"\r\n",argv[1]);
+            return 1;
+        }
+    }
+    printf("Night Mode : %s\r\n",only_fins?"on":"off");
+    return 0;
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -1219,5 +1241,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"rst","Reset LED microcontroller",rst_Cmd},
                           {"fpat","set flight pattern",fpat_Cmd},
                           {"alt","set expected altitude",alt_Cmd},
+                          {"nightlight","set night light mode",nightlight_Cmd},
                           {NULL,NULL,NULL}
 };

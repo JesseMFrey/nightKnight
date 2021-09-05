@@ -77,6 +77,7 @@ enum{LED_PAT_OFF=0,LED_PAT_MAN,LED_PAT_COLORTRAIN,LED_PAT_HUE,LED_PAT_BURST,LED_
 #define LED_PAT_MIN         LED_PAT_OFF
 #define LED_PAT_MAX         (LED_NUM_PAT-1)
 
+extern int only_fins;
 
 extern const COLOR_LIST RNBW_colors;
 extern const COLOR_LIST USA_colors;
