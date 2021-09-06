@@ -236,20 +236,26 @@ int color_Cmd(int argc,char **argv)
     char *eptr;
     int i;
     long int temp;
+    int arg_num=1;
     int c[3];
     LED_color color;
 
 
+    if(argc>4 || (argc != 0 && argc <3))
+    {
+        printf("Expected 3, 4 or zero arguments but got %i\r\n",argc);
+        return 1;
+    }
     if(argc==4)
     {
         //parse brightness
-        temp=strtol(argv[1],&eptr,10);
+        temp=strtol(argv[arg_num],&eptr,10);
 
         //check if the whole string was parsed
         if(*eptr)
         {
            //end of string not found
-           printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[1],eptr);
+           printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[arg_num],eptr);
            return 2;
         }
 
@@ -265,18 +271,27 @@ int color_Cmd(int argc,char **argv)
            return 5;
         }
         LED_brt=temp;
-
+        //increment argument number
+        arg_num++;
+    }
+    else
+    {
+        //retain existing brightness
+        LED_brt=settings.color.brt;
+    }
+    if(argc>=3)
+    {
         //parse color values
         for(i=0;i<3;i++)
         {
             //parse value
-            temp=strtol(argv[2+i],&eptr,0);
+            temp=strtol(argv[arg_num+i],&eptr,0);
 
             //check if the whole string was parsed
             if(*eptr)
             {
                 //end of string not found
-                printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2+i],eptr);
+                printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[arg_num+i],eptr);
                 return 2;
             }
 
@@ -301,11 +316,6 @@ int color_Cmd(int argc,char **argv)
         color.brt=LED_ST_BITS|LED_brt;
 
         flashPattern_setColor(color);
-    }
-    else if(argc!=0)
-    {
-        printf("Expected 4 or zero arguments but got %i\r\n",argc);
-        return 1;
     }
     //print color
     printf("color : 0x%02X 0x%02X 0x%02X 0x%02X\r\n",settings.color.brt,settings.color.r,settings.color.g,settings.color.b);
