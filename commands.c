@@ -1233,6 +1233,64 @@ int nightlight_Cmd(int argc,char **argv)
     return 0;
 }
 
+int get_Cmd(int argc, char**argv)
+{
+    char buffer[FP_NAME_LEN+5];
+    int val,i;
+
+    if(argc != 1)
+    {
+        printf("Error : get requires 1 argument\r\n");
+        return 1;
+    }
+    if(!strcmp("pat",argv[1]))
+    {
+        //get current pattern
+        val=flashPatternGet();
+        //loop through patterns
+        for(i=0;pattern_names[i].name!=NULL;i++)
+        {
+            if(pattern_names[i].val==val)
+            {
+                //print pattern
+                printf("LED pattern : %s\r\n",pattern_names[i].name);
+                return 0;
+            }
+        }
+        printf("Error : invalid pattern\r\n");
+        return 3;
+    }
+    else if(!strcmp("clist",argv[1]))
+    {
+        for(i=0;clists[i].name!=NULL;i++)
+        {
+            if(settings.list==clists[i].list)
+            {
+                //print color list pattern
+                printf("Color list : %s\r\n",clists[i].name);
+                return 0;
+            }
+        }
+        printf("Error : invalid color list\r\n");
+        return 3;
+    }
+    else if(!strcmp("fpat",argv[1]))
+    {
+        //copy to buffer to prevent errors
+        strncpy(buffer,settings.flightp,FP_NAME_LEN);
+        //terminate
+        buffer[FP_NAME_LEN] = 0;
+        //print flight pattern
+        printf("Flight pattern : %s\r\n",buffer);
+        return 0;
+    }
+    else
+    {
+        printf("Error : unknown key \"%s\"\r\n",argv[1]);
+        return 2;
+    }
+}
+
 const CMD_SPEC cmd_tbl[]={
                           {"help","get help on commands",helpCmd},
                           {"LED","Change LED stuff",LED_Cmd},
@@ -1252,5 +1310,6 @@ const CMD_SPEC cmd_tbl[]={
                           {"fpat","set flight pattern",fpat_Cmd},
                           {"alt","set expected altitude",alt_Cmd},
                           {"nightlight","set night light mode",nightlight_Cmd},
+                          {"get","query things",get_Cmd},
                           {NULL,NULL,NULL}
 };
