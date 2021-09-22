@@ -560,19 +560,8 @@ int flashPatternStep(void)
                     LED_stat[buffer_idx].colors[pat_i-1].g=(lin_idx==pat_d.basic.green_idx)?0xFF:0;
                 break;
                 case LED_PAT_HUE:
-                    //is this the first loop
-                    if((pat_i-1)==0)
-                    {
-                        //calculate color in RGB
-                        HsvToLED(&LED_stat[buffer_idx].colors[0],settings.color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
-                    }else
-                    {
-                        //copy from first LED
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_stat[buffer_idx].colors[0].brt;
-                        LED_stat[buffer_idx].colors[pat_i-1].r  =LED_stat[buffer_idx].colors[0].r;
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =LED_stat[buffer_idx].colors[0].g;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =LED_stat[buffer_idx].colors[0].b;
-                    }
+                    //calculate color in RGB
+                    HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],settings.color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
                 break;
                 case LED_PAT_BURST:
                     //set to full brightness
@@ -655,22 +644,31 @@ int flashPatternStep(void)
                     }
                 break;
                 case LED_PAT_ST_LIST:
-                    if(lin_idx<FIN_LED)
-                    {
-                        //fins bright white
-                        LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
-                        //high brightness for fins
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(settings.color.brt,9);
-
+                    if(only_fins){
+                        //set color from array
+                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[(((lin_idx*4)/settings.value)%settings.list->num_colors)].color;
+                        //set brightens from pattern color
+                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                     }
                     else
                     {
-                        //set color from array
-                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[(((lin_idx-FIN_LED)/settings.value)%settings.list->num_colors)].color;
-                        //set brightens from pattern color
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                        if(lin_idx<FIN_LED)
+                        {
+                            //fins bright white
+                            LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
+                            LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
+                            LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
+                            //high brightness for fins
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(settings.color.brt,9);
+
+                        }
+                        else
+                        {
+                            //set color from array
+                            LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[(((lin_idx-FIN_LED)/settings.value)%settings.list->num_colors)].color;
+                            //set brightens from pattern color
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                        }
                     }
                 break;
                 case LED_PAT_FLASH_NOGAP:
@@ -680,22 +678,32 @@ int flashPatternStep(void)
                     LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                 break;
                 case LED_PAT_FLOW_LIST:
-                    if(lin_idx<FIN_LED)
+                    if(only_fins)
                     {
-                        //fins bright white
-                        LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
-                        //high brightness for fins
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(settings.color.brt,9);
-
+                        //set color from array
+                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[( ((4*(lin_idx+pat_d.basic.LED_idx))/settings.value)%settings.list->num_colors)].color;
+                        //set color from pattern color
+                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                     }
                     else
                     {
-                        //set color from array
-                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/settings.value)%settings.list->num_colors)].color;
-                        //set color from pattern color
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                        if(lin_idx<FIN_LED)
+                        {
+                            //fins bright white
+                            LED_stat[buffer_idx].colors[pat_i-1].r  =settings.color.r;
+                            LED_stat[buffer_idx].colors[pat_i-1].g  =settings.color.g;
+                            LED_stat[buffer_idx].colors[pat_i-1].b  =settings.color.b;
+                            //high brightness for fins
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|brt_offset(settings.color.brt,9);
+
+                        }
+                        else
+                        {
+                            //set color from array
+                            LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[( ((lin_idx+pat_d.basic.LED_idx)/settings.value)%settings.list->num_colors)].color;
+                            //set color from pattern color
+                            LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
+                        }
                     }
                 break;
                 case LED_PAT_COLOR_PARTICLE:
