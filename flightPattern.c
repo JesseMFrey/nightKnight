@@ -48,11 +48,11 @@ const FLIGHT_PATTERN
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightGraph,.data=&(LED_color){.brt=MAX_SOLID_BRT,.r=0xFF,.g=0,.b=0}}},
-                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=0x00,.b=0x00}}},
-                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_SATURATION,.color={.brt=2,.r=0xFF,.g=0xFF,.b=0xFF}}},
@@ -89,19 +89,19 @@ const FLIGHT_PATTERN
                                           },
                                           //Fast pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedHue,.data=&(LED_color){.brt=MAX_SOLID_BRT,.h=0,.s=255,.v=200}}},
-                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_STATIC,.val1=0}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Coast pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedHue,.data=&(LED_color){.brt=MAX_SOLID_BRT,.h=0,.s=255,.v=200}}},
-                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_STATIC,.val1=0}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=0x00,.b=0x00}}},
-                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=0x00,.b=0x00}}},
-                                               {.mode=NC_MODE_INVALID},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_SATURATION,.color={.brt=2,.r=0xFF,.g=0xFF,.b=0xFF}}},
@@ -144,11 +144,11 @@ const FLIGHT_PATTERN
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightGraph,.data=&(LED_color){.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}},
-                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0x00,.g=0xFF,.b=0x00}}},
-                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_SATURATION,.color={.brt=2,.r=0xFF,.g=0xFF,.b=0xFF}}},
@@ -183,19 +183,19 @@ const FLIGHT_PATTERN
                                              },
                                              //Fast pattern
                                              {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedHue,.data=&(LED_color){.brt=MAX_SOLID_BRT,.h=85,.s=255,.v=200}}},
-                                                  {.mode=NC_MODE_INVALID},{.mode=NC_MODE_STATIC,.val1=0}
+                                                  {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=0}
                                              },
                                              //Coast pattern
                                              {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_speedHue,.data=&(LED_color){.brt=MAX_SOLID_BRT,.h=85,.s=255,.v=200}}},
-                                                  {.mode=NC_MODE_INVALID},{.mode=NC_MODE_STATIC,.val1=0}
+                                                  {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=0}
                                              },
                                              //Drogue pattern
                                              {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightGraph,.data=&(LED_color){.brt=MAX_SOLID_BRT,.r=0,.g=0xFF,.b=0}}},
-                                                  {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
+                                                  {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                              },
                                              //Main pattern
                                              {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0x00,.g=0xFF,.b=0x00}}},
-                                                  {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                                  {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                              },
                                              //Landed pattern
                                              {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_SATURATION,.color={.brt=2,.r=0xFF,.g=0xFF,.b=0xFF}}},
@@ -240,11 +240,11 @@ const FLIGHT_PATTERN
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
                                                {.basic={.pattern=LED_PAT_FLASH_GAP,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_RW_colors}},
-                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_STATIC,.val1=0}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightListParticle,.data=(void*)&USA_colors}},
-                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
@@ -294,7 +294,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightListParticle,.data=(void*)&RNBW_colors}},
-                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
@@ -342,12 +342,12 @@ const FLIGHT_PATTERN
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR,
                                                {.basic={.pattern=LED_SOLID_ST,.value=0,.color={.brt=MAX_SOLID_BRT-6,.r=255,.g=150,.b=10}}},
-                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,
                                                {.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=150,.b=10}}},
-                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
@@ -393,12 +393,12 @@ const FLIGHT_PATTERN
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,
                                                {.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=150,.b=10}}},
-                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=4000}
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
                                           {FLIGHT_TYPE_PATTERN_COMPLEX,
                                                {.cb={.callback=fp_heightParticle,.data=&(LED_color){.brt=31,.r=0xFF,.g=150,.b=10}}},
-                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_FLASH,.val1=NC_MAX_PWM,.val2=0,.t1=100,.t2=500}
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
                                           },
                                           //Landed pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
