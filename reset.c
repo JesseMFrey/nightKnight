@@ -5,7 +5,7 @@
  *      Author: jesse
  */
 
-#include <reset.h>
+#include "reset.h"
 #include <msp430.h>
 
 unsigned int __attribute__((noinit)) nr_resets;
