@@ -6,7 +6,6 @@
  */
 
 #include <msp430.h>
-#include <limits.h>
 #include "Companion.h"
 
 //#define SD24_read(ch)     {unsigned long val;val =(unsigned long)SD24BMEML##ch;val|=((unsigned long)SD24BMEMH##ch)<<16;val}
