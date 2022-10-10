@@ -81,6 +81,7 @@ extern int only_fins;
 
 extern const COLOR_LIST RNBW_colors;
 extern const COLOR_LIST USA_colors;
+extern const COLOR_LIST USA_spk_colors;
 extern const COLOR_LIST RGB_colors;
 extern const COLOR_LIST USA_RW_colors;
 

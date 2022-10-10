@@ -261,6 +261,56 @@ const FLIGHT_PATTERN
                                           },
                                          }
                                  },
+                                 {"USAspk",{
+                                          //Startup pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Idle pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Pad pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
+                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=2,.color={.brt=7,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}},
+                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Boost pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_spk_colors}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Fast pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_spk_colors}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Coast pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_colorHeight,.data=(void*)&USA_spk_colors}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Drogue pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
+                                               {.basic={.pattern=LED_PAT_STR_ST,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_spk_colors}},
+                                               {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
+                                          },
+                                          //Main pattern
+                                          {FLIGHT_TYPE_PATTERN_COMPLEX,{.cb={.callback=fp_heightListParticle,.data=(void*)&USA_colors}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM}
+                                          },
+                                          //Landed pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
+                                               {.basic={.pattern=LED_PAT_FLOW_LIST,.value=2,.color={.brt=4,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}},
+                                               {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Invalid pattern
+                                          {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_PATTERN_PANIC}},
+                                               {.mode=NC_MODE_STATIC,.val1=0},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                          //Test pattern
+                                          {FLIGHT_TYPE_PATTERN_VAL_COLOR,{.basic={.pattern=LED_PAT_COLORTRAIN,.value=0,.color={.brt=8,.r=0xFF,.g=0xFF,.b=0xFF}}},
+                                               {.mode=NC_MODE_STATIC,.val1=100},{.mode=NC_MODE_STATIC,.val1=0}
+                                          },
+                                         }
+                                 },
                                  {"rnbw",{
                                           //Startup pattern
                                           {FLIGHT_TYPE_PATTERN,{.basic={.pattern=LED_PAT_OFF}},
