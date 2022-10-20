@@ -22,6 +22,7 @@ void init5Vreg(void)
     //setup regulator enable pin
     P1OUT&=~BIT7;
     P1REN&=~BIT7;
+    P1DIR|= BIT7;
 
     //setup regulator PG interrupt
     P1IES|= BIT6;
