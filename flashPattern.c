@@ -73,8 +73,8 @@ const COLOR_LIST USA_colors={ .num_colors=3,.alt_color={
                   };
 
 const COLOR_LIST USA_spk_colors={ .num_colors=3,.alt_color={
-                       {.alt_frac=85 ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
-                       {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
+                       {.alt_frac=0   ,.color={.brt=LED_BRT_NORM,.r=USA_WHITE_BRT,.g=USA_WHITE_BRT,.b=USA_WHITE_BRT}},
+                       {.alt_frac=85  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
                        {.alt_frac=170,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0x00,.b=0xFF}}
                     }
                   };
