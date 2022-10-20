@@ -14,6 +14,8 @@
 #include <string.h>
 
 #define MAX_SOLID_BRT 15
+//max brightness for a color that is not brighter than pur R, G, or B
+#define MAX_SINGLE_BRT 31
 
 const FLIGHT_PATTERN
               flight_patterns[]
@@ -239,7 +241,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_STR_ST,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_colors}},
+                                               {.basic={.pattern=LED_PAT_STR_ST,.color={.brt=MAX_SINGLE_BRT,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_colors}},
                                                {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
@@ -289,7 +291,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_STR_ST,.color={.brt=31,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_spk_colors}},
+                                               {.basic={.pattern=LED_PAT_STR_ST,.color={.brt=MAX_SINGLE_BRT,.r=0xFF,.g=0xFF,.b=0xFF},.list=&USA_spk_colors}},
                                                {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_FADE,.val1=600,.val2=NC_MAX_PWM,.t1=10,.t2=8}
                                           },
                                           //Main pattern
@@ -339,7 +341,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Drogue pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=8,.color={.brt=18,.r=155,.g=100,.b=50},.list=&RNBW_colors}},
+                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=8,.color={.brt=MAX_SINGLE_BRT,.r=155,.g=100,.b=50},.list=&RNBW_colors}},
                                                {.mode=NC_MODE_STATIC,.val1=NC_MAX_PWM},{.mode=NC_MODE_ONE_SHOT,.val1=0,.val2=NC_MAX_PWM,.t1=8000}
                                           },
                                           //Main pattern
@@ -711,7 +713,7 @@ void fp_colorHeight(const struct ao_companion_command *cmd_dat,int fm_new, void 
         }
     }
     //set brightness
-    color.brt=MAX_SOLID_BRT;
+    color.brt=MAX_SINGLE_BRT;
 
     if(fm_new)
     {
