@@ -38,8 +38,8 @@ void reg5V_on(void)
     P1OUT|= BIT7;
     //stop timer
     TA3CTL=MC__STOP;
-    //set interrupt interval ~1 ms
-    TA3CCR0=33;
+    //set interrupt to startup time
+    TA3CCR0=REG_STARTUP_TICKS;
     //enable interrupt for CCR0
     TA3CCTL0=CCIE;
     //start timer
@@ -60,8 +60,8 @@ void __attribute__ ((interrupt(TIMER3_A0_VECTOR))) PG_inhibit (void)
 {
     //disable further interrupts
     TA3CCTL0=0;
-    //clear startup flag
-    reg_flags&=~REG_FLAGS_STARTUP;
+    //clear startup and de-glitch flags
+    reg_flags&=~(REG_FLAGS_STARTUP|REG_FLAGS_DEGLITCH);
     //check PG pin
     if(!(P1IN&BIT6))
     {

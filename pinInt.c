@@ -39,11 +39,18 @@ void __attribute__ ((interrupt(PORT1_VECTOR))) button1_ISR (void)
         break;
         case P1IV_P1IFG6:
             //5V regulator power good interrupt
-            if(reg5V_is_on() && !(reg_flags&REG_FLAGS_STARTUP))
+            if(reg5V_is_on() && !(reg_flags&(REG_FLAGS_STARTUP|REG_FLAGS_DEGLITCH)))
             {
-                //set error flag
-                reg_flags|=REG_FLAGS_ERROR;
-                panic(LED_PAT_POWER_PANIC);
+                //set de-glitch flag
+                reg_flags|=REG_FLAGS_DEGLITCH;
+                //stop timer
+                TA3CTL=MC__STOP;
+                //set interrupt to de-glitch time
+                TA3CCR0=REG_DEGLITCH_TICKS;
+                //enable interrupt for CCR0
+                TA3CCTL0=CCIE;
+                //start timer
+                TA3CTL=TASSEL__ACLK|MC__CONTINUOUS|TACLR;
             }
         break;
     }

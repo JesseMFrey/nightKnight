@@ -18,6 +18,9 @@ void reg5V_on(void);
 
 extern int reg_flags;
 
-enum{REG_FLAGS_STARTUP=0x01,REG_FLAGS_ERROR=0x02};
+enum{REG_FLAGS_STARTUP=0x01,REG_FLAGS_ERROR=0x02,REG_FLAGS_DEGLITCH=0x04};
+
+#define REG_STARTUP_TICKS        (33)        //about 1 ms
+#define REG_DEGLITCH_TICKS       (660)        //about 20 ms
 
 #endif /* REGULATOR_H_ */
