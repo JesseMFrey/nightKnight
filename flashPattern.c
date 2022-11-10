@@ -400,8 +400,6 @@ int flashPatternStep(void)
                         //limit to number of particles
                         pat_d.ptc.num=(NUM_PARTICLES/LED_STR);
                     }
-                    //each string is independent so account for that
-                    pat_d.ptc.num*=LED_STR;
                 }
                 else
                 {
