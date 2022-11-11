@@ -20,6 +20,7 @@
 #include "events.h"
 #include "reset.h"
 #include "settings.h"
+#include "ADC.h"
 
 
 int brt_Cmd(int argc,char **argv)
@@ -462,12 +463,12 @@ const struct {
     const char *name,*unit;
     float scale,offset;
 } ADC_chans[]={
-               {"Battery Voltage","V",6.3667,0},
-               {"Battery Current","A",2,0},
-               {"LED Voltage","V",4.8802,0},
-               {"LED Current","A",2,0},
-               {"MSP Voltage","V",2.75,0},
-               {"Regulator Temp","C",51.282051,-20.641026}
+               {"Battery Voltage", "V", BATTERY_V_SCALE, BATTERY_V_OFFSET},
+               {"Battery Current", "A", BATTERY_I_SCALE, BATTERY_I_OFFSET},
+               {"LED Voltage",     "V", LED_V_SCALE,     LED_V_OFFSET},
+               {"LED Current",     "A", LED_I_SCALE,     LED_I_OFFSET},
+               {"MSP Voltage",     "V", MSP_V_SCALE,     MSP_V_OFFSET},
+               {"Regulator Temp",  "C", REG_TEMP_SCALE,  REG_TEMP_OFFSET}
 };
 
 
@@ -481,7 +482,7 @@ int ADC_Cmd(int argc,char **argv)
     for(i=0;i<6;i++)
     {
         printf("%-15s : %f %s\r\n",ADC_chans[i].name,
-               vals[i]*ADC_chans[i].scale*(1.2)/((float)((int)0x7FFF))+ADC_chans[i].offset,
+               adc2unit(vals[i],ADC_chans[i].scale,ADC_chans[i].offset),
                ADC_chans[i].unit);
     }
     return 0;
