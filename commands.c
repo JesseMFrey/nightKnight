@@ -794,6 +794,7 @@ const struct{
           {"USA",&USA_colors},
           {"RGB",&RGB_colors},
           {"USA_RW",&USA_RW_colors},
+          {"xmas",&Xmas_colors},
           {"custom",(COLOR_LIST*)custom_clist},
           {NULL,NULL}
 };

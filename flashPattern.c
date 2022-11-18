@@ -93,6 +93,14 @@ const COLOR_LIST USA_RW_colors={
                     }
                   };
 
+const COLOR_LIST Xmas_colors={
+                    .num_colors=3,.alt_color={
+                          {.alt_frac=0  ,.color={.brt=LED_BRT_NORM,.r=0xFF,.g=0x00,.b=0x00}},
+                          {.alt_frac=85 ,.color={.brt=LED_BRT_NORM,.r=90,.g=90,.b=80}},
+                          {.alt_frac=170,.color={.brt=LED_BRT_NORM,.r=0x00,.g=0xFF,.b=0x00}},
+                    }
+                  };
+
 static int limit_idx(int i)
 {
     if(i<0)

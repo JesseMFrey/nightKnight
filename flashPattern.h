@@ -84,5 +84,6 @@ extern const COLOR_LIST USA_colors;
 extern const COLOR_LIST USA_spk_colors;
 extern const COLOR_LIST RGB_colors;
 extern const COLOR_LIST USA_RW_colors;
+extern const COLOR_LIST Xmas_colors;
 
 #endif /* FLASHPATTERN_H_ */
