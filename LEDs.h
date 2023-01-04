@@ -70,7 +70,7 @@ typedef struct{
     unsigned char end[4];
 }LED_array;
 
-LED_array LED_stat[2];
+extern LED_array LED_stat[2];
 
 extern const int LED_lut[150][2];
 

@@ -10,6 +10,7 @@
 #include "LEDs.h"
 #include "flashPattern.h"
 
+LED_array LED_stat[2];
 
 void initLEDs(void)
 {
