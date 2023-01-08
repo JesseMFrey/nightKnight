@@ -275,6 +275,11 @@ void flashPatternAdvance(void)
     e_flags|=FP_ADVANCE;
 }
 
+static unsigned char random_next_hue(unsigned char prev)
+{
+    return (rand() & 0x3F) + (prev + 256/LED_STR + 32);
+}
+
 int flashPatternStep(void)
 {
     int j;
@@ -345,7 +350,7 @@ int flashPatternStep(void)
                                 pat_d.basic.hue[j] = pat_d.basic.hue[j+1];
                             }
                             //add new random hue of
-                            pat_d.basic.hue[LED_STR-1] = (rand() & 0x3F) + (pat_d.basic.hue[LED_STR-1] + 85 + 32);
+                            pat_d.basic.hue[LED_STR-1] = random_next_hue(pat_d.basic.hue[LED_STR-1]);
                         }
                     }
                 }
@@ -1095,7 +1100,14 @@ void flashPatternChange(int pattern)
         case LED_PAT_RND_SATURATION:
             for(i=0;i<LED_STR;i++)
             {
-                pat_d.basic.hue[i] = rand();
+                if(i == 0)
+                {
+                    pat_d.basic.hue[i] = rand();
+                }
+                else
+                {
+                    pat_d.basic.hue[i] = random_next_hue(pat_d.basic.hue[i-1]);
+                }
             }
             //drop into saturation init
         case LED_PAT_SATURATION:
