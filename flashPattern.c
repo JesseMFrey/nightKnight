@@ -222,7 +222,7 @@ static void new_particle(PARTICLE *n,int type)
     int tmp;
     //create new particle
     n->v=0.3*(rand()/(float)RAND_MAX)+0.1;
-    n->x=LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
+    n->x=only_fins?FIN_LED:LED_LEN+(LED_LEN/2)*(rand()/(float)RAND_MAX);
 
     switch(type)
     {
@@ -659,7 +659,7 @@ int flashPatternStep(void)
                 case LED_PAT_ST_LIST:
                     if(only_fins){
                         //set color from array
-                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[(((lin_idx*4)/settings.value)%settings.list->num_colors)].color;
+                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[((lin_idx/settings.value)%settings.list->num_colors)].color;
                         //set brightens from pattern color
                         LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                     }
@@ -694,7 +694,7 @@ int flashPatternStep(void)
                     if(only_fins)
                     {
                         //set color from array
-                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[( ((4*(lin_idx+pat_d.basic.LED_idx))/settings.value)%settings.list->num_colors)].color;
+                        LED_stat[buffer_idx].colors[pat_i-1]=settings.list->alt_color[( (((lin_idx+pat_d.basic.LED_idx))/settings.value)%settings.list->num_colors)].color;
                         //set color from pattern color
                         LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
                     }
