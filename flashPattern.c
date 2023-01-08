@@ -25,7 +25,7 @@
 
 static int LED_pattern;
 
-#define NUM_PARTICLES (LED_STR*15)
+#define NUM_PARTICLES (LED_STR*30)
 
 static int buffer_idx=0;
 
