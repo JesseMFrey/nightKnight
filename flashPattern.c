@@ -37,6 +37,7 @@ static union{
         int LED_idx;
         //indicies for colortrain
         int red_idx,blue_idx,green_idx;
+        unsigned char hue[LED_STR];
     }basic;
     struct{
         //particle stuff for particle pattern
@@ -318,6 +319,7 @@ int flashPatternStep(void)
                 pat_d.basic.LED_idx&=0xFF;
             break;
             case LED_PAT_SATURATION:
+            case LED_PAT_RND_SATURATION:
                 //calculate new index
                 pat_d.basic.LED_idx+=(pat_d.basic.idx_dir&0x01)?-1:1;
                 //check for reversal
@@ -325,9 +327,26 @@ int flashPatternStep(void)
                 {
                     //increment direction
                     pat_d.basic.idx_dir+=1;
-                    //check for overflow
-                    if(pat_d.basic.idx_dir>=6){
-                        pat_d.basic.idx_dir=0;
+                    if(LED_pattern == LED_PAT_SATURATION)
+                    {
+                        //check for overflow
+                        if(pat_d.basic.idx_dir>=6){
+                            pat_d.basic.idx_dir=0;
+                        }
+                    }
+                    else
+                    {
+                        //check for overflow
+                        if(pat_d.basic.idx_dir>=2){
+                            pat_d.basic.idx_dir=0;
+                            //shift hues down
+                            for(j=0; j<LED_STR-1; j++)
+                            {
+                                pat_d.basic.hue[j] = pat_d.basic.hue[j+1];
+                            }
+                            //add new random hue of
+                            pat_d.basic.hue[LED_STR-1] = (rand() & 0x3F) + (pat_d.basic.hue[LED_STR-1] + 85 + 32);
+                        }
                     }
                 }
             break;
@@ -609,6 +628,10 @@ int flashPatternStep(void)
                         LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
 
                     }
+                break;
+                case LED_PAT_RND_SATURATION:
+                    //calculate color in RGB
+                    HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],settings.color.brt,pat_d.basic.hue[strp_idx],(pat_d.basic.LED_idx>0xFF)?0xFF:pat_d.basic.LED_idx,0xFF);
                 break;
                 case LED_PAT_SATURATION:
                     //calculate color in RGB
@@ -1069,8 +1092,14 @@ void flashPatternChange(int pattern)
             //set interrupt interval
             flash_per=51;
         break;
+        case LED_PAT_RND_SATURATION:
+            for(i=0;i<LED_STR;i++)
+            {
+                pat_d.basic.hue[i] = rand();
+            }
+            //drop into saturation init
         case LED_PAT_SATURATION:
-        pat_d.basic.idx_dir=0;
+            pat_d.basic.idx_dir=0;
             pat_d.basic.LED_idx=0;
             //set interrupt interval
             flash_per=51;

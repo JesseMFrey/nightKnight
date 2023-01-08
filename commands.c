@@ -381,6 +381,7 @@ const struct {
                  {"fl_list",LED_PAT_FLOW_LIST},
                  {"particle",LED_PAT_PARTICLE},
                  {"eyes_h",LED_PAT_EYES_H},
+                 {"rnd_sat",LED_PAT_RND_SATURATION},
                  {"wave_bu",LED_PAT_WAVE_BIG_U},
                  {"wave_bd",LED_PAT_WAVE_BIG_D},
                  {"wave_su",LED_PAT_WAVE_SM_U},
