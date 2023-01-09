@@ -390,12 +390,10 @@ int flashPatternStep(void)
                 nosecone_pattern_mode(NC_MODE_STATIC,pat_d.basic.LED_idx==0?0xFFF:0x1F,NC_NA,NC_NA,NC_NA);
             break;
             case LED_PAT_BURST:
-                //calculate new index
-                pat_d.basic.LED_idx+=1;
-                //limit 0 to LED_LEN
-                if(pat_d.basic.LED_idx>=(LED_LEN*5))
+                if( pat_d.basic.LED_idx < LED_LEN + settings.value)
                 {
-                    pat_d.basic.LED_idx=0;
+                    //calculate new index
+                    pat_d.basic.LED_idx+=1;
                 }
             break;
             case LED_PAT_FLASH_NOGAP:
@@ -601,37 +599,46 @@ int flashPatternStep(void)
                     HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],settings.color.brt,pat_d.basic.LED_idx,0xFF,0xFF);
                 break;
                 case LED_PAT_BURST:
-                    //set to full brightness
-                    LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|settings.color.brt;
-                    //LEDs are red or whit, red always max
-                    LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
-                    if(lin_idx>=(C_LEFT-pat_d.basic.LED_idx) && lin_idx<=(C_RIGHT+pat_d.basic.LED_idx))
+                    if(pat_d.basic.LED_idx <= LED_LEN/2 + settings.value)
                     {
-                        if(pat_d.basic.LED_idx>=3 && lin_idx>=(C_LEFT-(pat_d.basic.LED_idx-3)) && lin_idx<=(C_RIGHT+(pat_d.basic.LED_idx-3)))
+                        if(lin_idx >= LED_LEN/2 + pat_d.basic.LED_idx || lin_idx <= LED_LEN/2 - pat_d.basic.LED_idx )
                         {
-                            //LED is black, clear red
-                            LED_stat[buffer_idx].colors[pat_i-1].r  =0x00;
+                            //set to color brightness
+                            LED_stat[buffer_idx].colors[pat_i-1].brt = LED_ST_BITS|settings.color.brt;
+                            //set color to white
+                            LED_stat[buffer_idx].colors[pat_i-1].r = USA_WHITE_BRT;
+                            LED_stat[buffer_idx].colors[pat_i-1].g = USA_WHITE_BRT;
+                            LED_stat[buffer_idx].colors[pat_i-1].b = USA_WHITE_BRT;
                         }
-                        //LED is red
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =0x00;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =0x00;
+                        else
+                        {
+                            //turn center LEDs off
+                            LED_stat[buffer_idx].colors[pat_i-1].brt = LED_ST_BITS;
+                            //set color to white
+                            LED_stat[buffer_idx].colors[pat_i-1].r = 0;
+                            LED_stat[buffer_idx].colors[pat_i-1].g = 0;
+                            LED_stat[buffer_idx].colors[pat_i-1].b = 0;
+                        }
                     }
                     else
                     {
-                        //LED is white
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
-                    }
-                    if(pat_d.basic.LED_idx>=6)
-                    {
-                        //HsvToLED(&LED_stat[buffer_idx].colors[pat_i-1],0,0,0xFF/(25-6)*(pat_d.basic.LED_idx-5));
-                        //LED is white
-                        LED_stat[buffer_idx].colors[pat_i-1].r  =0xFF;
-                        LED_stat[buffer_idx].colors[pat_i-1].g  =0xFF;
-                        LED_stat[buffer_idx].colors[pat_i-1].b  =0xFF;
-                        //ramp up brightness
-                        LED_stat[buffer_idx].colors[pat_i-1].brt=LED_ST_BITS|((MAX_BRT/(26-6)*(pat_d.basic.LED_idx-5)));
-
+                        tmp1 = pat_d.basic.LED_idx - (LED_LEN/2 + settings.value);
+                        if(lin_idx >= LED_LEN/2 + tmp1 || lin_idx <= LED_LEN/2 - tmp1 )
+                        {
+                            //turn LEDs off
+                            LED_stat[buffer_idx].colors[pat_i-1].brt = LED_ST_BITS;
+                            //set color to white
+                            LED_stat[buffer_idx].colors[pat_i-1].r = 0;
+                            LED_stat[buffer_idx].colors[pat_i-1].g = 0;
+                            LED_stat[buffer_idx].colors[pat_i-1].b = 0;
+                        }
+                        else
+                        {
+                            //set color from pattern color
+                            LED_stat[buffer_idx].colors[pat_i-1]=settings.color;
+                            //make sure bits are correct
+                            LED_stat[buffer_idx].colors[pat_i-1].brt |= LED_ST_BITS;
+                        }
                     }
                 break;
                 case LED_PAT_RND_SATURATION:
@@ -1119,7 +1126,7 @@ void flashPatternChange(int pattern)
         case LED_PAT_BURST:
             pat_d.basic.LED_idx=0;
             //set interrupt interval
-            flash_per=102;
+            flash_per=50;
         break;
         case LED_PAT_FLASH_NOGAP:
             pat_d.basic.LED_idx=0;
