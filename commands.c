@@ -785,7 +785,8 @@ int sim_Cmd(int argc,char **argv)
 
 #define CUSTOM_LIST_COLORS      (10)
 
-static char custom_clist[sizeof(COLOR_LIST)+CUSTOM_LIST_COLORS*(sizeof(LED_color)+sizeof(int))];
+static char custom_clist1[sizeof(COLOR_LIST)+CUSTOM_LIST_COLORS*(sizeof(LED_color)+sizeof(int))];
+static char custom_clist2[sizeof(COLOR_LIST)+CUSTOM_LIST_COLORS*(sizeof(LED_color)+sizeof(int))];
 
 const struct{
     const char * name;
@@ -796,16 +797,31 @@ const struct{
           {"RGB",&RGB_colors},
           {"USA_RW",&USA_RW_colors},
           {"xmas",&Xmas_colors},
-          {"custom",(COLOR_LIST*)custom_clist},
+          {"custom1",(COLOR_LIST*)custom_clist1},
+          {"custom2",(COLOR_LIST*)custom_clist2},
           {NULL,NULL}
 };
 
-
+static COLOR_LIST * get_custom_list(const char *name)
+{
+    if( !strcmp("custom1", name))
+    {
+        return (COLOR_LIST*)custom_clist1;
+    }
+    else if( !strcmp("custom2", name))
+    {
+        return (COLOR_LIST*)custom_clist2;
+    }
+    else
+    {
+        return NULL;
+    }
+}
 
 int clist_Cmd(int argc,char **argv)
 {
     const COLOR_LIST *list=NULL;
-    COLOR_LIST *cust_list=(COLOR_LIST*)custom_clist;
+    COLOR_LIST *cust_list=NULL;
     int LED_brt;
     char *eptr;
     int i,j;
@@ -846,8 +862,8 @@ int clist_Cmd(int argc,char **argv)
             }
             else
             {
-                //default to custom list
-                list=(COLOR_LIST*)custom_clist;
+                //default to first custom list
+                list=(COLOR_LIST*)custom_clist1;
             }
             printf("idx\t""alt\t""Brt\t""Red\t""Green\t""Blue\r\n");
             for(i=0;i<list->num_colors;i++)
@@ -858,24 +874,33 @@ int clist_Cmd(int argc,char **argv)
         }
         else if(!strcmp("add",argv[1]))
         {
+            if(argc<7)
+            {
+                printf("Error : add requires 6 extra arguments\r\n");
+                return 2;
+            }
+            //check which list
+            cust_list = get_custom_list(argv[2]);
+
+            if(cust_list == NULL)
+            {
+                printf("Error : \"%s\" is not a customizable list\r\n");
+                return 8;
+            }
+
             if(cust_list->num_colors>=CUSTOM_LIST_COLORS)
             {
                 printf("Error : list can not have more than %u entries\r\n",CUSTOM_LIST_COLORS);
                 return 1;
             }
-            if(argc<6)
-            {
-                printf("Error : add requires 5 extra arguments\r\n");
-                return 2;
-            }
             //parse height
-            tempf=strtof(argv[2],&eptr);
+            tempf=strtof(argv[3],&eptr);
 
             //check if the whole string was parsed
             if(*eptr)
             {
               //end of string not found
-              printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[2],eptr);
+              printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[3],eptr);
               return 2;
             }
 
@@ -893,13 +918,13 @@ int clist_Cmd(int argc,char **argv)
             height_frac=256*tempf/(float)100;
 
             //parse brightness
-            temp=strtol(argv[3],&eptr,10);
+            temp=strtol(argv[4],&eptr,10);
 
             //check if the whole string was parsed
             if(*eptr)
             {
                //end of string not found
-               printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[3],eptr);
+               printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[4],eptr);
                return 2;
             }
 
@@ -920,13 +945,13 @@ int clist_Cmd(int argc,char **argv)
             for(i=0;i<3;i++)
             {
                 //parse value
-                temp=strtol(argv[4+i],&eptr,0);
+                temp=strtol(argv[5+i],&eptr,0);
 
                 //check if the whole string was parsed
                 if(*eptr)
                 {
                     //end of string not found
-                    printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[4+i],eptr);
+                    printf("Error while parsing \"%s\" unknown suffix \"%s\"\r\n",argv[5+i],eptr);
                     return 2;
                 }
 
@@ -968,18 +993,27 @@ int clist_Cmd(int argc,char **argv)
         }
         else if(!strcmp("remove",argv[1]))
         {
+            if(argc<3)
+            {
+                printf("Error : \"remove\" requires two extra arguments\r\n");
+                return 6;
+            }
+            //check which list
+            cust_list = get_custom_list(argv[2]);
+
+            if(cust_list == NULL)
+            {
+                printf("Error : \"%s\" is not a customizable list\r\n");
+                return 8;
+            }
             if(cust_list->num_colors<=0)
             {
                 printf("Error : cant remove from an empty list\r\n");
                 return 7;
             }
-            if(argc<2)
-            {
-                printf("Error : \"remove\" requires one extra argument\r\n");
-                return 6;
-            }
+
             //parse value
-            temp=strtol(argv[2],&eptr,0);
+            temp=strtol(argv[3],&eptr,0);
 
             //check if the whole string was parsed
             if(*eptr)
@@ -1008,6 +1042,24 @@ int clist_Cmd(int argc,char **argv)
                 cust_list->alt_color[i]=cust_list->alt_color[i+1];
             }
 
+        }
+        else if(!strcmp("clear",argv[1]))
+        {
+            if(argc<2)
+            {
+                printf("Error : \"remove\" requires one extra argument\r\n");
+                return 6;
+            }
+            //check which list
+            cust_list = get_custom_list(argv[2]);
+
+            if(cust_list == NULL)
+            {
+                printf("Error : \"%s\" is not a customizable list\r\n");
+                return 8;
+            }
+
+            cust_list->num_colors = 0;
         }
         else
         {
