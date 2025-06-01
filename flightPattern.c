@@ -224,7 +224,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=1,.color={.brt=7,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}},
+                                               {.basic={.pattern=LED_PAT_LIST_UNIFORM_PARTICLE,.value=5,.color={.brt=7,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_colors}},
                                                {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Boost pattern
@@ -274,7 +274,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=2,.color={.brt=7,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_RW_colors}},
+                                               {.basic={.pattern=LED_PAT_LIST_UNIFORM_PARTICLE,.value=6,.color={.brt=5,.r=0x00,.g=0x00,.b=0xFF},.list=&USA_colors}},
                                                {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Boost pattern
@@ -324,7 +324,7 @@ const FLIGHT_PATTERN
                                           },
                                           //Pad pattern
                                           {FLIGHT_TYPE_PATTERN_VAL_COLOR_LIST,
-                                               {.basic={.pattern=LED_PAT_ST_LIST,.value=6,.color={.brt=1,.r=155,.g=100,.b=50},.list=&RNBW_colors}},
+                                               {.basic={.pattern=LED_PAT_LIST_UNIFORM_PARTICLE,.value=6,.color={.brt=5,.r=255,.g=255,.b=255},.list=&RNBW_colors}},
                                                {.mode=NC_MODE_PATTERN},{.mode=NC_MODE_STATIC,.val1=0}
                                           },
                                           //Boost pattern
