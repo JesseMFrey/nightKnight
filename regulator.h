@@ -14,7 +14,7 @@ void reg5V_on(void);
 
 #define reg5V_off()     (P1OUT&=~BIT7)
 
-#define reg5V_is_on()   (P1OUT&BIT7)q
+#define reg5V_is_on()   (P1OUT&BIT7)
 
 extern int reg_flags;
 
